@@ -17,6 +17,7 @@
     <ClCompile Include="..\src\DialogueText.cpp" />
     <ClCompile Include="..\src\JsonPlaythroughParser.cpp" />
     <ClCompile Include="..\src\NodeContent.cpp" />
+    <ClCompile Include="..\src\OJ_Scene.cpp" />
     <ClCompile Include="..\src\TimeoutEffects.cpp" />
     <ClCompile Include="..\src\WAG_Button.cpp" />
     <ClCompile Include="..\src\WAG_ResourceManager.cpp" />
@@ -31,6 +32,7 @@
     <ClInclude Include="..\include\DialogueText.h" />
     <ClInclude Include="..\include\JsonPlaythroughParser.h" />
     <ClInclude Include="..\include\NodeContent.h" />
+    <ClInclude Include="..\include\OJ_Scene.h" />
     <ClInclude Include="..\include\TimeoutEffects.h" />
     <ClInclude Include="..\include\WAG_Button.h" />
     <ClInclude Include="..\include\WAG_ResourceManager.h" />
