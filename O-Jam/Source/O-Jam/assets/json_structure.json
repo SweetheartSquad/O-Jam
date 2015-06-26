@@ -1,0 +1,186 @@
+{
+  "characters": [
+    {
+      "id": "WAG_FOX",
+      "variables": {
+        "CHOICE_1": null,
+        "CHOICE_2": null
+      }
+    }
+  ],
+  "conversations": [
+    {
+      "id":"WAG_CONVO_1",
+      "dialogue": [
+        {
+          "speaker": "Fox",
+          "portrait": "river",
+          "text": [
+            "This is a dialogue thing",
+            "beep",
+            "boop",
+            "i am a robot"
+          ]
+        },
+        {
+          "speaker": "Rabbit",
+          "portrait": "burrow",
+          "text": [
+            "thanks cheryl"
+          ]
+        },
+        {
+          "speaker": "Fox",
+          "portrait": "animals",
+          "text": [
+            "This text is also pretty long so that we can test out the text-wrapping stuff when it gets to around this point.",
+            "Bacon ipsum dolor amet cillum dolor sausage elit. Pariatur pork belly elit, ut aliqua kielbasa leberkas jowl. Cillum nulla et excepteur spare ribs ham landjaeger doner rump aliquip commodo laborum tenderloin swine. Short ribs boudin in cupidatat salami. Non venison cupim laborum pastrami tongue ipsum consequat quis ut.\nBall tip non ham hock, occaecat aliquip pastrami short loin spare ribs. Strip steak nisi commodo in, ea aliqua tenderloin biltong sunt anim sausage ball tip turkey. Pork kevin short ribs veniam. Ball tip ullamco shankle corned beef. Tri-tip sunt dolore, officia jowl pork loin enim ham hock eiusmod swine t-bone. Ad tail turducken aute rump lorem."
+          ]
+        },
+        {
+          "speaker": "Rabbit",
+          "portrait": "burrow",
+          "text": [
+            "question one???"
+          ],
+          "options": [
+            {
+              "text": "option 1",
+              "triggers": [
+                {
+                  "type": "setVar",
+                  "target": "WAG_FOX",
+                  "variable": "CHOICE_1",
+                  "value": "1"
+                },
+                {
+                  "type": "setConversation",
+                  "conversation": "WAG_CONVO_2"
+                }
+              ]
+            },
+            {
+              "text": "option 2",
+              "triggers": [
+                {
+                  "type": "setVar",
+                  "target": "WAG_FOX",
+                  "variable": "CHOICE_1",
+                  "value": "2"
+                },
+                {
+                  "type": "setConversation",
+                  "conversation": "WAG_CONVO_2"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id":"WAG_CONVO_2",
+      "dialogue": [
+        {
+          "speaker": "cheryl",
+          "portrait": "cheryl",
+          "text": [
+            "This is a brand new conversation!!"
+          ]
+        },
+        {
+          "speaker": "cheryl",
+          "portrait": "cheryl",
+          "text": [
+            "question two???"
+          ],
+          "options": [
+            {
+              "text": "option 1",
+              "triggers": [
+                {
+                  "type": "setVar",
+                  "target": "WAG_FOX",
+                  "variable": "CHOICE_2",
+                  "value": "1"
+                }
+              ]
+            },
+            {
+              "text": "option 2",
+              "triggers": [
+                {
+                  "type": "setVar",
+                  "target": "WAG_FOX",
+                  "variable": "CHOICE_2",
+                  "value": "2"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "speaker": "cheryl",
+          "portrait": "cheryl",
+          "conditions": [
+            {
+              "type": "equality",
+              "target": "WAG_FOX",
+              "variable": "CHOICE_1",
+              "value": "1"
+            }
+          ],
+          "text": [
+            "You chose one for the first choice."
+          ]
+        },
+        {
+          "speaker": "cheryl",
+          "portrait": "cheryl",
+          "conditions": [
+            {
+              "type": "equality",
+              "target": "WAG_FOX",
+              "variable": "CHOICE_1",
+              "value": "2"
+            }
+          ],
+          "text": [
+            "You chose two for the first choice."
+          ]
+        },
+        {
+          "speaker": "cheryl",
+          "portrait": "cheryl",
+          "conditions": [
+            {
+              "type": "equality",
+              "target": "WAG_FOX",
+              "variable": "CHOICE_2",
+              "value": "1"
+            }
+          ],
+          "text": [
+            "You chose one for the second choice."
+          ]
+        },
+        {
+          "speaker": "cheryl",
+          "portrait": "cheryl",
+          "conditions": [
+            {
+              "type": "equality",
+              "target": "WAG_FOX",
+              "variable": "CHOICE_2",
+              "value": "2"
+            }
+          ],
+          "text": [
+            "You chose two for the second choice."
+          ]
+        }
+      ]
+    }
+  ]
+}
