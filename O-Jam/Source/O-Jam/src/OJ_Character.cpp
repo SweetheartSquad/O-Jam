@@ -33,9 +33,18 @@ OJ_Character::OJ_Character(OJ_TexturePack* _texPack, Box2DWorld* _world, int16 _
 	rootComponent = torso;
 
 	rootComponent->maxVelocity = b2Vec2(componentScale*0.5f, componentScale*0.5f);
-
-	torso->createFixture(sf, b2Vec2(0.f, 0.f), this);
+	
+	b2Fixture * f = torso->createFixture(sf, b2Vec2(0.f, 0.f), this);
+	f->SetDensity(10.f);
 }
 
 OJ_Character::~OJ_Character() {
+}
+
+void OJ_Character::move(glm::vec2 _v){
+	if(_v.x != 0 || _v.y != 0){
+		float s = speed * rootComponent->body->GetMass();
+		rootComponent->applyLinearImpulseUp(_v.y * s);
+		rootComponent->applyLinearImpulseRight(_v.x * s);
+	}
 }

@@ -8,12 +8,12 @@ public:
 	Box2DSprite * handR;
 	Box2DSprite * handL;
 
-	b2DistanceJoint * leftHandJoint;
-	b2DistanceJoint * rightHandJoint;
+	b2PrismaticJoint * handJointR;
+	b2PrismaticJoint * handJointL;
 
-	glm::vec2 punchDir;
+	float punchAngle;
 	float punchSpeed;
-	unsigned long int punchDelay;
+	float punchReach;
 
 	OJ_Boxer(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits = -1, int16 _groupIndex = -1);
 	virtual ~OJ_Boxer();
@@ -22,10 +22,4 @@ public:
 
 	void punchL();
 	void punchR();
-
-protected:
-	int ticksSincePunchL;
-	bool punchedL;
-	int ticksSincePunchR;
-	bool punchedR;
 };

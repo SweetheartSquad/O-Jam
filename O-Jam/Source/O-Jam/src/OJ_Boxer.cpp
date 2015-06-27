@@ -5,13 +5,8 @@
 
 OJ_Boxer::OJ_Boxer(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits, int16 _groupIndex) :
 	OJ_Character(_texPack == nullptr ? new OJ_TexturePack("torso", "hand") : _texPack, _world, _categoryBits, _maskBits, _groupIndex),
-	ticksSincePunchL(0),
-	ticksSincePunchR(0),
-	punchedL(false),
-	punchedR(false),
-	punchDir(0),
 	punchSpeed(2.f),
-	punchDelay(5)
+	punchReach(3.f)
 {
 	handR = new Box2DSprite(world, b2_dynamicBody, false, nullptr, texPack->handTex, 0.5f, 0.5f, 0, 0, componentScale);
 	handL = new Box2DSprite(world, b2_dynamicBody, false, nullptr, texPack->handTex, 0.5f, 0.5f, 0, 0, componentScale);
@@ -27,24 +22,37 @@ OJ_Boxer::OJ_Boxer(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _catego
 	// JOINTS //
 	////////////
 	{
-		b2DistanceJointDef j;
+		b2PrismaticJointDef j;
 		j.bodyA = torso->body;
 		j.bodyB = handR->body;
 		j.localAnchorA.Set(0.9f * torso->getCorrectedWidth(), 0);
 		j.localAnchorB.Set(0, 0);
+		j.localAxisA.Set(-0.2, 0.8);
 		j.collideConnected = false;
-		j.length = componentScale;
-		leftHandJoint = (b2DistanceJoint *)world->b2world->CreateJoint(&j);
+		j.enableLimit = true;
+		j.enableMotor = true;
+		j.maxMotorForce = 100;
+		j.motorSpeed = -100;
+		j.upperTranslation = componentScale;
+		j.lowerTranslation = 0;
+		handJointL = (b2PrismaticJoint *)world->b2world->CreateJoint(&j);
 	}
 	{
-		b2DistanceJointDef j;
+		b2PrismaticJointDef j;
 		j.bodyA = torso->body;
 		j.bodyB = handL->body;
 		j.localAnchorA.Set(-0.9f * torso->getCorrectedWidth(), 0);
 		j.localAnchorB.Set(0, 0);
+		j.localAxisA.Set(0.2, 0.8);
+		j.enableLimit = true;
+		j.enableMotor = true;
+		j.maxMotorForce = 100;
+		j.motorSpeed = -100;
+		j.upperTranslation = componentScale;
+		j.lowerTranslation = 0;
 		j.collideConnected = false;
-		j.length = componentScale;
-		rightHandJoint = (b2DistanceJoint *)world->b2world->CreateJoint(&j);
+		
+		handJointR = (b2PrismaticJoint *)world->b2world->CreateJoint(&j);
 	}
 
 }
@@ -54,42 +62,21 @@ OJ_Boxer::~OJ_Boxer() {
 }
 
 void OJ_Boxer::update(Step * _step) {
-	if(punchedR) {
-		ticksSincePunchR++;
-	}
-	if(punchedL) {
-		ticksSincePunchL++;
-	}
-	
-	if(ticksSincePunchR > punchDelay){
-		rightHandJoint->SetLength(componentScale*0.3f);
-		ticksSincePunchR = 0;
-		punchedR = false;
-	}
-	if(ticksSincePunchL > punchDelay){
-		leftHandJoint->SetLength(componentScale*0.3f);
-		ticksSincePunchL = 0;
-		punchedL = false;
-	}
 	OJ_Character::update(_step);
 }
 
 void OJ_Boxer::punchR(){
-	if(!punchedR){
-		punchedR = true;
+	handJointR->SetLimits(0, componentScale*punchReach);
 
-		rightHandJoint->SetLength(componentScale*3.f);
-
-		handR->applyLinearImpulseToCenter(punchDir.x * punchSpeed * handR->body->GetMass(), punchDir.y * punchSpeed * handR->body->GetMass());
-	}
+	glm::vec2 punchV(glm::cos(punchAngle + glm::half_pi<float>()), glm::sin(punchAngle + glm::half_pi<float>()));
+	float s = punchSpeed * handR->body->GetMass();
+	handR->applyLinearImpulseToCenter(punchV.x * s, punchV.y * s);
 }
 
 void OJ_Boxer::punchL(){
-	if(!punchedL){
-		punchedL = true;
-
-		leftHandJoint->SetLength(componentScale*3.f);
-
-		handL->applyLinearImpulseToCenter(punchDir.x * punchSpeed * handL->body->GetMass(), punchDir.y * punchSpeed * handL->body->GetMass());
-	}
+	handJointL->SetLimits(0, componentScale*punchReach);
+		
+	glm::vec2 punchV(glm::cos(punchAngle + glm::half_pi<float>()), glm::sin(punchAngle + glm::half_pi<float>()));
+	float s = punchSpeed * handL->body->GetMass();
+	handL->applyLinearImpulseToCenter(punchV.x * s, punchV.y * s);
 }
