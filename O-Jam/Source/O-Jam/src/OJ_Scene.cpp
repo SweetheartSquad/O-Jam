@@ -171,31 +171,37 @@ void OJ_Scene::update(Step* _step) {
 }
 
 void OJ_Scene::movePlayer(OJ_Player * _player, Joystick * _joystick){
-	if(_joystick == nullptr){
-		return;
-	}
+	// Calculate movement
+	glm::vec2 movement(0);
 
-	glm::vec3 movement(0);
+	if(keyboard->keyDown(GLFW_KEY_W)){
+		movement.y += 1.f;
+	}if(keyboard->keyDown(GLFW_KEY_S)){
+		movement.y -= 1.f;
+	}if(keyboard->keyDown(GLFW_KEY_A)){
+		movement.x -= 1.f;
+	}if(keyboard->keyDown(GLFW_KEY_D)){
+		movement.x += 1.f;
+	}
 
 	if(_joystick != nullptr){
-		// Calculate movement
-		movement.x += _player->speed * _player->rootComponent->body->GetMass() * _joystick->getAxis(Joystick::xbox_axes::kLX);
-		movement.y += _player->speed * _player->rootComponent->body->GetMass() * -_joystick->getAxis(Joystick::xbox_axes::kLY);
+		movement.x += _joystick->getAxis(Joystick::xbox_axes::kLX);
+		movement.y += -_joystick->getAxis(Joystick::xbox_axes::kLY);
 	}
+	
+	_player->move(movement);
 
-	if(movement.x != 0 || movement.y != 0 || movement.z != 0){
-		_player->rootComponent->applyLinearImpulseUp(movement.y);
-		_player->rootComponent->applyLinearImpulseRight(movement.x);
-	}
+	// Calculate punches
+	if(_joystick != nullptr){
+		_player->punchDir = glm::vec2(0);
+		_player->punchDir.x = _joystick->getAxis(Joystick::xbox_axes::kRX);
+		_player->punchDir.y = -_joystick->getAxis(Joystick::xbox_axes::kRY);
 
-	_player->punchDir = glm::vec2(0);
-	_player->punchDir.x = _joystick->getAxis(Joystick::xbox_axes::kRX);
-	_player->punchDir.y = -_joystick->getAxis(Joystick::xbox_axes::kRY);
-
-	if(_joystick->buttonJustDown(Joystick::xbox_buttons::kR1)){
-		_player->punchR();
-	}else if(_joystick->buttonJustDown(Joystick::xbox_buttons::kL1)){
-		_player->punchL();
+		if(_joystick->buttonJustDown(Joystick::xbox_buttons::kR1)){
+			_player->punchR();
+		}else if(_joystick->buttonJustDown(Joystick::xbox_buttons::kL1)){
+			_player->punchL();
+		}
 	}
 }
 

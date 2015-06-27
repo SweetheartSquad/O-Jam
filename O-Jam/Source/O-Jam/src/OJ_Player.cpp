@@ -15,7 +15,6 @@ OJ_TexturePack::OJ_TexturePack(std::string _torsoSrc, std::string _handSrc) :
 
 OJ_Player::OJ_Player(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits, int16 _groupIndex) :
 	Box2DSuperSprite(_world, _categoryBits, _maskBits, _groupIndex),
-	keyboard(&Keyboard::getInstance()),
 	ticksSincePunchL(0),
 	ticksSincePunchR(0),
 	punchedL(false),
@@ -94,20 +93,6 @@ OJ_Player::OJ_Player(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _cate
 }
 
 void OJ_Player::update(Step * _step){
-
-	if(keyboard->keyDown(GLFW_KEY_W)){
-		rootComponent->applyLinearImpulseUp(2.0f);
-	}
-	if(keyboard->keyDown(GLFW_KEY_S)){
-		rootComponent->applyLinearImpulseDown(2.0f);
-	}
-	if(keyboard->keyDown(GLFW_KEY_A)){
-		rootComponent->applyLinearImpulseLeft(2.0f);
-	}
-	if(keyboard->keyDown(GLFW_KEY_D)){
-		rootComponent->applyLinearImpulseRight(2.0f);
-	}
-	
 	if(punchedR) {
 		ticksSincePunchR++;
 	}
@@ -125,6 +110,11 @@ void OJ_Player::update(Step * _step){
 		ticksSincePunchL = 0;
 		punchedL = false;
 	}
+
+	rootComponent->body->SetFixedRotation(true);
+	
+	float a = glm::atan(punchDir.y, punchDir.x);
+	rootComponent->body->SetTransform(rootComponent->body->GetWorldCenter(), a);
 
 	Box2DSuperSprite::update(_step);
 }
@@ -152,5 +142,13 @@ void OJ_Player::punchL(){
 		leftHandJoint->SetLength(componentScale*3.f);
 
 		handL->applyLinearImpulseToCenter(punchDir.x * punchSpeed * handL->body->GetMass(), punchDir.y * punchSpeed * handL->body->GetMass());
+	}
+}
+
+void OJ_Player::move(glm::vec2 _v){
+	if(_v.x != 0 || _v.y != 0){
+		float s = speed * rootComponent->body->GetMass();
+		rootComponent->applyLinearImpulseUp(_v.y * s);
+		rootComponent->applyLinearImpulseRight(_v.x * s);
 	}
 }

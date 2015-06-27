@@ -4,7 +4,6 @@
 #include <Box2DSuperSprite.h>
 #include <Box2DSprite.h>
 #include <TextureSampler.h>
-#include <Keyboard.h>
 
 class OJ_TexturePack : public Node{
 public:
@@ -36,9 +35,11 @@ public:
 	
 	void punchL();
 	void punchR();
+	// move the player
+	// _v should be normalized in most cases, and the player speed, mass, etc will be taken into account here
+	void move(glm::vec2 _v);
 	
 private:
-	Keyboard * keyboard;
 	int ticksSincePunchL;
 	bool punchedL;
 	int ticksSincePunchR;
