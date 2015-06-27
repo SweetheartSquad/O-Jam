@@ -13,6 +13,7 @@ public:
 
 class OJ_Character : public Box2DSuperSprite {
 public:
+	float health;
 
 	float speed;
 	

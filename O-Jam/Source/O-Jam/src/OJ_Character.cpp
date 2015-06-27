@@ -17,6 +17,7 @@ OJ_TexturePack::OJ_TexturePack(std::string _torsoSrc, std::string _handSrc) :
 OJ_Character::OJ_Character(float _componentScale, OJ_TexturePack* _texPack, Box2DWorld* _world, int16 _categoryBits, int16 _maskBits, int16 _groupIndex) :
 	Box2DSuperSprite(_world, _categoryBits, _maskBits, _groupIndex),
 	speed(1.0f),
+	health(100.f),
 	texPack(_texPack)
 {
 	componentScale = _componentScale;

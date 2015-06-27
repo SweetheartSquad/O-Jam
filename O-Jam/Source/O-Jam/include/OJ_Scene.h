@@ -15,6 +15,7 @@ class ComponentShaderText;
 class Font;
 class OJ_Enemy;
 class OJ_Arena;
+class OJ_ContactListener;
 
 class OJ_Scene : public LayeredScene {
 
@@ -22,10 +23,12 @@ public:
 
 	int sceneHeight;
 	int sceneWidth;
-	
+
 	Box2DWorld * box2DWorld;
 	Box2DDebugDrawer * box2DDebugDrawer;
 	BulletWorld * bulletWorld;
+
+	OJ_ContactListener * cl;
 
 	OJ_Player * playerOne;
 	OJ_Player * playerTwo;
@@ -52,6 +55,10 @@ public:
 	virtual void unload() override;
 
 private:
+	OJ_Enemy * fastBallTarget;
+	OJ_Enemy * findClosestEnemy(OJ_Player * _toPlayer);
 	void handlePlayerInput(OJ_Player * _player, Joystick * _joystick);
 	void handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo);
+
+	void killEnemy(OJ_Enemy * _enemy);
 };

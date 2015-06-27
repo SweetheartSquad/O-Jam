@@ -14,19 +14,21 @@ OJ_Player::OJ_Player(float _componentScale, OJ_TexturePack * _texPack, Box2DWorl
 	disableTimer(1)
 {
 	rootComponent->body->SetType(b2_kinematicBody);
+	rootComponent->body->SetFixedRotation(true);
 
 	disableTimer.onCompleteFunction = [this](Timeout * _this){
 		this->disabled = false;
 		this->rootComponent->body->SetType(b2_kinematicBody);
+		this->rootComponent->body->SetFixedRotation(true);
 	};
 }
 
 void OJ_Player::update(Step * _step){
 	disableTimer.update(_step);
-	rootComponent->body->SetFixedRotation(true);
 	
-	rootComponent->body->SetTransform(rootComponent->body->GetWorldCenter(), punchAngle);
-
+	if(!disabled){
+		rootComponent->body->SetTransform(rootComponent->body->GetWorldCenter(), punchAngle);
+	}
 	OJ_Boxer::update(_step);
 }
 
@@ -64,6 +66,7 @@ void OJ_Player::disable(float _seconds){
 	disabled = true;
 	stance = kNONE;
 	rootComponent->body->SetType(b2_dynamicBody);
+	rootComponent->body->SetFixedRotation(false);
 	disableTimer.targetSeconds = _seconds;
 	disableTimer.restart();
 }
