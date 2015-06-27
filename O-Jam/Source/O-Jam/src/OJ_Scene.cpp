@@ -28,8 +28,8 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	box2DDebugDrawer(nullptr),
 	textShader(new ComponentShaderText(true)),
 	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false)),
-	playerOne(new OJ_Player(nullptr, box2DWorld, 0, 0, 0)),
-	playerTwo(new OJ_Player(nullptr, box2DWorld, 0, 0, 0))
+	playerOne(new OJ_Player(new OJ_TexturePack("MOM_TORSO", "MOM_HAND"), box2DWorld, 0, 0, 0)),
+	playerTwo(new OJ_Player(new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, 0, 0, 0))
 {
 	// Set screen width and height
 	updateScreenDimensions();

@@ -18,7 +18,7 @@ std::map<std::string, OpenAL_Sound *> OJ_ResourceManager::voices;
 std::string OJ_ResourceManager::speaker = "blip";
 
 void OJ_ResourceManager::init(){
-	playthrough = new JsonPlaythroughParser("../assets/json_structure.json");
+	playthrough = new JsonPlaythroughParser("../assets/playthrough.json");
 	resources.push_back(cursor);
 	resources.push_back(cheryl);
 	resources.push_back(stream);

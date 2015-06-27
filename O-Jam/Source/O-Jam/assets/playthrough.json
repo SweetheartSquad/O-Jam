@@ -1,32 +1,32 @@
 {
   "assets": [
     {
-      "id": "BURROW",
+      "id": "MOM_TORSO",
       "type": "texture",
-      "src": "burrow.png",
-      "width": 1920,
-      "height": 1080
+      "src": "mom_torso.png",
+      "width": 1174,
+      "height": 1174
     },
     {
-      "id": "RIVER",
+      "id": "MOM_HAND",
       "type": "texture",
-      "src": "river.png",
-      "width": 1920,
-      "height": 1080
+      "src": "mom_hand.png",
+      "width": 199,
+      "height": 199
     },
     {
-      "id": "Fox",
+      "id": "SON_TORSO",
       "type": "texture",
-      "src": "fox_avatar.png",
-      "width": 120,
-      "height": 120
+      "src": "son_torso.png",
+      "width": 496,
+      "height": 496
     },
     {
-      "id": "Rabbit",
+      "id": "SON_HAND",
       "type": "texture",
-      "src": "rabbit_avatar.png",
-      "width": 128,
-      "height": 128
+      "src": "son_hand.png",
+      "width": 142,
+      "height": 142
     }
   ],
   "characters": [
