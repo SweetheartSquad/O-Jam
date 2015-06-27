@@ -57,8 +57,8 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	childTransform->addChild(testEnemy);
 
 	testEnemy->targetCharacter(playerOne);
-	testEnemy->rootComponent->maxVelocity = b2Vec2(30.0f, 30.0f);
-	testEnemy->speed = 30.0f;
+	testEnemy->rootComponent->maxVelocity = b2Vec2(10.0f, 10.0f);
+	testEnemy->speed = 10.0f;
 
 	//Set up cameras
 	{Transform * t = new Transform();
