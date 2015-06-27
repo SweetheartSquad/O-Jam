@@ -1,4 +1,34 @@
 {
+  "assets": [
+    {
+      "id": "BURROW",
+      "type": "texture",
+      "src": "burrow.png",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "id": "RIVER",
+      "type": "texture",
+      "src": "river.png",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "id": "Fox",
+      "type": "texture",
+      "src": "fox_avatar.png",
+      "width": 120,
+      "height": 120
+    },
+    {
+      "id": "Rabbit",
+      "type": "texture",
+      "src": "rabbit_avatar.png",
+      "width": 128,
+      "height": 128
+    }
+  ],
   "characters": [
     {
       "id": "WAG_FOX",
@@ -14,7 +44,7 @@
       "dialogue": [
         {
           "speaker": "Fox",
-          "portrait": "river",
+          "portrait": "RIVER",
           "text": [
             "This is a dialogue thing",
             "beep",
@@ -24,7 +54,7 @@
         },
         {
           "speaker": "Rabbit",
-          "portrait": "burrow",
+          "portrait": "BURROW",
           "text": [
             "thanks cheryl"
           ]
@@ -39,7 +69,7 @@
         },
         {
           "speaker": "Rabbit",
-          "portrait": "burrow",
+          "portrait": "BURROW",
           "text": [
             "question one???"
           ],

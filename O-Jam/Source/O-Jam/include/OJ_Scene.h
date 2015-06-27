@@ -28,6 +28,6 @@ public:
 	virtual void unload() override;
 
 private:
-	void renderUi(vox::MatrixStack* _matrixStack, RenderOptions* _renderOptions;
+	void renderUi(vox::MatrixStack* _matrixStack, RenderOptions* _renderOptions);
 	void updateScreenDimensions();
 };

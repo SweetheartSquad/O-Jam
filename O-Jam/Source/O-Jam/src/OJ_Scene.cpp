@@ -3,6 +3,7 @@
 #include <OJ_Scene.h>
 #include <shader/ComponentShaderBase.h>
 #include <shader/ShaderComponentTexture.h>
+#include <glfw/glfw3.h>
 
 OJ_Scene::OJ_Scene(Game * _game) :
 	Scene(_game),
