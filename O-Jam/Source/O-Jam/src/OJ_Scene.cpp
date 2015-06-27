@@ -91,6 +91,11 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	playerOne->punchSpeed = 100.f;
 	playerTwo->speed = 50.f;
 	playerTwo->punchSpeed = 100.f;
+
+	MeshEntity * bg = new MeshEntity(MeshFactory::getCubeMesh(100));
+	bg->setShader(mainShader,true);
+	bg->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
+	childTransform->addChild(bg, false);
 }
 
 OJ_Scene::~OJ_Scene() {
@@ -166,6 +171,10 @@ void OJ_Scene::update(Step* _step) {
 }
 
 void OJ_Scene::movePlayer(OJ_Player * _player, Joystick * _joystick){
+	if(_joystick == nullptr){
+		return;
+	}
+
 	glm::vec3 movement(0);
 
 	if(_joystick != nullptr){

@@ -55,8 +55,10 @@ OJ_Player::OJ_Player(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _cate
 	sf.groupIndex = groupIndex;
 
 	torso->createFixture(sf, b2Vec2(0.f, 0.f), this);
-	handR->createFixture(sf, b2Vec2(0.f, 0.f), this);
-	handL->createFixture(sf, b2Vec2(0.f, 0.f), this);
+	b2Fixture * f = handR->createFixture(sf, b2Vec2(0.f, 0.f), this);
+	f->SetDensity(0.01f);
+	f = handL->createFixture(sf, b2Vec2(0.f, 0.f), this);
+	f->SetDensity(0.01f);
 	
 	//handR->setTranslationPhysical(3.0f, 0.f, 0.f);
 	//handL->setTranslationPhysical(-3.0f, 0.f, 0.f);
