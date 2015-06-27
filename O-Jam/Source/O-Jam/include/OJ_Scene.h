@@ -14,6 +14,7 @@ class ComponentShaderBase;
 class ComponentShaderText;
 class Font;
 class OJ_Enemy;
+class OJ_Arena;
 
 class OJ_Scene : public LayeredScene {
 
@@ -34,6 +35,8 @@ public:
 
 	ComponentShaderBase * mainShader;
 	ComponentShaderText * textShader;
+
+	OJ_Arena * arena;
 
 	Font * font;
 
