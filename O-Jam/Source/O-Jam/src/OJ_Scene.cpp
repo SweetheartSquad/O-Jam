@@ -43,7 +43,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 
 	// Add the players to the scene
 	childTransform->addChild(playerOne);
-	childTransform->addChild(playerTwo);
+	//childTransform->addChild(playerTwo);
 
 	playerOne->setShader(mainShader, true);
 	playerTwo->setShader(mainShader, true);
@@ -87,7 +87,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	MeshEntity * bg = new MeshEntity(MeshFactory::getCubeMesh(25));
 	bg->setShader(mainShader,true);
 	bg->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
-	childTransform->addChild(bg, false);
+	//childTransform->addChild(bg, false);
 }
 
 OJ_Scene::~OJ_Scene() {

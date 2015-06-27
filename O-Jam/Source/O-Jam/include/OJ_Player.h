@@ -20,11 +20,16 @@ public:
 	Box2DSprite * handR;
 	Box2DSprite * handL;
 
-	explicit OJ_Player(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits = -1, int16 _groupIndex = 0);
+	b2DistanceJoint * leftHandJoint;
+	b2DistanceJoint * rightHandJoint;
+
+	explicit OJ_Player(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits = -1, int16 _groupIndex = -1);
 	~OJ_Player();
 
 	void update(Step * _step) override;
 	
 private:
 	Keyboard * keyboard;
+	int ticksSincePunch;
+	bool punched;
 };
