@@ -23,6 +23,8 @@ public:
 	b2DistanceJoint * leftHandJoint;
 	b2DistanceJoint * rightHandJoint;
 
+	float speed;
+
 	explicit OJ_Player(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits = -1, int16 _groupIndex = -1);
 	~OJ_Player();
 

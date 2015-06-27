@@ -17,7 +17,8 @@ OJ_Player::OJ_Player(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _cate
 	Box2DSuperSprite(_world, _categoryBits, _maskBits, _groupIndex),
 	keyboard(&Keyboard::getInstance()),
 	ticksSincePunch(0),
-	punched(false)
+	punched(false),
+	speed(1)
 {
 	if(_texPack == nullptr){
 		_texPack = new OJ_TexturePack("torso", "hand");
