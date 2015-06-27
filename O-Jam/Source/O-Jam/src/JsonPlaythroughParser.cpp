@@ -19,9 +19,22 @@ Character::Character(Json::Value _json) :
 JsonPlaythroughParser::JsonPlaythroughParser(std::string _jsonSrc) :
 	currentConversation(nullptr)
 {
-	std::string jsonLoaded = FileUtils::voxReadFile(_jsonSrc);
+	
+
 	Json::Reader reader;
-	bool parsingSuccessful = reader.parse( jsonLoaded, root );
+	Json::Value defTexJson;
+	bool parsingSuccessful = reader.parse(
+		"{"
+			"\"id\":\"DEFAULT\",\""
+			"\"type\": \"texture\","
+			"\"width\": 256,"
+			"\"height\": 256"
+		"}", defTexJson);
+	textures["DEFAULT"] = new AssetTexture(defTexJson);
+
+
+	std::string jsonLoaded = FileUtils::voxReadFile(_jsonSrc);
+	parsingSuccessful = reader.parse( jsonLoaded, root );
 	if(!parsingSuccessful){
 		Log::error("JSON parse failed: " + reader.getFormattedErrorMessages() + "\n" + jsonLoaded);
 	}else{
@@ -37,5 +50,25 @@ JsonPlaythroughParser::JsonPlaythroughParser(std::string _jsonSrc) :
 			 Conversation * c = new Conversation(conversationsJson[i]);
 			 conversations[c->id] = c;
 		 }
+
+		 Json::Value texturesJson = root["assets"];
+		 for(auto i = 0; i < texturesJson.size(); ++i) {
+			 Asset * a = Asset::getAsset(texturesJson[i]);
+			 AssetTexture * at = dynamic_cast<AssetTexture *>(a);
+			 if(at != nullptr){
+				textures[at->id] = at;
+			 }
+		 }
 	}
+}
+
+AssetTexture * JsonPlaythroughParser::getTexture(std::string _id){
+	AssetTexture * res = nullptr;
+	auto it = textures.find(_id);
+	if(it != textures.end()){
+		res = it->second;
+	}else{
+		res = textures["DEFAULT"];
+	}
+	return res;
 }

@@ -36,7 +36,8 @@ void DialogueTextLabel::tickerIn(float _delay){
 				voice = it->second;
 			}
 			g->setVisible(true);
-			checkForAlError(alSourcef(voice->source->sourceId, AL_PITCH, g->character/256.f + 0.5f));
+			//std::cout << g->character/128.f+0.5f << std::endl;
+			checkForAlError(alSourcef(voice->source->sourceId, AL_PITCH, g->character/128.f+0.5f));
 			voice->play();
 		};
 		t->start();

@@ -8,13 +8,7 @@
 #include <math.h>
 
 Texture * WAG_ResourceManager::cursor = new Texture("../assets/engine basics/cursor.png", 32, 32, true, false);
-Texture * WAG_ResourceManager::cheryl = new Texture("../assets/img_cheryl.jpg", 256, 256, true, false);
-Texture * WAG_ResourceManager::frameWithAnimals = new Texture("../assets/framewithanimalsaspectratio.PNG", 1920, 1080, true, false);
-Texture * WAG_ResourceManager::burrow = new Texture("../assets/burrow.png", 1920, 1080, true, false);
-Texture * WAG_ResourceManager::river = new Texture("../assets/river.png", 1920, 1080, true, false);
-Texture * WAG_ResourceManager::foxPortrait = new Texture("../assets/fox_avatar.png", 120, 120, true, false);
-Texture * WAG_ResourceManager::rabbitPortrait = new Texture("../assets/rabbit_avatar.png", 128, 128, true, false);
-Texture * WAG_ResourceManager::scratchings = new Texture("../assets/scratchthings.png", 1920, 1080, true, false);
+Texture * WAG_ResourceManager::cheryl = new Texture("../assets/engine basics/img_cheryl.jpg", 256, 256, true, false);
 OpenAL_Sound * WAG_ResourceManager::stream = new OpenAL_SoundStreamGenerative(false, false/*, 100, 10*/);
 JsonPlaythroughParser * WAG_ResourceManager::playthrough = nullptr;
 
@@ -27,13 +21,7 @@ void WAG_ResourceManager::init(){
 	playthrough = new JsonPlaythroughParser("../assets/json_structure.json");
 	resources.push_back(cursor);
 	resources.push_back(cheryl);
-	resources.push_back(frameWithAnimals);
-	resources.push_back(burrow);
-	resources.push_back(river);
-	resources.push_back(foxPortrait);
-	resources.push_back(rabbitPortrait);
 	resources.push_back(stream);
-	resources.push_back(scratchings);
 
 	OpenAL_Sound * voice = new OpenAL_SoundSimple("../assets/audio/fox.wav", false, false);
 	voices["Fox"] = voice;

@@ -234,19 +234,7 @@ void DialogueDisplay::loadFrame(std::string _portrait){
 		framePanelOverlay->background->mesh->popTexture2D();
 	}
 
-	Texture * tex = nullptr;
-	if(_portrait == "cheryl"){
-		tex = WAG_ResourceManager::cheryl;
-	}else if(_portrait == "animals"){
-		tex = WAG_ResourceManager::frameWithAnimals;
-	}else if(_portrait == "burrow"){
-		tex = WAG_ResourceManager::burrow;
-	}else if(_portrait == "river"){
-		tex = WAG_ResourceManager::river;
-	}else{
-		tex = WAG_ResourceManager::cursor;
-	}
-	framePanelOverlay->background->mesh->pushTexture2D(tex);
+	framePanelOverlay->background->mesh->pushTexture2D(WAG_ResourceManager::playthrough->getTexture(_portrait)->texture);
 	
 	fadeTimeoutFrame->restart();
 }
@@ -262,14 +250,7 @@ void DialogueDisplay::loadPortrait(std::string _speaker){
 	Texture * tex = nullptr;
 	std::string speaker = (*stuffToSay)->getCurrentDialogue()->portrait;
 
-	if(_speaker == "Fox"){
-		tex = WAG_ResourceManager::foxPortrait;
-	}else if(_speaker == "Rabbit"){
-		tex = WAG_ResourceManager::rabbitPortrait;
-	}else{
-		tex = WAG_ResourceManager::cheryl;
-	}
-	portraitPanelOverlay->background->mesh->pushTexture2D(tex);
+	portraitPanelOverlay->background->mesh->pushTexture2D(WAG_ResourceManager::playthrough->getTexture(_speaker)->texture);
 
 	fadeTimeoutPortrait->restart();
 }
