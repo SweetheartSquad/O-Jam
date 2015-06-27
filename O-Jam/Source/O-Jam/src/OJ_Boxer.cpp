@@ -25,14 +25,14 @@ OJ_Boxer::OJ_Boxer(float _componentScale, OJ_TexturePack * _texPack, Box2DWorld 
 		b2PrismaticJointDef j;
 		j.bodyA = torso->body;
 		j.bodyB = handR->body;
-		j.localAnchorA.Set(0.9f * torso->getCorrectedWidth(), 0);
+		j.localAnchorA.Set(0.3f * torso->getCorrectedWidth(), 0.7f * torso->getCorrectedHeight());
 		j.localAnchorB.Set(0, 0);
-		j.localAxisA.Set(-0.2, 0.8);
+		j.localAxisA.Set(0.0, 1);
 		j.collideConnected = false;
 		j.enableLimit = true;
 		j.enableMotor = true;
-		j.maxMotorForce = 100;
-		j.motorSpeed = -100;
+		j.maxMotorForce = 100 * componentScale;
+		j.motorSpeed = -100 * componentScale;
 		j.upperTranslation = componentScale;
 		j.lowerTranslation = 0;
 		handJointL = (b2PrismaticJoint *)world->b2world->CreateJoint(&j);
@@ -41,20 +41,19 @@ OJ_Boxer::OJ_Boxer(float _componentScale, OJ_TexturePack * _texPack, Box2DWorld 
 		b2PrismaticJointDef j;
 		j.bodyA = torso->body;
 		j.bodyB = handL->body;
-		j.localAnchorA.Set(-0.9f * torso->getCorrectedWidth(), 0);
+		j.localAnchorA.Set(-0.3f * torso->getCorrectedWidth(), 0.7f * torso->getCorrectedHeight());
 		j.localAnchorB.Set(0, 0);
-		j.localAxisA.Set(0.2, 0.8);
+		j.localAxisA.Set(0.0, 1);
 		j.enableLimit = true;
 		j.enableMotor = true;
-		j.maxMotorForce = 100;
-		j.motorSpeed = -100;
+		j.maxMotorForce = 100 * componentScale;
+		j.motorSpeed = -100 * componentScale;
 		j.upperTranslation = componentScale;
 		j.lowerTranslation = 0;
 		j.collideConnected = false;
 		
 		handJointR = (b2PrismaticJoint *)world->b2world->CreateJoint(&j);
 	}
-
 }
 
 OJ_Boxer::~OJ_Boxer() {
@@ -66,7 +65,7 @@ void OJ_Boxer::update(Step * _step) {
 }
 
 void OJ_Boxer::punchR(){
-	handJointR->SetLimits(0, componentScale*punchReach);
+	handJointR->SetLimits(0, punchReach);
 
 	glm::vec2 punchV(glm::cos(punchAngle + glm::half_pi<float>()), glm::sin(punchAngle + glm::half_pi<float>()));
 	float s = punchSpeed * handR->body->GetMass();
@@ -74,7 +73,7 @@ void OJ_Boxer::punchR(){
 }
 
 void OJ_Boxer::punchL(){
-	handJointL->SetLimits(0, componentScale*punchReach);
+	handJointL->SetLimits(0, punchReach);
 		
 	glm::vec2 punchV(glm::cos(punchAngle + glm::half_pi<float>()), glm::sin(punchAngle + glm::half_pi<float>()));
 	float s = punchSpeed * handL->body->GetMass();

@@ -55,6 +55,8 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	childTransform->addChild(playerOne);
 	childTransform->addChild(playerTwo);
 
+	playerOne->punchReach = 3.0f;
+
 	playerOne->translateComponents(-5.0f, 0.f, 0.f);
 	playerTwo->translateComponents(5.0f, 0.f, 0.f);
 
