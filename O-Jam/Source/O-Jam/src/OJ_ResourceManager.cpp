@@ -1,23 +1,23 @@
 #pragma once
 
-#include <WAG_ResourceManager.h>
+#include <OJ_ResourceManager.h>
 
 #include <NumberUtils.h>
 #include <Easing.h>
 
 #include <math.h>
 
-Texture * WAG_ResourceManager::cursor = new Texture("../assets/engine basics/cursor.png", 32, 32, true, false);
-Texture * WAG_ResourceManager::cheryl = new Texture("../assets/engine basics/img_cheryl.jpg", 256, 256, true, false);
-OpenAL_Sound * WAG_ResourceManager::stream = new OpenAL_SoundStreamGenerative(false, false/*, 100, 10*/);
-JsonPlaythroughParser * WAG_ResourceManager::playthrough = nullptr;
+Texture * OJ_ResourceManager::cursor = new Texture("../assets/engine basics/cursor.png", 32, 32, true, false);
+Texture * OJ_ResourceManager::cheryl = new Texture("../assets/engine basics/img_cheryl.jpg", 256, 256, true, false);
+OpenAL_Sound * OJ_ResourceManager::stream = new OpenAL_SoundStreamGenerative(false, false/*, 100, 10*/);
+JsonPlaythroughParser * OJ_ResourceManager::playthrough = nullptr;
 
-std::map<std::string, OpenAL_Sound *> WAG_ResourceManager::voices;
+std::map<std::string, OpenAL_Sound *> OJ_ResourceManager::voices;
 
 
-std::string WAG_ResourceManager::speaker = "blip";
+std::string OJ_ResourceManager::speaker = "blip";
 
-void WAG_ResourceManager::init(){
+void OJ_ResourceManager::init(){
 	playthrough = new JsonPlaythroughParser("../assets/json_structure.json");
 	resources.push_back(cursor);
 	resources.push_back(cheryl);
@@ -58,10 +58,10 @@ void WAG_ResourceManager::init(){
 		//return (t|t*t>>8)*sqrt(t>>10);
 		
 		//return -t&20|t&40|t*10&t>>6|(t*100&t)/256;
-		//return t%63-WAG_ResourceManager::dialogueChar;
+		//return t%63-OJ_ResourceManager::dialogueChar;
 		return OpenAL_SoundStreamGenerative::compressFloat(sin(t&4|-t*3&t>>9));
 		//return /*t*30>>50|*/(t*2&t)/2;
 		//return t*2|t&-3|t/2*4/((unsigned long int)pow(t+1,2))>>t*3/1;
-		//return t>>WAG_ResourceManager::dialogueChar;
+		//return t>>OJ_ResourceManager::dialogueChar;
 	};
 }

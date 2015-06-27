@@ -1,8 +1,8 @@
 #pragma once
 
 #include <WAG_TestScene.h>
-#include <WAG_Game.h>
-#include <WAG_ResourceManager.h>
+#include <OJ_ResourceManager.h>
+#include <OJ_Game.h>
 
 #include <MeshEntity.h>
 #include <MeshInterface.h>
@@ -149,12 +149,12 @@ WAG_TestScene::WAG_TestScene(Game * _game) :
 	uiLayer.addChild(dd);
 	//childTransform->addChild(dd);
 
-	//dd->stuffToSay = WAG_ResourceManager::playthrough->conversations["WAG_CONVO_1"];
-	WAG_ResourceManager::playthrough->currentConversation = WAG_ResourceManager::playthrough->conversations["WAG_CONVO_1"];
+	//dd->stuffToSay = OJ_ResourceManager::playthrough->conversations["WAG_CONVO_1"];
+	OJ_ResourceManager::playthrough->currentConversation = OJ_ResourceManager::playthrough->conversations["WAG_CONVO_1"];
 	Step step;
 	dd->update(&step);
 	dd->sayNext();
-	//dd->portraitPanel->mesh->pushTexture2D(WAG_ResourceManager::cheryl);
+	//dd->portraitPanel->mesh->pushTexture2D(OJ_ResourceManager::cheryl);
 	//childTransform->addChild(dd);
 	//dd->parents.at(0)->translate(300, 300, 0);
 	
@@ -162,7 +162,7 @@ WAG_TestScene::WAG_TestScene(Game * _game) :
 
 	mouseIndicator = new Sprite();
 	uiLayer.childTransform->addChild(mouseIndicator);
-	mouseIndicator->mesh->pushTexture2D(WAG_ResourceManager::cursor);
+	mouseIndicator->mesh->pushTexture2D(OJ_ResourceManager::cursor);
 	mouseIndicator->parents.at(0)->scale(32, 32, 1);
 	mouseIndicator->mesh->scaleModeMag = GL_NEAREST;
 	mouseIndicator->mesh->scaleModeMin = GL_NEAREST;
@@ -189,12 +189,12 @@ WAG_TestScene::~WAG_TestScene(){
 
 
 void WAG_TestScene::update(Step * _step){
-	WAG_ResourceManager::stream->update(_step);
+	OJ_ResourceManager::stream->update(_step);
 	// handle inputs
 	joy->update(_step);
 	
 	if(keyboard->keyJustUp(GLFW_KEY_P)){	
-		WAG_ResourceManager::stream->play(true);
+		OJ_ResourceManager::stream->play(true);
 	}
 	if(keyboard->keyJustUp(GLFW_KEY_E)){	
 		std::wcout << L"Calling RequestJSONValueAsync..." << std::endl;

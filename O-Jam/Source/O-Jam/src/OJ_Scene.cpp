@@ -3,6 +3,11 @@
 #include <OJ_Scene.h>
 #include <shader/ComponentShaderBase.h>
 #include <shader/ShaderComponentTexture.h>
+#include <FpsDisplay.h>
+#include <shader/ComponentShaderText.h>
+#include <Font.h>
+#include <OJ_Player.h>
+
 #include <glfw/glfw3.h>
 
 #include <JoystickManager.h>
@@ -12,7 +17,13 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	Scene(_game),
 	joy(new JoystickManager()),
 	uiLayer(this, 0,0,0,0),
-	mainShader(new ComponentShaderBase(true))
+	mainShader(new ComponentShaderBase(true)),
+	bulletWorld(new BulletWorld()),
+	box2DWorld(new Box2DWorld()),
+	textShader(new ComponentShaderText(true)),
+	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false)),
+	playerOne(new OJ_Player(nullptr, box2DWorld, 0, 0, 0)),
+	playerTwo(new OJ_Player(nullptr, box2DWorld, 0, 0, 0))
 {
 	// Set screen width and height
 	updateScreenDimensions();
@@ -20,11 +31,29 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	// Initialize and compile the shader 
 	mainShader->addComponent(new ShaderComponentTexture(mainShader));
 	mainShader->compileShader();
+
+	// Set the text color to white
+	textShader->setColor(1.0f, 1.0f, 1.0f);
+
+	// Add the players to the scene
+	childTransform->addChild(playerOne);
+	childTransform->addChild(playerTwo);
+	playerOne->setShader(mainShader, true);
+	playerTwo->setShader(mainShader, true);
+
+#ifdef _DEBUG
+	// Add the fps display
+	uiLayer.addChild(new FpsDisplay(bulletWorld, this, font, textShader));
+#endif
+
 }
 
 OJ_Scene::~OJ_Scene() {
-	mainShader->decrementAndDelete();
+	delete mainShader;
+	delete textShader;
 	delete joy;
+	delete bulletWorld;
+	delete box2DWorld;
 }
 
 void OJ_Scene::update(Step* _step) {
@@ -53,6 +82,7 @@ void OJ_Scene::update(Step* _step) {
 		}
 		
 	}
+	uiLayer.update(_step);
 }
 
 void OJ_Scene::movePlayer(OJ_Player * _player, Joystick * _joystick){
@@ -77,6 +107,7 @@ void OJ_Scene::movePlayer(OJ_Player * _player, Joystick * _joystick){
 
 void OJ_Scene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOptions) {
 	Scene::render(_matrixStack, _renderOptions);
+	renderUi(_matrixStack, _renderOptions);
 }
 
 void OJ_Scene::load() {

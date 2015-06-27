@@ -5,9 +5,9 @@
 #include <typeinfo>
 #include <Texture.h>
 #include <Game.h>
-#include <WAG_ResourceManager.h>
+#include <OJ_ResourceManager.h>
 
-#include <WAG_Game.h>
+#include <OJ_Game.h>
 
 // memory leak debugging
 #define _CRTDBG_MAP_ALLOC
@@ -21,9 +21,9 @@ int main(void){
 #endif
 
 	vox::initialize("WAG Challenge - demo");
-	WAG_ResourceManager::init();
-	WAG_ResourceManager::load();
-	WAG_Game * game = new WAG_Game();
+	OJ_ResourceManager::init();
+	OJ_ResourceManager::load();
+	OJ_Game * game = new OJ_Game();
 
 	while (game->isRunning){
 		game->performGameLoop();
@@ -31,7 +31,7 @@ int main(void){
 	
 	delete game;
 	game = nullptr;
-	WAG_ResourceManager::destruct();
+	OJ_ResourceManager::destruct();
 #ifdef _DEBUG
 	std::cout << "Final node count: " << Node::nodes.size() << std::endl;
 
