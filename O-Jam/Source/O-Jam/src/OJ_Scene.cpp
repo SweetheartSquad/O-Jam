@@ -29,9 +29,8 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	box2DDebugDrawer(nullptr),
 	textShader(new ComponentShaderText(true)),
 	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false)),
-	playerOne(new OJ_Player(3.f, new OJ_TexturePack("MOM_TORSO", "MOM_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, 0)),
-	playerTwo(new OJ_Player(1.f, new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, 0)),
-	testEnemy(new OJ_Enemy(2.f, new OJ_TexturePack("TORSO", "HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kENEMY, -1, 0))
+	playerOne(new OJ_Player(3.f, new OJ_TexturePack("MOM_TORSO", "MOM_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -1)),
+	playerTwo(new OJ_Player(1.f, new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -2))
 {
 
 	// Initialize and compile the shader 
@@ -60,13 +59,6 @@ OJ_Scene::OJ_Scene(Game * _game) :
 
 	playerOne->setShader(mainShader, true);
 	playerTwo->setShader(mainShader, true);
-	
-	testEnemy->setShader(mainShader, true);
-	addChild(testEnemy, 1);
-
-	testEnemy->targetCharacter(playerOne);
-	testEnemy->rootComponent->maxVelocity = b2Vec2(10.0f, 10.0f);
-	testEnemy->speed = 10.0f;
 
 	//Set up cameras
 	{Transform * t = new Transform();
@@ -108,6 +100,17 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	playerOne->punchSpeed = 125.f;
 	playerTwo->speed = 25.f;
 	playerTwo->punchSpeed = 125.f;
+
+	for(unsigned long int i = 0; i < 100; ++i){
+		OJ_Enemy * e = new OJ_Enemy(2.f, new OJ_TexturePack("TORSO", "HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kENEMY, -1, 1);
+		enemies.push_back(e);
+		e->setShader(mainShader, true);
+		addChild(e, 1);
+
+		e->targetCharacter(playerOne);
+		e->rootComponent->maxVelocity = b2Vec2(10.0f, 10.0f);
+		e->speed = 10.0f;
+	}
 }
 
 OJ_Scene::~OJ_Scene() {
