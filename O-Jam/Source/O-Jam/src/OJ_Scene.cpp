@@ -20,6 +20,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 
 OJ_Scene::~OJ_Scene() {
 	mainShader->decrementAndDelete();
+	delete joy;
 }
 
 void OJ_Scene::update(Step* _step) {
