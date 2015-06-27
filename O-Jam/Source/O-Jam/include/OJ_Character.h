@@ -14,7 +14,14 @@ public:
 class OJ_Character : public Box2DSuperSprite {
 public:
 
-	OJ_Character(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits = -1, int16 _groupIndex = -1);
-	virtual ~OJ_Character();
+	float speed;
+	
+	b2Filter sf;
 
+	Box2DSprite * torso;
+	OJ_TexturePack * texPack;
+
+	OJ_Character(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits = -1, int16 _groupIndex = -1);
+	
+	virtual ~OJ_Character();
 };
