@@ -15,10 +15,11 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	uiLayer(this, 0,0,0,0),
 	mainShader(new ComponentShaderBase(true)),
 	bulletWorld(new BulletWorld()),
+	box2DWorld(new Box2DWorld()),
 	textShader(new ComponentShaderText(true)),
 	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false)),
-	playerOne(new OJ_Player(nullptr, b2World, 0, 0, 0)),
-	playerTwo(new OJ_Player(nullptr, b2World, 0, 0, 0))
+	playerOne(new OJ_Player(nullptr, box2DWorld, 0, 0, 0)),
+	playerTwo(new OJ_Player(nullptr, box2DWorld, 0, 0, 0))
 {
 	// Set screen width and height
 	updateScreenDimensions();
@@ -33,6 +34,8 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	// Add the players to the scene
 	childTransform->addChild(playerOne);
 	childTransform->addChild(playerTwo);
+	playerOne->setShader(mainShader, true);
+	playerTwo->setShader(mainShader, true);
 
 #ifdef _DEBUG
 	// Add the fps display
@@ -46,7 +49,7 @@ OJ_Scene::~OJ_Scene() {
 	delete textShader;
 	delete joy;
 	delete bulletWorld;
-	delete b2World;
+	delete box2DWorld;
 }
 
 void OJ_Scene::update(Step* _step) {

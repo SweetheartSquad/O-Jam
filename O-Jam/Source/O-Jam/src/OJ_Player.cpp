@@ -20,9 +20,9 @@ OJ_Player::OJ_Player(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _cate
 	handR = new Box2DSprite(world, b2_dynamicBody, false, nullptr, _texPack->handTex);
 	handL = new Box2DSprite(world, b2_dynamicBody, false, nullptr, _texPack->handTex);
 	
-	components.push_back(&torso);
-	components.push_back(&handR);
-	components.push_back(&handL);
+	addComponent(&torso);
+	addComponent(&handR);
+	addComponent(&handL);
 
 	rootComponent = torso;
 

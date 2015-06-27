@@ -18,6 +18,9 @@ public:
 
 	int sceneHeight;
 	int sceneWidth;
+	
+	Box2DWorld * box2DWorld;
+	BulletWorld * bulletWorld;
 
 	OJ_Player * playerOne;
 	OJ_Player * playerTwo;
@@ -28,9 +31,6 @@ public:
 	Font * font;
 
 	JoystickManager * joy;
-	
-	Box2DWorld * b2World;
-	BulletWorld * bulletWorld;
 
 	UILayer uiLayer;
 	
