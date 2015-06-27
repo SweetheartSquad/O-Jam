@@ -26,9 +26,6 @@ OJ_Scene::OJ_Scene(Game * _game) :
 
 	textShader->setColor(1.0f, 1.0f, 1.0f);
 
-	// Add the uiLayer to the scene
-	//childTransform->addChild(&uiLayer, false);
-
 #ifdef _DEBUG
 	// Add the fps display
 	uiLayer.addChild(new FpsDisplay(bulletWorld, this, font, textShader));

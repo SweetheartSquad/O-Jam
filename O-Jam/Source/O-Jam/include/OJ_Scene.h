@@ -4,6 +4,8 @@
 #include <UILayer.h>
 #include <Box2DWorld.h>
 
+#include <OJ_Player.h>
+
 class JoystickManager;
 class Game;
 class ComponentShaderBase;
@@ -16,6 +18,9 @@ public:
 
 	int sceneHeight;
 	int sceneWidth;
+
+	OJ_Player * playerOne;
+	OJ_Player * playerTwo;
 
 	ComponentShaderBase * mainShader;
 	ComponentShaderText * textShader;
