@@ -52,6 +52,10 @@ public:
 	virtual void unload() override;
 
 private:
+	OJ_Enemy * fastBallTarget;
+	OJ_Enemy * findClosestEnemy(OJ_Player * _toPlayer);
 	void handlePlayerInput(OJ_Player * _player, Joystick * _joystick);
 	void handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo);
+
+	void killEnemy(OJ_Enemy * _enemy);
 };
