@@ -77,43 +77,30 @@ void OJ_ContactListener::playerEnemyContact(b2Contact * _contact, b2Fixture * _p
 	OJ_Enemy * e = static_cast<OJ_Enemy *>(_enemyFixture->GetUserData());
 
 	// if an item is triggered as dead, don't trigger a proper contact
-	//if(!item->destroy){
+	if(!p->dead && !e->dead){
+		Box2DSprite * hand = nullptr;
 
-	// IF fixture's linear velocity is greater than userData's root body's linear velocity?
-	Box2DSprite * hand = nullptr;
+		if(p->handL->body->GetFixtureList() == _playerFixture){
+			hand = p->handL;
+		}else if(p->handR->body->GetFixtureList() == _playerFixture){
+			hand = p->handR;
+		}
 
-	if(p->handL->body->GetFixtureList() == _playerFixture){
-		hand = p->handL;
-	}else if(p->handR->body->GetFixtureList() == _playerFixture){
-		hand = p->handR;
-	}
+		if(hand != nullptr){
+			// hand - enemy punch!
+			glm::vec3 hPos = hand->getWorldPos();
+			glm::vec3 pPos = p->rootComponent->getWorldPos();
 
-	if(hand != nullptr){
-		glm::vec3 hPos = hand->getWorldPos();
-		glm::vec3 pPos = p->rootComponent->getWorldPos();
-
-		glm::vec3 diff = hPos - pPos;
-		float d = sqrtf(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
-		if(d > 4.f){
-			// calculate?
-			float damage = 50.f;
-			e->takeDamage(damage);
+			glm::vec3 diff = hPos - pPos;
+			float d = sqrtf(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+			if(d > 4.f){
+				e->takeDamage(p->damage);
+			}
+		}else{
+			// enemy - body attack!
+			p->takeDamage(e->damage);
 		}
 	}
-
-	/*
-		static_cast<Item *>(item)->hitPlayer();
-		if(item->thrown || (item->held && item != p->heldItem)){
-			// do some sort of damage thing here
-			//PuppetResourceManager::hitSounds->playRandomSound();
-			p->takeDamage(item->damage);
-			item->owner->score += item->damage * damageScoreMult;
-		}else if(p->heldItem == nullptr && !item->held && !item->destroy){
-			p->itemToPickup = item;
-			// multiple players might be able to pick it up in one update
-		}
-		*/
-	//}
 }
 
 void OJ_ContactListener::EndContact(b2Contact* _contact){

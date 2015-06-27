@@ -206,6 +206,16 @@ void OJ_Scene::update(Step* _step) {
 	}
 
 	box2DWorld->update(_step);
+
+	// destroy dead enemies
+	for(signed long int i = enemies.size()-1; i >= 0; --i){
+		OJ_Enemy * enemy = enemies.at(i);
+		
+		if (enemy->dead){
+			killEnemy(enemy);
+		}
+	}
+
 	Scene::update(_step);
 	uiLayer.update(_step);
 }
