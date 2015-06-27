@@ -18,10 +18,10 @@ public:
 	
 	enum Stance {
 		kNONE,
-		kCYCLONE,
-		kLEAPFROG_SLAM,
-		kFASTBALL_SPECIAL,
-		kJUGGLE_PUNCH
+		kPULL,
+		kAOE,
+		kBEAM,
+		kSPIN
 	} stance;
 	void getReady(Stance _stance);
 
