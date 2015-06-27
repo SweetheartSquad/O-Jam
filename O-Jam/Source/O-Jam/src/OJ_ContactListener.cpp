@@ -96,7 +96,7 @@ void OJ_ContactListener::playerEnemyContact(b2Contact * _contact, b2Fixture * _p
 			}
 		}else{
 			// enemy - body attack!
-			p->takeDamage(e->damage);
+			//p->takeDamage(e->damage);
 		}
 	}
 }

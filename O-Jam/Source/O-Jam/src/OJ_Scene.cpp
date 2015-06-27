@@ -357,5 +357,5 @@ void OJ_Scene::killEnemy(OJ_Enemy * _enemy){
 	}
 
 	removeChild(_enemy->parents.at(0));
-	//delete _enemy->parents.at(0); // memory leak here
+	delete _enemy->parents.at(0); // memory leak here
 }
