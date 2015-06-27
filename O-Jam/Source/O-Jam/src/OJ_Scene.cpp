@@ -44,13 +44,9 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	// Add the players to the scene
 	childTransform->addChild(playerOne);
 	childTransform->addChild(playerTwo);
+
 	playerOne->setShader(mainShader, true);
 	playerTwo->setShader(mainShader, true);
-
-
-
-
-
 	
 	//Set up cameras
 	{Transform * t = new Transform();
