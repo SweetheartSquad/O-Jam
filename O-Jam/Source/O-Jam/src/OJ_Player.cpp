@@ -10,6 +10,7 @@
 OJ_Player::OJ_Player(float _componentScale, OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits, int16 _groupIndex) :
 	OJ_Boxer(_componentScale, _texPack, _world, _categoryBits, _maskBits, _groupIndex)
 {
+	rootComponent->body->SetType(b2_kinematicBody);
 }
 
 void OJ_Player::update(Step * _step){
@@ -21,4 +22,11 @@ void OJ_Player::update(Step * _step){
 }
 
 OJ_Player::~OJ_Player() {
+}
+
+void OJ_Player::move(glm::vec2 _v){
+	if(_v.x != 0 || _v.y != 0){
+		float s = speed;
+		rootComponent->body->SetLinearVelocity(b2Vec2(_v.x * s, _v.y * s));
+	}
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <OJ_Scene.h>
+#include <OJ_Game.h>
 #include <shader/ComponentShaderBase.h>
 #include <shader/ShaderComponentTexture.h>
 #include <FpsDisplay.h>
@@ -29,9 +30,9 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	box2DDebugDrawer(nullptr),
 	textShader(new ComponentShaderText(true)),
 	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false)),
-	playerOne(new OJ_Player(3.f, new OJ_TexturePack("MOM_TORSO", "MOM_HAND"), box2DWorld, 0, 0, 0)),
-	playerTwo(new OJ_Player(1.f, new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, 0, 0, 0)),
-	testEnemy(new OJ_Enemy(2.f, new OJ_TexturePack("TORSO", "HAND"), box2DWorld, 0, 0, 0))
+	playerOne(new OJ_Player(3.f, new OJ_TexturePack("MOM_TORSO", "MOM_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, 0)),
+	playerTwo(new OJ_Player(1.f, new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, 0)),
+	testEnemy(new OJ_Enemy(2.f, new OJ_TexturePack("TORSO", "HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kENEMY, -1, 0))
 {
 	// Set screen width and height
 	updateScreenDimensions();
@@ -210,8 +211,9 @@ void OJ_Scene::movePlayer(OJ_Player * _player, Joystick * _joystick){
 		glm::vec2 punchDir = glm::vec2(0);
 		punchDir.x = _joystick->getAxis(Joystick::xbox_axes::kRX);
 		punchDir.y = -_joystick->getAxis(Joystick::xbox_axes::kRY);
-		_player->punchAngle = glm::atan(punchDir.y, punchDir.x) - glm::half_pi<float>();
-
+		if(std::abs(punchDir.x) + std::abs(punchDir.y) > 0.5f){
+			_player->punchAngle = glm::atan(punchDir.y, punchDir.x) - glm::half_pi<float>();
+		}
 		if(_joystick->buttonJustDown(Joystick::xbox_buttons::kR1)){
 			_player->punchR();
 		}else if(_joystick->buttonJustDown(Joystick::xbox_buttons::kL1)){
