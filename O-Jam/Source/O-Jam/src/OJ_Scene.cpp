@@ -6,6 +6,7 @@
 #include <FpsDisplay.h>
 #include <shader/ComponentShaderText.h>
 #include <Font.h>
+#include <OJ_Player.h>
 
 #include <glfw/glfw3.h>
 
@@ -15,7 +16,9 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	mainShader(new ComponentShaderBase(true)),
 	bulletWorld(new BulletWorld()),
 	textShader(new ComponentShaderText(true)),
-	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false))
+	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false)),
+	playerOne(new OJ_Player(b2World)),
+	playerTwo(new OJ_Player(b2World))
 {
 	// Set screen width and height
 	updateScreenDimensions();
@@ -24,7 +27,12 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	mainShader->addComponent(new ShaderComponentTexture(mainShader));
 	mainShader->compileShader();
 
+	// Set the text color to white
 	textShader->setColor(1.0f, 1.0f, 1.0f);
+
+	// Add the players to the scene
+	childTransform->addChild(playerOne);
+	childTransform->addChild(playerTwo);
 
 #ifdef _DEBUG
 	// Add the fps display
@@ -38,6 +46,7 @@ OJ_Scene::~OJ_Scene() {
 	delete textShader;
 	delete joy;
 	delete bulletWorld;
+	delete b2World;
 }
 
 void OJ_Scene::update(Step* _step) {
