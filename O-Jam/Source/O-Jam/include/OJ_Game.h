@@ -10,7 +10,7 @@ public:
 	enum BOX2D_CATEGORY{
 		kBOUNDARY = 0x0001,
 		kPLAYER = 0x0002,
-		//kBUMPER = 0x0004,
+		kBULLET = 0x0004,
 		kENEMY = 0x0008,
 		//kDEAD_ZONE = 0x00010,
 		//kMONSTER = 0x00020,

@@ -13,12 +13,10 @@ OJ_Player::OJ_Player(float _componentScale, OJ_TexturePack * _texPack, Box2DWorl
 	disabled(false),
 	disableTimer(1)
 {
-	rootComponent->body->SetType(b2_kinematicBody);
 	rootComponent->body->SetFixedRotation(true);
 
 	disableTimer.onCompleteFunction = [this](Timeout * _this){
 		this->disabled = false;
-		this->rootComponent->body->SetType(b2_kinematicBody);
 		this->rootComponent->body->SetFixedRotation(true);
 	};
 }
@@ -39,7 +37,8 @@ void OJ_Player::move(glm::vec2 _v){
 	if(!disabled){
 		if(_v.x != 0 || _v.y != 0){
 			float s = speed;
-			rootComponent->body->SetLinearVelocity(b2Vec2(_v.x * s, _v.y * s));
+			//rootComponent->body->SetLinearVelocity(b2Vec2(_v.x * s, _v.y * s));
+			rootComponent->applyLinearImpulseToCenter(_v.x * s, _v.y * s);
 		}
 	}
 }
@@ -65,7 +64,6 @@ void OJ_Player::getReady(Stance _stance){
 void OJ_Player::disable(float _seconds){
 	disabled = true;
 	stance = kNONE;
-	rootComponent->body->SetType(b2_dynamicBody);
 	rootComponent->body->SetFixedRotation(false);
 	disableTimer.targetSeconds = _seconds;
 	disableTimer.restart();

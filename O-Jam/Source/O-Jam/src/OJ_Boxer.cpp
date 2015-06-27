@@ -14,9 +14,9 @@ OJ_Boxer::OJ_Boxer(float _componentScale, OJ_TexturePack * _texPack, Box2DWorld 
 	addComponent(&handL);
 
 	b2Fixture * f = handR->createFixture(sf, b2Vec2(0.f, 0.f), this);
-	f->SetDensity(50.f);
+	f->SetDensity(1.f);
 	f = handL->createFixture(sf, b2Vec2(0.f, 0.f), this);
-	f->SetDensity(50.f);
+	f->SetDensity(1.f);
 	
 	////////////
 	// JOINTS //
