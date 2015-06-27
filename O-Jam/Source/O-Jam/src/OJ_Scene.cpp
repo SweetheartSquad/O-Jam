@@ -17,6 +17,7 @@
 
 #include <JoystickManager.h>
 #include <Joystick.h>
+#include <OJ_Enemy.h>
 
 OJ_Scene::OJ_Scene(Game * _game) :
 	Scene(_game),
@@ -29,7 +30,8 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	textShader(new ComponentShaderText(true)),
 	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false)),
 	playerOne(new OJ_Player(nullptr, box2DWorld, 0, 0, 0)),
-	playerTwo(new OJ_Player(nullptr, box2DWorld, 0, 0, 0))
+	playerTwo(new OJ_Player(nullptr, box2DWorld, 0, 0, 0)),
+	testEnemy(new OJ_Enemy(new OJ_TexturePack("torso", "hand"), box2DWorld, 0, 0, 0))
 {
 	// Set screen width and height
 	updateScreenDimensions();
@@ -51,6 +53,13 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	playerOne->setShader(mainShader, true);
 	playerTwo->setShader(mainShader, true);
 	
+	testEnemy->setShader(mainShader, true);
+	childTransform->addChild(testEnemy);
+
+	testEnemy->targetCharacter(playerOne);
+	testEnemy->rootComponent->maxVelocity = b2Vec2(30.0f, 30.0f);
+	testEnemy->speed = 30.0f;
+
 	//Set up cameras
 	{Transform * t = new Transform();
 	MousePerspectiveCamera * mouseCamera = new MousePerspectiveCamera();

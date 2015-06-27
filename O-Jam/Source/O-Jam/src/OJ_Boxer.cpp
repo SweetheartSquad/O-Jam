@@ -18,7 +18,7 @@ OJ_Boxer::OJ_Boxer(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _catego
 	addComponent(&handR);
 	addComponent(&handL);
 
-		b2Fixture * f = handR->createFixture(sf, b2Vec2(0.f, 0.f), this);
+	b2Fixture * f = handR->createFixture(sf, b2Vec2(0.f, 0.f), this);
 	f->SetDensity(0.01f);
 	f = handL->createFixture(sf, b2Vec2(0.f, 0.f), this);
 	f->SetDensity(0.01f);

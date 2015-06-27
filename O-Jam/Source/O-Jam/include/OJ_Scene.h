@@ -13,6 +13,7 @@ class Game;
 class ComponentShaderBase;
 class ComponentShaderText;
 class Font;
+class OJ_Enemy;
 
 class OJ_Scene : public Scene {
 
@@ -27,6 +28,8 @@ public:
 
 	OJ_Player * playerOne;
 	OJ_Player * playerTwo;
+
+	OJ_Enemy * testEnemy;
 
 	ComponentShaderBase * mainShader;
 	ComponentShaderText * textShader;
