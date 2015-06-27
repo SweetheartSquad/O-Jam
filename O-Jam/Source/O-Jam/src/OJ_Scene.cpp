@@ -48,7 +48,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	// Set the text color to white
 	textShader->setColor(1.0f, 1.0f, 1.0f);
 	
-	arena = new OJ_Arena(box2DWorld, mainShader, 50, 12);
+	arena = new OJ_Arena(this, box2DWorld, mainShader, 50, 12);
 	addChild(arena, 1);
 	
 	// cheryl box
@@ -104,23 +104,10 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	uiLayer.addChild(new FpsDisplay(bulletWorld, this, font, textShader));
 #endif
 
-
-
 	playerOne->speed = 25.f;
 	playerOne->punchSpeed = 125.f;
 	playerTwo->speed = 25.f;
 	playerTwo->punchSpeed = 125.f;
-
-	for(unsigned long int i = 0; i < 100; ++i){
-		OJ_Enemy * e = new OJ_Enemy(2.f, new OJ_TexturePack("TORSO", "HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kENEMY, -1, 1);
-		enemies.push_back(e);
-		e->setShader(mainShader, true);
-		addChild(e, 1);
-
-		e->targetCharacter(playerOne);
-		e->rootComponent->maxVelocity = b2Vec2(10.0f, 10.0f);
-		e->speed = 10.0f;
-	}
 }
 
 OJ_Scene::~OJ_Scene() {
@@ -207,14 +194,6 @@ void OJ_Scene::update(Step* _step) {
 	}
 
 	box2DWorld->update(_step);
-
-	// destroy dead enemies
-	for(signed long int i = enemies.size()-1; i >= 0; --i){
-		OJ_Enemy * enemy = enemies.at(i);
-		if (enemy->dead){
-			killEnemy(enemy);
-		}
-	}
 
 	Scene::update(_step);
 	uiLayer.update(_step);
@@ -348,14 +327,3 @@ OJ_Enemy * OJ_Scene::findClosestEnemy(OJ_Player * _toPlayer){
 	return res;
 }
 */
-void OJ_Scene::killEnemy(OJ_Enemy * _enemy){
-	for(signed long int i = enemies.size()-1; i >= 0; --i){
-		if(enemies.at(i) == _enemy){
-			enemies.erase(enemies.begin() + i);
-			break;
-		}
-	}
-
-	removeChild(_enemy->parents.at(0));
-	delete _enemy->parents.at(0); // memory leak here
-}

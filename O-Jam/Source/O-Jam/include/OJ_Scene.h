@@ -34,8 +34,6 @@ public:
 	OJ_Player * playerTwo;
 	float stanceDistanceSq;
 
-	std::vector<OJ_Enemy *> enemies;
-
 	ComponentShaderBase * mainShader;
 	ComponentShaderText * textShader;
 
@@ -56,11 +54,7 @@ public:
 
 private:
 	void handlePlayerInput(OJ_Player * _player, Joystick * _joystick);
-	void handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo);
-
-	void killEnemy(OJ_Enemy * _enemy);
-
-	
+	void handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo);	
 
 
 	bool snapped;
