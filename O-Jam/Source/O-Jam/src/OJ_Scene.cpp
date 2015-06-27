@@ -29,9 +29,9 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	box2DDebugDrawer(nullptr),
 	textShader(new ComponentShaderText(true)),
 	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false)),
-	playerOne(new OJ_Player(nullptr, box2DWorld, 0, 0, 0)),
-	playerTwo(new OJ_Player(nullptr, box2DWorld, 0, 0, 0)),
-	testEnemy(new OJ_Enemy(new OJ_TexturePack("torso", "hand"), box2DWorld, 0, 0, 0))
+	playerOne(new OJ_Player(new OJ_TexturePack("MOM_TORSO", "MOM_HAND"), box2DWorld, 0, 0, 0)),
+	playerTwo(new OJ_Player(new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, 0, 0, 0)),
+	testEnemy(new OJ_Enemy(new OJ_TexturePack("TORSO", "HAND"), box2DWorld, 0, 0, 0))
 {
 	// Set screen width and height
 	updateScreenDimensions();
@@ -42,6 +42,14 @@ OJ_Scene::OJ_Scene(Game * _game) :
 
 	// Set the text color to white
 	textShader->setColor(1.0f, 1.0f, 1.0f);
+
+	
+	// cheryl box
+	MeshEntity * bg = new MeshEntity(MeshFactory::getCubeMesh(100));
+	bg->setShader(mainShader,true);
+	bg->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
+	childTransform->addChild(bg, false);
+
 
 	// Add the players to the scene
 	childTransform->addChild(playerOne);
@@ -74,7 +82,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 
 
 	{Transform * t = new Transform();
-	FollowCamera * gameCam = new FollowCamera(15, glm::vec3(0, 0, 0), 0, 0);
+	FollowCamera * gameCam = new FollowCamera(10, glm::vec3(0, 0, 0), 0, 0);
 	t->addChild(gameCam, false);
 	cameras.push_back(gameCam);
 	gameCam->farClip = 1000.f;
@@ -96,15 +104,10 @@ OJ_Scene::OJ_Scene(Game * _game) :
 
 
 
-	playerOne->speed = 50.f;
-	playerOne->punchSpeed = 100.f;
-	playerTwo->speed = 50.f;
-	playerTwo->punchSpeed = 100.f;
-
-	MeshEntity * bg = new MeshEntity(MeshFactory::getCubeMesh(100));
-	bg->setShader(mainShader,true);
-	bg->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
-	childTransform->addChild(bg, false);
+	playerOne->speed = 25.f;
+	playerOne->punchSpeed = 125.f;
+	playerTwo->speed = 25.f;
+	playerTwo->punchSpeed = 125.f;
 }
 
 OJ_Scene::~OJ_Scene() {
@@ -138,7 +141,7 @@ void OJ_Scene::update(Step* _step) {
 			box2DDebugDrawer = new Box2DDebugDrawer(box2DWorld);
 			box2DWorld->b2world->SetDebugDraw(box2DDebugDrawer);
 			box2DDebugDrawer->drawing = true;
-			box2DDebugDrawer->AppendFlags(b2Draw::e_aabbBit);
+			//box2DDebugDrawer->AppendFlags(b2Draw::e_aabbBit);
 			box2DDebugDrawer->AppendFlags(b2Draw::e_shapeBit);
 			box2DDebugDrawer->AppendFlags(b2Draw::e_centerOfMassBit);
 			box2DDebugDrawer->AppendFlags(b2Draw::e_jointBit);
