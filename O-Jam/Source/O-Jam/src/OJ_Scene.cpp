@@ -43,7 +43,10 @@ OJ_Scene::OJ_Scene(Game * _game) :
 
 	// Add the players to the scene
 	childTransform->addChild(playerOne);
-	//childTransform->addChild(playerTwo);
+	childTransform->addChild(playerTwo);
+
+	playerOne->translateComponents(-5.0f, 0.f, 0.f);
+	playerTwo->translateComponents(5.0f, 0.f, 0.f);
 
 	playerOne->setShader(mainShader, true);
 	playerTwo->setShader(mainShader, true);
@@ -81,13 +84,6 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	// Add the fps display
 	uiLayer.addChild(new FpsDisplay(bulletWorld, this, font, textShader));
 #endif
-
-
-
-	MeshEntity * bg = new MeshEntity(MeshFactory::getCubeMesh(25));
-	bg->setShader(mainShader,true);
-	bg->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
-	//childTransform->addChild(bg, false);
 }
 
 OJ_Scene::~OJ_Scene() {

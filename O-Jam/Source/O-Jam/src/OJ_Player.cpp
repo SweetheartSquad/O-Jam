@@ -104,20 +104,21 @@ void OJ_Player::update(Step * _step){
 		leftHandJoint->SetLength(3.0f);
 		rightHandJoint->SetLength(3.0f);
 
-		torso->body->GetAngle();
+		b2Vec2 dir = torso->body->GetLinearVelocity();
+
+		handL->applyLinearImpulse(dir.x * 2.f, dir.y * 2.f, 0.f, 0.f);
+		handR->applyLinearImpulse(dir.x * 2.f, dir.y * 2.f, 0.f, 0.f);
 	}
 
 	if(punched) {
 		ticksSincePunch++;
 	}
-	if(ticksSincePunch > 60) {
+
+	if(ticksSincePunch > 30 && leftHandJoint->GetLength()) {
 		leftHandJoint->SetLength(0.2f);
 		rightHandJoint->SetLength(0.2f);
-
-		float rot = torso->body->GetAngle();
-
-		handL->applyLinearImpulse(cos(rot) * 2.0f, sin(rot) * 2.0f, 0.f, 0.f);
-		handR->applyLinearImpulse(cos(rot) * 2.0f, sin(rot) * 2.0f, 0.f, 0.f);
+		ticksSincePunch = 0;
+		punched = false;
 	}
 
 	Box2DSuperSprite::update(_step);
