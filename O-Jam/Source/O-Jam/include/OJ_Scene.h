@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Scene.h>
+#include <LayeredScene.h>
 #include <UILayer.h>
 #include <Box2DWorld.h>
 #include <Box2DDebugDrawer.h>
@@ -15,7 +15,7 @@ class ComponentShaderText;
 class Font;
 class OJ_Enemy;
 
-class OJ_Scene : public Scene {
+class OJ_Scene : public LayeredScene {
 
 public:
 
@@ -38,8 +38,6 @@ public:
 
 	JoystickManager * joy;
 
-	UILayer uiLayer;
-	
 	OJ_Scene(Game * _game);
 	~OJ_Scene();
 
@@ -50,7 +48,5 @@ public:
 	virtual void unload() override;
 
 private:
-	void renderUi(vox::MatrixStack* _matrixStack, RenderOptions* _renderOptions);
-	void updateScreenDimensions();
 	void movePlayer(OJ_Player * _player, Joystick * _joystick);
 };
