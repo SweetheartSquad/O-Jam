@@ -223,9 +223,26 @@ void OJ_Scene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOpti
 void OJ_Scene::load() {
 	Scene::load();
 	updateScreenDimensions();
+	mainShader->load();
+	textShader->load();
+	uiLayer.load();
+	font->load();
+
+	if(box2DDebugDrawer != nullptr){
+		box2DDebugDrawer->load();
+	}
 }
 
 void OJ_Scene::unload() {
+	mainShader->unload();
+	textShader->unload();
+	font->unload();
+	uiLayer.unload();
+
+	if(box2DDebugDrawer != nullptr){
+		box2DDebugDrawer->unload();
+	}
+
 	Scene::unload();
 }
 
