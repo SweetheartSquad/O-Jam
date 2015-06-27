@@ -18,4 +18,5 @@ public:
 	~OJ_Player();
 
 	void update(Step * _step) override;
+	virtual void move(glm::vec2 _v) override;
 };
