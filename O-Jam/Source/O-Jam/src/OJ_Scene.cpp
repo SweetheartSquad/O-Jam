@@ -35,7 +35,10 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	playerOne(new OJ_Player(3.f, new OJ_TexturePack("MOM_TORSO", "MOM_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -1)),
 	playerTwo(new OJ_Player(1.f, new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -2)),
 	stanceDistanceSq(500),
-	fastBallTarget(nullptr)
+	snapped(false),
+	stanceCharged(false),
+	stanceChargeTimer(0.5f),
+	snapTimer(0.25f)
 {
 
 	// Initialize and compile the shader 
@@ -129,6 +132,20 @@ OJ_Scene::~OJ_Scene() {
 }
 
 void OJ_Scene::update(Step* _step) {
+	snapTimer.update(_step);
+	stanceChargeTimer.update(_step);
+	if(snapTimer.active){
+		glm::vec3 v = snapPos - playerOne->rootComponent->getWorldPos();
+		v = glm::normalize(v);
+		float s = playerOne->rootComponent->body->GetMass() * 50;
+		playerOne->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
+
+		v = snapPos - playerTwo->rootComponent->getWorldPos();
+		v = glm::normalize(v);
+		s = playerTwo->rootComponent->body->GetMass() * 50;
+		playerTwo->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
+	}
+
 	joy->update(_step);
 	unsigned int joyCnt = 2;
 	switch(joyCnt){
@@ -190,6 +207,16 @@ void OJ_Scene::update(Step* _step) {
 	}
 
 	box2DWorld->update(_step);
+
+	// destroy dead enemies
+	for(signed long int i = enemies.size()-1; i >= 0; --i){
+		OJ_Enemy * enemy = enemies.at(i);
+		
+		if (enemy->dead){
+			killEnemy(enemy);
+		}
+	}
+
 	Scene::update(_step);
 	uiLayer.update(_step);
 }
@@ -231,13 +258,13 @@ void OJ_Scene::handlePlayerInput(OJ_Player * _player, Joystick * _joystick){
 
 		// stancing
 		if(_joystick->buttonDown(Joystick::xbox_buttons::kA)){
-			_player->getReady(OJ_Player::Stance::kCYCLONE);
+			_player->getReady(OJ_Player::Stance::kPULL);
 		}else if(_joystick->buttonDown(Joystick::xbox_buttons::kB)){
-			_player->getReady(OJ_Player::Stance::kFASTBALL_SPECIAL);
+			_player->getReady(OJ_Player::Stance::kBEAM);
 		}else if(_joystick->buttonDown(Joystick::xbox_buttons::kY)){
-			_player->getReady(OJ_Player::Stance::kJUGGLE_PUNCH);
+			_player->getReady(OJ_Player::Stance::kBEAM);
 		}else if(_joystick->buttonDown(Joystick::xbox_buttons::kX)){
-			_player->getReady(OJ_Player::Stance::kLEAPFROG_SLAM);
+			_player->getReady(OJ_Player::Stance::kSPIN);
 		}else{
 			_player->getReady(OJ_Player::Stance::kNONE);
 		}
@@ -245,32 +272,17 @@ void OJ_Scene::handlePlayerInput(OJ_Player * _player, Joystick * _joystick){
 }
 
 void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
-	if(/*_playerOne->stance != OJ_Player::Stance::kNONE && */_playerTwo->stance != OJ_Player::Stance::kNONE){
+	if(_playerOne->stance != OJ_Player::Stance::kNONE && _playerTwo->stance != OJ_Player::Stance::kNONE){
 		float dist = glm::distance2(_playerOne->rootComponent->getWorldPos(), _playerTwo->rootComponent->getWorldPos());
-		if(dist < stanceDistanceSq/* && _playerOne->stance == _playerTwo->stance*/){
+		if(dist < stanceDistanceSq && _playerOne->stance == _playerTwo->stance){
 			// initiate stance
-			if(_playerTwo->stance == OJ_Player::Stance::kFASTBALL_SPECIAL){
-				if(fastBallTarget == nullptr){
-					fastBallTarget = findClosestEnemy(_playerTwo);
-					if(fastBallTarget == nullptr){
-						// no enemies left to target; break out of stance
-						return;
-					}
-				}
-				glm::vec3 dv = fastBallTarget->rootComponent->getWorldPos() - _playerTwo->rootComponent->getWorldPos();
-				float d = glm::length2(dv);
-				if(d < 50.f){
-					// check for correct input
-					// if successful, pick a new target and start again
-					// otherwise, break out of stance
-					killEnemy(fastBallTarget);
-					fastBallTarget = findClosestEnemy(_playerTwo);
-				}else{
-					// continue trajectory
-					dv = glm::normalize(dv);
-					_playerTwo->rootComponent->body->SetLinearVelocity(b2Vec2(dv.x*50, dv.y*50));
-				}
-
+			if(_playerTwo->stance == OJ_Player::Stance::kPULL){
+				_playerOne->disable(snapTimer.targetSeconds);
+				_playerTwo->disable(snapTimer.targetSeconds);
+				snapTimer.restart();
+				snapPos = (_playerOne->rootComponent->getWorldPos() + _playerTwo->rootComponent->getWorldPos()) * 0.5f;
+			}else{
+				stanceChargeTimer.restart();
 			}
 		}else{
 			// the players were either too far apart or didn't synchronize
@@ -320,7 +332,7 @@ void OJ_Scene::unload() {
 	Scene::unload();
 }
 
-
+/*
 OJ_Enemy * OJ_Scene::findClosestEnemy(OJ_Player * _toPlayer){
 	OJ_Enemy * res = nullptr;
 	float dmin = 100000000000;
@@ -336,7 +348,7 @@ OJ_Enemy * OJ_Scene::findClosestEnemy(OJ_Player * _toPlayer){
 	}
 	return res;
 }
-
+*/
 void OJ_Scene::killEnemy(OJ_Enemy * _enemy){
 	for(signed long int i = enemies.size()-1; i >= 0; --i){
 		if(enemies.at(i) == _enemy){

@@ -4,7 +4,7 @@
 #include <Box2DSprite.h>
 
 OJ_Boxer::OJ_Boxer(float _componentScale, OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits, int16 _groupIndex) :
-	OJ_Character(_componentScale, _texPack == nullptr ? new OJ_TexturePack("TORSO", "HAND") : _texPack, _world, _categoryBits, _maskBits, _groupIndex),
+	OJ_Character(50.f, _componentScale, _texPack == nullptr ? new OJ_TexturePack("TORSO", "HAND") : _texPack, _world, _categoryBits, _maskBits, _groupIndex),
 	punchSpeed(2.f),
 	punchReach(3.f)
 {
