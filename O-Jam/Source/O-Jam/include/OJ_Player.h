@@ -29,6 +29,10 @@ public:
 	~OJ_Player();
 
 	void update(Step * _step) override;
+
+	glm::vec2 punchDir;
+	float punchSpeed;
+	void punch();
 	
 private:
 	Keyboard * keyboard;

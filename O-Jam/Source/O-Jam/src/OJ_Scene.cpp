@@ -165,18 +165,21 @@ void OJ_Scene::movePlayer(OJ_Player * _player, Joystick * _joystick){
 
 	if(_joystick != nullptr){
 		// Calculate movement
-		movement.y += _player->speed * -_joystick->getAxis(Joystick::xbox_axes::kLY);
 		movement.x += _player->speed * _joystick->getAxis(Joystick::xbox_axes::kLX);
+		movement.y += _player->speed * -_joystick->getAxis(Joystick::xbox_axes::kLY);
 	}
 
 	if(movement.x != 0 || movement.y != 0 || movement.z != 0){
 		_player->rootComponent->applyLinearImpulseUp(movement.y);
 		_player->rootComponent->applyLinearImpulseRight(movement.x);
-		// Move player
-		/*
-		ragdoll->upperbody->body->activate(true);
-		ragdoll->upperbody->body->applyCentralImpulse(btVector3(movement.x, movement.y, movement.z));
-		*/
+	}
+
+	_player->punchDir = glm::vec2(0);
+	_player->punchDir.x = _joystick->getAxis(Joystick::xbox_axes::kRX);
+	_player->punchDir.y = -_joystick->getAxis(Joystick::xbox_axes::kRY);
+
+	if(_joystick->getAxis(Joystick::xbox_axes::kBUMPERS) > 0.5){
+		_player->punch();
 	}
 }
 

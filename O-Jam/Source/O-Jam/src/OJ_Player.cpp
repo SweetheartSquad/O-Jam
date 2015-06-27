@@ -18,7 +18,9 @@ OJ_Player::OJ_Player(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _cate
 	keyboard(&Keyboard::getInstance()),
 	ticksSincePunch(0),
 	punched(false),
-	speed(1)
+	speed(1),
+	punchDir(0),
+	punchSpeed(2.f)
 {
 	if(_texPack == nullptr){
 		_texPack = new OJ_TexturePack("torso", "hand");
@@ -99,16 +101,7 @@ void OJ_Player::update(Step * _step){
 		rootComponent->applyLinearImpulseRight(2.0f);
 	}
 	if(keyboard->keyJustDown(GLFW_KEY_SPACE)){
-
-		punched = true;
-
-		leftHandJoint->SetLength(3.0f);
-		rightHandJoint->SetLength(3.0f);
-
-		b2Vec2 dir = torso->body->GetLinearVelocity();
-
-		handL->applyLinearImpulse(dir.x * 2.f, dir.y * 2.f, 0.f, 0.f);
-		handR->applyLinearImpulse(dir.x * 2.f, dir.y * 2.f, 0.f, 0.f);
+		punch();
 	}
 
 	if(punched) {
@@ -126,4 +119,19 @@ void OJ_Player::update(Step * _step){
 }
 
 OJ_Player::~OJ_Player() {
+}
+
+
+
+
+void OJ_Player::punch(){
+	if(!punched){
+		punched = true;
+
+		leftHandJoint->SetLength(3.0f);
+		rightHandJoint->SetLength(3.0f);
+
+		handL->applyLinearImpulseToCenter(punchDir.x * punchSpeed, punchDir.y * punchSpeed);
+		handR->applyLinearImpulseToCenter(punchDir.x * punchSpeed, punchDir.y * punchSpeed);
+	}
 }
