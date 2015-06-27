@@ -1,6 +1,5 @@
 #pragma once
 
-#include <glfw/glfw3.h>
 #include <OJ_Scene.h>
 #include <shader/ComponentShaderBase.h>
 #include <shader/ShaderComponentTexture.h>
