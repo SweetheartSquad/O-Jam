@@ -19,6 +19,8 @@
     <ClCompile Include="..\src\Enemy.cpp" />
     <ClCompile Include="..\src\JsonPlaythroughParser.cpp" />
     <ClCompile Include="..\src\NodeContent.cpp" />
+    <ClCompile Include="..\src\OJ_Boxer.cpp" />
+    <ClCompile Include="..\src\OJ_Character.cpp" />
     <ClCompile Include="..\src\OJ_Scene.cpp" />
     <ClCompile Include="..\src\OJ_Player.cpp" />
     <ClCompile Include="..\src\TimeoutEffects.cpp" />
@@ -37,6 +39,8 @@
     <ClInclude Include="..\include\Enemy.h" />
     <ClInclude Include="..\include\JsonPlaythroughParser.h" />
     <ClInclude Include="..\include\NodeContent.h" />
+    <ClInclude Include="..\include\OJ_Boxer.h" />
+    <ClInclude Include="..\include\OJ_Character.h" />
     <ClInclude Include="..\include\OJ_Scene.h" />
     <ClInclude Include="..\include\OJ_Player.h" />
     <ClInclude Include="..\include\TimeoutEffects.h" />
