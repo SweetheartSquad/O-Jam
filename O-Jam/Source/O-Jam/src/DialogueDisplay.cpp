@@ -5,7 +5,7 @@
 #include <shader\ShaderComponentTexture.h>
 #include <MeshInterface.h>
 #include <Font.h>
-#include <WAG_ResourceManager.h>
+#include <OJ_ResourceManager.h>
 #include <VerticalLinearLayout.h>
 #include <HorizontalLinearLayout.h>
 
@@ -17,7 +17,7 @@ DialogueDisplay::DialogueDisplay(BulletWorld * _world, Scene * _scene, Font * _f
 	NodeBulletBody(_world),
 	shouldSayNext(false),
 	autoProgress(false),
-	stuffToSay(&WAG_ResourceManager::playthrough->currentConversation)
+	stuffToSay(&OJ_ResourceManager::playthrough->currentConversation)
 {
 	setWidth(_width);
 	setHeight(_height);
@@ -131,7 +131,7 @@ DialogueDisplay::DialogueDisplay(BulletWorld * _world, Scene * _scene, Font * _f
 	/*NodeUI * scratchings = new NodeUI(_world, _scene);
 	scratchings->setHeight(1.f);
 	scratchings->setWidth(1.f);
-	scratchings->background->mesh->pushTexture2D(WAG_ResourceManager::scratchings);
+	scratchings->background->mesh->pushTexture2D(OJ_ResourceManager::scratchings);
 	addChild(scratchings);*/
 }
 
@@ -151,7 +151,7 @@ bool DialogueDisplay::sayNext(){
 	// set the speaker
 	std::string sp = (*stuffToSay)->getCurrentDialogue()->speaker;
 	speaker->setText(std::wstring(sp.begin(), sp.end()));
-	WAG_ResourceManager::speaker = sp;
+	OJ_ResourceManager::speaker = sp;
 
 
 	// set the images
@@ -234,7 +234,7 @@ void DialogueDisplay::loadFrame(std::string _portrait){
 		framePanelOverlay->background->mesh->popTexture2D();
 	}
 
-	framePanelOverlay->background->mesh->pushTexture2D(WAG_ResourceManager::playthrough->getTexture(_portrait)->texture);
+	framePanelOverlay->background->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture(_portrait)->texture);
 	
 	fadeTimeoutFrame->restart();
 }
@@ -250,7 +250,7 @@ void DialogueDisplay::loadPortrait(std::string _speaker){
 	Texture * tex = nullptr;
 	std::string speaker = (*stuffToSay)->getCurrentDialogue()->portrait;
 
-	portraitPanelOverlay->background->mesh->pushTexture2D(WAG_ResourceManager::playthrough->getTexture(_speaker)->texture);
+	portraitPanelOverlay->background->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture(_speaker)->texture);
 
 	fadeTimeoutPortrait->restart();
 }

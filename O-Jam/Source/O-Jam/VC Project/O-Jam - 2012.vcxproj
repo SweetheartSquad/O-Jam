@@ -22,7 +22,7 @@
     <ClCompile Include="..\src\OJ_Player.cpp" />
     <ClCompile Include="..\src\TimeoutEffects.cpp" />
     <ClCompile Include="..\src\WAG_Button.cpp" />
-    <ClCompile Include="..\src\WAG_ResourceManager.cpp" />
+    <ClCompile Include="..\src\OJ_ResourceManager.cpp" />
     <ClCompile Include="..\src\Main.cpp" />
     <ClCompile Include="..\src\WAG_Game.cpp" />
     <ClCompile Include="..\src\WAG_TestScene.cpp" />
@@ -39,7 +39,7 @@
     <ClInclude Include="..\include\OJ_Player.h" />
     <ClInclude Include="..\include\TimeoutEffects.h" />
     <ClInclude Include="..\include\WAG_Button.h" />
-    <ClInclude Include="..\include\WAG_ResourceManager.h" />
+    <ClInclude Include="..\include\OJ_ResourceManager.h" />
     <ClInclude Include="..\include\WAG_Game.h" />
     <ClInclude Include="..\include\WAG_TestScene.h" />
   </ItemGroup>

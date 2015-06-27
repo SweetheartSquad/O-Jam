@@ -8,7 +8,7 @@
 #include <OpenALSound.h>
 #include <JsonPlaythroughParser.h>
 
-class WAG_ResourceManager : public ResourceManager{
+class OJ_ResourceManager : public ResourceManager{
 public:
 	static Texture * cursor;
 	static Texture * cheryl;

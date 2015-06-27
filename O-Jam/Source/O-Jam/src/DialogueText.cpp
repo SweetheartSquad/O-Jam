@@ -1,7 +1,7 @@
 #pragma once
 
 #include <DialogueText.h>
-#include <WAG_ResourceManager.h>
+#include <OJ_ResourceManager.h>
 
 DialogueTextLabel::DialogueTextLabel(BulletWorld * _world, Scene * _scene, Font * _font, Shader * _textShader) :
 	TextLabel(_world, _scene, _font, _textShader, 1.f),
@@ -28,10 +28,10 @@ void DialogueTextLabel::tickerIn(float _delay){
 		g->setVisible(false);
 		Timeout * t = new Timeout(_delay * i);
 		t->onCompleteFunction = [g](Timeout * _this){
-			auto it = WAG_ResourceManager::voices.find(WAG_ResourceManager::speaker);
+			auto it = OJ_ResourceManager::voices.find(OJ_ResourceManager::speaker);
 			OpenAL_Sound * voice;
-			if(it == WAG_ResourceManager::voices.end()){
-				voice = WAG_ResourceManager::voices["blip"];
+			if(it == OJ_ResourceManager::voices.end()){
+				voice = OJ_ResourceManager::voices["blip"];
 			}else{
 				voice = it->second;
 			}

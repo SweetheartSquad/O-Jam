@@ -2,7 +2,7 @@
 
 #include <DialogueSay.h>
 #include <iostream>
-#include <WAG_ResourceManager.h>
+#include <OJ_ResourceManager.h>
 
 DialogueSay::DialogueSay() :
 	currentText(-1)
@@ -113,7 +113,7 @@ TriggerSetVar::TriggerSetVar(Json::Value _json) :
 }
 
 void TriggerSetVar::trigger(){
-	WAG_ResourceManager::playthrough->characters.at(target)->variables.at(variable) = newValue;
+	OJ_ResourceManager::playthrough->characters.at(target)->variables.at(variable) = newValue;
 }
 
 TriggerSetConversation::TriggerSetConversation(Json::Value _json) :
@@ -122,7 +122,7 @@ TriggerSetConversation::TriggerSetConversation(Json::Value _json) :
 }
 
 void TriggerSetConversation::trigger(){
-	WAG_ResourceManager::playthrough->currentConversation = WAG_ResourceManager::playthrough->conversations[newConversation];
+	OJ_ResourceManager::playthrough->currentConversation = OJ_ResourceManager::playthrough->conversations[newConversation];
 }
 
 Condition * Condition::getCondition(Json::Value _json){
@@ -150,5 +150,5 @@ ConditionEquality::ConditionEquality(Json::Value _json) :
 }
 
 bool ConditionEquality::evaluate(){
-	return (WAG_ResourceManager::playthrough->characters.at(target)->variables.at(variable) == requiredValue);
+	return (OJ_ResourceManager::playthrough->characters.at(target)->variables.at(variable) == requiredValue);
 }
