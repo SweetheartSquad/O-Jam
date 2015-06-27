@@ -17,6 +17,7 @@ public:
 
 	static std::string speaker;
 	static std::map<std::string, OpenAL_Sound *> voices;
+	static std::map<std::string, OpenAL_Sound *> songs;
 
 	static void init();
 };

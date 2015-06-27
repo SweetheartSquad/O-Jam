@@ -47,7 +47,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	beamActive(false),
 	guideActive(false),
 	teamworkAngle(0),
-	guidedBullet(nullptr),
+	guidedBullet(nullptr)
 {
 
 	// Initialize and compile the shader 
@@ -109,7 +109,6 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	gameCam->addTarget(playerTwo->rootComponent, 1);}
 
 	waveText = new TextArea(bulletWorld, this, font, textShader, 400);
-	waveText->setVisible(false);
 	uiLayer.addChild(waveText);
 	waveText->parents.at(0)->translate(100, 100, 0.f);
 
@@ -144,6 +143,8 @@ OJ_Scene::OJ_Scene(Game * _game) :
 			this->guidedBullet = nullptr;
 		}
 	};
+
+	OJ_ResourceManager::songs["funker"]->play(true);
 }
 
 OJ_Scene::~OJ_Scene() {
