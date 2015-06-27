@@ -24,6 +24,10 @@ OJ_Player::OJ_Player(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _cate
 	addComponent(&handR);
 	addComponent(&handL);
 
+	torso->parents.at(0)->scale(10, 10, 10);
+	handR->parents.at(0)->scale(5, 5, 5);
+	handL->parents.at(0)->scale(-5, 5, 5);
+
 	rootComponent = torso;
 
 
@@ -38,8 +42,6 @@ OJ_Player::OJ_Player(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _cate
 	torso->createFixture(sf, b2Vec2(0.f, 0.f), this);
 	handR->createFixture(sf, b2Vec2(0.f, 0.f), this);
 	handL->createFixture(sf, b2Vec2(0.f, 0.f), this);
-	
-	handL->childTransform->scale(-1, 1, 1);
 
 	////////////
 	// JOINTS //
