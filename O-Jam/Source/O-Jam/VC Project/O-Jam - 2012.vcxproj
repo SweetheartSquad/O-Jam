@@ -16,6 +16,7 @@
     <ClCompile Include="..\src\DialogueDisplay.cpp" />
     <ClCompile Include="..\src\DialogueSay.cpp" />
     <ClCompile Include="..\src\DialogueText.cpp" />
+    <ClCompile Include="..\src\OJ_ContactListener.cpp" />
     <ClCompile Include="..\src\OJ_Enemy.cpp" />
     <ClCompile Include="..\src\JsonPlaythroughParser.cpp" />
     <ClCompile Include="..\src\NodeContent.cpp" />
@@ -36,6 +37,7 @@
     <ClInclude Include="..\include\DialogueDisplay.h" />
     <ClInclude Include="..\include\DialogueSay.h" />
     <ClInclude Include="..\include\DialogueText.h" />
+    <ClInclude Include="..\include\OJ_ContactListener.h" />
     <ClInclude Include="..\include\OJ_Enemy.h" />
     <ClInclude Include="..\include\JsonPlaythroughParser.h" />
     <ClInclude Include="..\include\NodeContent.h" />

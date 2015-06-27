@@ -2,6 +2,7 @@
 
 #include <OJ_Scene.h>
 #include <OJ_Game.h>
+#include <OJ_ContactListener.h>
 #include <shader/ComponentShaderBase.h>
 #include <shader/ShaderComponentTexture.h>
 #include <FpsDisplay.h>
@@ -27,6 +28,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	bulletWorld(new BulletWorld()),
 	box2DWorld(new Box2DWorld(b2Vec2(0, 0))),
 	box2DDebugDrawer(nullptr),
+	cl(new OJ_ContactListener(this)),
 	textShader(new ComponentShaderText(true)),
 	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false)),
 	playerOne(new OJ_Player(3.f, new OJ_TexturePack("MOM_TORSO", "MOM_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -1)),
