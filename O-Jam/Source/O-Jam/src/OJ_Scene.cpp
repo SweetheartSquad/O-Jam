@@ -211,7 +211,6 @@ void OJ_Scene::update(Step* _step) {
 	// destroy dead enemies
 	for(signed long int i = enemies.size()-1; i >= 0; --i){
 		OJ_Enemy * enemy = enemies.at(i);
-		
 		if (enemy->dead){
 			killEnemy(enemy);
 		}
@@ -358,6 +357,5 @@ void OJ_Scene::killEnemy(OJ_Enemy * _enemy){
 	}
 
 	removeChild(_enemy->parents.at(0));
-	delete _enemy;
+	//delete _enemy->parents.at(0); // memory leak here
 }
-	

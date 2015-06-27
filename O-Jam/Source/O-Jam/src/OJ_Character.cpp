@@ -70,15 +70,4 @@ void OJ_Character::takeDamage(float _damage){
 
 void OJ_Character::die(){
 	dead = true;
-	
-	for(Box2DSprite ** c : components){
-		(*c)->body->SetGravityScale(0.0f);
-		for (b2Fixture* f = (*c)->body->GetFixtureList(); f != nullptr; f = f->GetNext()){
-			b2Filter sf = f->GetFilterData();
-			if((sf.categoryBits & OJ_Game::kPLAYER) != 0){
-				sf.maskBits = OJ_Game::kBOUNDARY;
-				f->SetFilterData(sf);
-			}
-		}
-	}
 }

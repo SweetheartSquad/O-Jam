@@ -91,7 +91,7 @@ void OJ_ContactListener::playerEnemyContact(b2Contact * _contact, b2Fixture * _p
 			glm::vec3 pPos = p->rootComponent->getWorldPos();
 
 			float d = glm::distance2(hPos, pPos);
-			if(d > 16.f){
+			if(d > p->punchReach*p->punchReach*0.3f){
 				e->takeDamage(p->damage);
 			}
 		}else{
