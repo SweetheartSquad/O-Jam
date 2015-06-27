@@ -5,8 +5,12 @@
 #include <shader/ShaderComponentTexture.h>
 #include <glfw/glfw3.h>
 
+#include <JoystickManager.h>
+#include <Joystick.h>
+
 OJ_Scene::OJ_Scene(Game * _game) :
 	Scene(_game),
+	joy(new JoystickManager()),
 	uiLayer(this, 0,0,0,0),
 	mainShader(new ComponentShaderBase(true))
 {
@@ -25,6 +29,50 @@ OJ_Scene::~OJ_Scene() {
 
 void OJ_Scene::update(Step* _step) {
 	Scene::update(_step);
+	
+	joy->update(_step);
+
+	glm::vec3 movement(0);
+
+	unsigned int joyCnt = 0;
+
+	for(unsigned int i = 0; i < GLFW_JOYSTICK_LAST; ++i){
+		Joystick * joystick = joy->joysticks[0];
+		if(joystick != nullptr){
+			++i;
+			switch(joyCnt){
+				case 1:
+					movePlayer(playerOne, joy->joysticks[i]);
+					break;
+				case 2:
+					movePlayer(playerTwo, joy->joysticks[i]);
+					break;
+				default:
+					exit;
+			}
+		}
+		
+	}
+}
+
+void OJ_Scene::movePlayer(OJ_Player * _player, Joystick * _joystick){
+	glm::vec3 movement(0);
+
+	if(_joystick != nullptr){
+		// Calculate movement
+		/*
+		movement += playerSpeed * mass * mouseCam->forwardVectorRotated * -_joystick->getAxis(Joystick::xbox_axes::kLY);
+		movement += playerSpeed * mass * mouseCam->rightVectorRotated * _joystick->getAxis(Joystick::xbox_axes::kLX);
+		*/
+	}
+
+	if(movement.x != 0 || movement.y != 0 || movement.z != 0){
+		// Move player
+		/*
+		ragdoll->upperbody->body->activate(true);
+		ragdoll->upperbody->body->applyCentralImpulse(btVector3(movement.x, movement.y, movement.z));
+		*/
+	}
 }
 
 void OJ_Scene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOptions) {

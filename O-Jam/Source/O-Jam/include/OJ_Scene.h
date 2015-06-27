@@ -7,6 +7,7 @@
 #include <OJ_Player.h>
 
 class JoystickManager;
+class Joystick;
 class Game;
 
 class OJ_Scene : public Scene {
@@ -36,4 +37,5 @@ public:
 private:
 	void renderUi(vox::MatrixStack* _matrixStack, RenderOptions* _renderOptions);
 	void updateScreenDimensions();
+	void movePlayer(OJ_Player * _player, Joystick * _joystick);
 };
