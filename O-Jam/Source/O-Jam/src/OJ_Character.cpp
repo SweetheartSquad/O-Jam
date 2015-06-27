@@ -32,7 +32,7 @@ OJ_Character::OJ_Character(float _componentScale, OJ_TexturePack* _texPack, Box2
 
 	rootComponent = torso;
 
-	rootComponent->maxVelocity = b2Vec2(componentScale*0.5f, componentScale*0.5f);
+	rootComponent->maxVelocity = b2Vec2(componentScale*10.f, componentScale*10.f);
 	
 	b2Fixture * f = torso->createFixture(sf, b2Vec2(0.f, 0.f), this);
 	f->SetDensity(10.f);

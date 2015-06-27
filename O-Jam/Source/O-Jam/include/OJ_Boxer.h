@@ -20,6 +20,6 @@ public:
 	
 	void update(Step * _step);
 
-	void punchL();
-	void punchR();
-};
+	virtual void punchL();
+	virtual void punchR();
+}; 

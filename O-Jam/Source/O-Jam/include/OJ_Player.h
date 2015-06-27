@@ -4,19 +4,30 @@
 #include <Box2DSprite.h>
 #include <TextureSampler.h>
 #include <OJ_Boxer.h>
+#include <Timeout.h>
 
 class OJ_Player : public OJ_Boxer {
 public:
-	Box2DSprite * torso;
-	Box2DSprite * handR;
-	Box2DSprite * handL;
-
-	b2PrismaticJoint * leftHandJoint;
-	b2PrismaticJoint * rightHandJoint;
-
 	explicit OJ_Player(float _componentScale, OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits = -1, int16 _groupIndex = 0);
 	~OJ_Player();
 
 	void update(Step * _step) override;
 	virtual void move(glm::vec2 _v) override;
+	virtual void punchL() override;
+	virtual void punchR() override;
+	
+	enum Stance {
+		kNONE,
+		kCYCLONE,
+		kLEAPFROG_SLAM,
+		kFASTBALL_SPECIAL,
+		kJUGGLE_PUNCH
+	} stance;
+	void getReady(Stance _stance);
+
+	void disable(float _seconds);
+
+private:
+	bool disabled;
+	Timeout disableTimer;
 };

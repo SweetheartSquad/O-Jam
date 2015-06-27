@@ -31,7 +31,8 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	textShader(new ComponentShaderText(true)),
 	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false)),
 	playerOne(new OJ_Player(3.f, new OJ_TexturePack("MOM_TORSO", "MOM_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -1)),
-	playerTwo(new OJ_Player(1.f, new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -2))
+	playerTwo(new OJ_Player(1.f, new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -2)),
+	stanceDistanceSq(5*5)
 {
 	// Set screen width and height
 	updateScreenDimensions();
@@ -129,13 +130,15 @@ void OJ_Scene::update(Step* _step) {
 	unsigned int joyCnt = 2;
 	switch(joyCnt){
 		case 2:
-			movePlayer(playerTwo, joy->joysticks[1]);
+			handlePlayerInput(playerTwo, joy->joysticks[1]);
 		case 1:
-			movePlayer(playerOne, joy->joysticks[0]);
+			handlePlayerInput(playerOne, joy->joysticks[0]);
 			break;
 		default:
 			exit;
 	}
+
+	handleStancing(playerOne, playerTwo);
 
 	if(keyboard->keyJustUp(GLFW_KEY_2)){
 		if(box2DDebugDrawer != nullptr){
@@ -188,7 +191,7 @@ void OJ_Scene::update(Step* _step) {
 	uiLayer.update(_step);
 }
 
-void OJ_Scene::movePlayer(OJ_Player * _player, Joystick * _joystick){
+void OJ_Scene::handlePlayerInput(OJ_Player * _player, Joystick * _joystick){
 	// Calculate movement
 	glm::vec2 movement(0);
 
@@ -221,6 +224,43 @@ void OJ_Scene::movePlayer(OJ_Player * _player, Joystick * _joystick){
 			_player->punchR();
 		}else if(_joystick->buttonJustDown(Joystick::xbox_buttons::kL1)){
 			_player->punchL();
+		}
+
+		// stancing
+		if(_joystick->buttonDown(Joystick::xbox_buttons::kA)){
+			_player->getReady(OJ_Player::Stance::kCYCLONE);
+		}else if(_joystick->buttonDown(Joystick::xbox_buttons::kB)){
+			_player->getReady(OJ_Player::Stance::kFASTBALL_SPECIAL);
+		}else if(_joystick->buttonDown(Joystick::xbox_buttons::kY)){
+			_player->getReady(OJ_Player::Stance::kJUGGLE_PUNCH);
+		}else if(_joystick->buttonDown(Joystick::xbox_buttons::kX)){
+			_player->getReady(OJ_Player::Stance::kLEAPFROG_SLAM);
+		}else{
+			_player->getReady(OJ_Player::Stance::kNONE);
+		}
+	}
+}
+
+void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
+	if(/*_playerOne->stance != OJ_Player::Stance::kNONE && */_playerTwo->stance != OJ_Player::Stance::kNONE){
+		if(glm::distance2(_playerOne->rootComponent->getWorldPos(), _playerTwo->rootComponent->getWorldPos()) < stanceDistanceSq && _playerOne->stance == _playerTwo->stance){
+			// initiate stance
+
+		}else{
+			// the players were either too far apart or didn't synchronize
+			// punish by pushing them apart
+			_playerOne->disable(0.25f);
+			_playerTwo->disable(0.25f);
+
+			glm::vec3 v = _playerOne->rootComponent->getWorldPos() - _playerTwo->rootComponent->getWorldPos();
+			v = glm::normalize(v);
+			float s = _playerOne->rootComponent->body->GetMass() * 50;
+			_playerOne->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
+
+			v = _playerTwo->rootComponent->getWorldPos() - _playerOne->rootComponent->getWorldPos();
+			v = glm::normalize(v);
+			s = _playerTwo->rootComponent->body->GetMass() * 50;
+			_playerTwo->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
 		}
 	}
 }

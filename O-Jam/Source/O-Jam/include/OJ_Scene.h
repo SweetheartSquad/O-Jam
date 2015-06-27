@@ -28,6 +28,7 @@ public:
 
 	OJ_Player * playerOne;
 	OJ_Player * playerTwo;
+	float stanceDistanceSq;
 
 	std::vector<OJ_Enemy *> enemies;
 
@@ -52,5 +53,6 @@ public:
 private:
 	void renderUi(vox::MatrixStack* _matrixStack, RenderOptions* _renderOptions);
 	void updateScreenDimensions();
-	void movePlayer(OJ_Player * _player, Joystick * _joystick);
+	void handlePlayerInput(OJ_Player * _player, Joystick * _joystick);
+	void handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo);
 };
