@@ -84,6 +84,13 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	// Add the fps display
 	uiLayer.addChild(new FpsDisplay(bulletWorld, this, font, textShader));
 #endif
+
+
+
+	playerOne->speed = 50.f;
+	playerOne->punchSpeed = 100.f;
+	playerTwo->speed = 50.f;
+	playerTwo->punchSpeed = 100.f;
 }
 
 OJ_Scene::~OJ_Scene() {
@@ -95,6 +102,18 @@ OJ_Scene::~OJ_Scene() {
 }
 
 void OJ_Scene::update(Step* _step) {
+	joy->update(_step);
+	unsigned int joyCnt = 2;
+	switch(joyCnt){
+		case 2:
+			movePlayer(playerTwo, joy->joysticks[1]);
+		case 1:
+			movePlayer(playerOne, joy->joysticks[0]);
+			break;
+		default:
+			exit;
+	}
+
 	if(keyboard->keyJustUp(GLFW_KEY_2)){
 		if(box2DDebugDrawer != nullptr){
 			box2DWorld->b2world->SetDebugDraw(nullptr);
@@ -143,20 +162,6 @@ void OJ_Scene::update(Step* _step) {
 
 	box2DWorld->update(_step);
 	Scene::update(_step);
-	
-	joy->update(_step);
-
-	unsigned int joyCnt = 1;
-	switch(joyCnt){
-		case 2:
-			movePlayer(playerTwo, joy->joysticks[1]);
-		case 1:
-			movePlayer(playerOne, joy->joysticks[0]);
-			break;
-		default:
-			exit;
-	}
-
 	uiLayer.update(_step);
 }
 
@@ -165,8 +170,8 @@ void OJ_Scene::movePlayer(OJ_Player * _player, Joystick * _joystick){
 
 	if(_joystick != nullptr){
 		// Calculate movement
-		movement.x += _player->speed * _joystick->getAxis(Joystick::xbox_axes::kLX);
-		movement.y += _player->speed * -_joystick->getAxis(Joystick::xbox_axes::kLY);
+		movement.x += _player->speed * _player->rootComponent->body->GetMass() * _joystick->getAxis(Joystick::xbox_axes::kLX);
+		movement.y += _player->speed * _player->rootComponent->body->GetMass() * -_joystick->getAxis(Joystick::xbox_axes::kLY);
 	}
 
 	if(movement.x != 0 || movement.y != 0 || movement.z != 0){
@@ -178,8 +183,10 @@ void OJ_Scene::movePlayer(OJ_Player * _player, Joystick * _joystick){
 	_player->punchDir.x = _joystick->getAxis(Joystick::xbox_axes::kRX);
 	_player->punchDir.y = -_joystick->getAxis(Joystick::xbox_axes::kRY);
 
-	if(_joystick->getAxis(Joystick::xbox_axes::kBUMPERS) > 0.5){
-		_player->punch();
+	if(_joystick->buttonJustDown(Joystick::xbox_buttons::kR1)){
+		_player->punchR();
+	}else if(_joystick->buttonJustDown(Joystick::xbox_buttons::kL1)){
+		_player->punchL();
 	}
 }
 

@@ -32,10 +32,15 @@ public:
 
 	glm::vec2 punchDir;
 	float punchSpeed;
-	void punch();
+	unsigned long int punchDelay;
+	
+	void punchL();
+	void punchR();
 	
 private:
 	Keyboard * keyboard;
-	int ticksSincePunch;
-	bool punched;
+	int ticksSincePunchL;
+	bool punchedL;
+	int ticksSincePunchR;
+	bool punchedR;
 };
