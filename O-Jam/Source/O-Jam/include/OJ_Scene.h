@@ -29,7 +29,7 @@ public:
 	OJ_Player * playerOne;
 	OJ_Player * playerTwo;
 
-	OJ_Enemy * testEnemy;
+	std::vector<OJ_Enemy *> enemies;
 
 	ComponentShaderBase * mainShader;
 	ComponentShaderText * textShader;
