@@ -67,6 +67,8 @@ private:
 	Timeout snapTimer;
 	glm::vec3 snapPos;
 
-	bool stanceCharged;
-	Timeout stanceChargeTimer;
+
+	std::vector<Box2DSprite *> bullets;
+	//bool stanceCharged;
+	//Timeout stanceChargeTimer;
 };

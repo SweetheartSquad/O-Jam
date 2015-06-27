@@ -36,9 +36,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	playerTwo(new OJ_Player(1.f, new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -2)),
 	stanceDistanceSq(500),
 	snapped(false),
-	stanceCharged(false),
-	stanceChargeTimer(0.5f),
-	snapTimer(0.25f)
+	snapTimer(2.f)
 {
 
 	// Initialize and compile the shader 
@@ -133,16 +131,15 @@ OJ_Scene::~OJ_Scene() {
 
 void OJ_Scene::update(Step* _step) {
 	snapTimer.update(_step);
-	stanceChargeTimer.update(_step);
 	if(snapTimer.active){
 		glm::vec3 v = snapPos - playerOne->rootComponent->getWorldPos();
 		v = glm::normalize(v);
-		float s = playerOne->rootComponent->body->GetMass() * 50;
+		float s = playerOne->rootComponent->body->GetMass() * 10 * snapTimer.elapsedSeconds;
 		playerOne->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
 
 		v = snapPos - playerTwo->rootComponent->getWorldPos();
 		v = glm::normalize(v);
-		s = playerTwo->rootComponent->body->GetMass() * 50;
+		s = playerTwo->rootComponent->body->GetMass() * 10 * snapTimer.elapsedSeconds;
 		playerTwo->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
 	}
 
@@ -259,11 +256,11 @@ void OJ_Scene::handlePlayerInput(OJ_Player * _player, Joystick * _joystick){
 		if(_joystick->buttonDown(Joystick::xbox_buttons::kA)){
 			_player->getReady(OJ_Player::Stance::kPULL);
 		}else if(_joystick->buttonDown(Joystick::xbox_buttons::kB)){
-			_player->getReady(OJ_Player::Stance::kBEAM);
+			_player->getReady(OJ_Player::Stance::kSPIN);
 		}else if(_joystick->buttonDown(Joystick::xbox_buttons::kY)){
 			_player->getReady(OJ_Player::Stance::kBEAM);
 		}else if(_joystick->buttonDown(Joystick::xbox_buttons::kX)){
-			_player->getReady(OJ_Player::Stance::kSPIN);
+			_player->getReady(OJ_Player::Stance::kAOE);
 		}else{
 			_player->getReady(OJ_Player::Stance::kNONE);
 		}
@@ -280,8 +277,30 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 				_playerTwo->disable(snapTimer.targetSeconds);
 				snapTimer.restart();
 				snapPos = (_playerOne->rootComponent->getWorldPos() + _playerTwo->rootComponent->getWorldPos()) * 0.5f;
-			}else{
-				stanceChargeTimer.restart();
+			}else if(snapTimer.active){
+				if(_playerTwo->stance == OJ_Player::Stance::kAOE){
+					float r = 2;
+					for(unsigned long int i = 0; i < 360; i += 10){
+						glm::vec2 dir(cos(i) * r, sin(i) * r);
+						Box2DSprite * explosionPart = new Box2DSprite(box2DWorld, b2_dynamicBody, false, nullptr, OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture, 1, 1, 0, 0, 1.f);
+						explosionPart->setShader(mainShader, true);
+						addChild(explosionPart, 1);
+						bullets.push_back(explosionPart);
+
+						b2Filter sf;
+						sf.categoryBits = OJ_Game::BOX2D_CATEGORY::kBULLET;
+						sf.maskBits = -1;
+						sf.groupIndex = 0;
+						explosionPart->createFixture(sf, b2Vec2(0, 0), explosionPart, false);
+
+						explosionPart->setTranslationPhysical(snapPos.x + dir.x, snapPos.y + dir.y, 0, false);
+						explosionPart->applyLinearImpulseToCenter(dir.x, dir.y);
+					}
+				}else if(_playerTwo->stance == OJ_Player::Stance::kBEAM){
+
+				}else if(_playerTwo->stance == OJ_Player::Stance::kSPIN){
+
+				}
 			}
 		}else{
 			// the players were either too far apart or didn't synchronize
