@@ -67,7 +67,6 @@ void OJ_ContactListener::playerPlayerContact(b2Contact * _contact){
 	if(fxA->GetUserData() != nullptr && fxB->GetUserData() != nullptr){
 		OJ_Character * playerA = static_cast<OJ_Character *>(fxA->GetUserData());
 		OJ_Character * playerB = static_cast<OJ_Character *>(fxB->GetUserData());
-		
 	}
 }
 
@@ -91,9 +90,8 @@ void OJ_ContactListener::playerEnemyContact(b2Contact * _contact, b2Fixture * _p
 			glm::vec3 hPos = hand->getWorldPos();
 			glm::vec3 pPos = p->rootComponent->getWorldPos();
 
-			glm::vec3 diff = hPos - pPos;
-			float d = sqrtf(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
-			if(d > 4.f){
+			float d = glm::distance2(hPos, pPos);
+			if(d > 16.f){
 				e->takeDamage(p->damage);
 			}
 		}else{
