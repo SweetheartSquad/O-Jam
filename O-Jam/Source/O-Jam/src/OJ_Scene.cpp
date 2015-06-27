@@ -21,9 +21,8 @@
 #include <OJ_Enemy.h>
 
 OJ_Scene::OJ_Scene(Game * _game) :
-	Scene(_game),
+	LayeredScene(_game, 2),
 	joy(new JoystickManager()),
-	uiLayer(this, 0,0,0,0),
 	mainShader(new ComponentShaderBase(true)),
 	bulletWorld(new BulletWorld()),
 	box2DWorld(new Box2DWorld(b2Vec2(0, 0))),
@@ -34,8 +33,6 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	playerTwo(new OJ_Player(1.f, new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -2)),
 	stanceDistanceSq(5*5)
 {
-	// Set screen width and height
-	updateScreenDimensions();
 
 	// Initialize and compile the shader 
 	mainShader->addComponent(new ShaderComponentTexture(mainShader));
@@ -49,12 +46,12 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	MeshEntity * bg = new MeshEntity(MeshFactory::getCubeMesh(100));
 	bg->setShader(mainShader,true);
 	bg->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
-	childTransform->addChild(bg, false);
+	addChild(bg, 0, false);
 
 
 	// Add the players to the scene
-	childTransform->addChild(playerOne);
-	childTransform->addChild(playerTwo);
+	addChild(playerOne, 1);
+	addChild(playerTwo, 1);
 
 	playerOne->punchReach = 3.0f;
 
@@ -109,7 +106,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 		OJ_Enemy * e = new OJ_Enemy(2.f, new OJ_TexturePack("TORSO", "HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kENEMY, -1, 1);
 		enemies.push_back(e);
 		e->setShader(mainShader, true);
-		childTransform->addChild(e);
+		addChild(e, 1);
 
 		e->targetCharacter(playerOne);
 		e->rootComponent->maxVelocity = b2Vec2(10.0f, 10.0f);
@@ -143,7 +140,7 @@ void OJ_Scene::update(Step* _step) {
 	if(keyboard->keyJustUp(GLFW_KEY_2)){
 		if(box2DDebugDrawer != nullptr){
 			box2DWorld->b2world->SetDebugDraw(nullptr);
-			childTransform->removeChild(box2DDebugDrawer);
+			removeChild(box2DDebugDrawer);
 			delete box2DDebugDrawer;
 			box2DDebugDrawer = nullptr;
 		}else{
@@ -155,7 +152,7 @@ void OJ_Scene::update(Step* _step) {
 			box2DDebugDrawer->AppendFlags(b2Draw::e_centerOfMassBit);
 			box2DDebugDrawer->AppendFlags(b2Draw::e_jointBit);
 			//drawer->AppendFlags(b2Draw::e_pairBit);
-			childTransform->addChild(box2DDebugDrawer, false);
+			addChild(box2DDebugDrawer, 1, false);
 		}
 	}
 
@@ -266,13 +263,11 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 }
 
 void OJ_Scene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOptions) {
-	Scene::render(_matrixStack, _renderOptions);
-	renderUi(_matrixStack, _renderOptions);
+	LayeredScene::render(_matrixStack, _renderOptions);
 }
 
 void OJ_Scene::load() {
 	Scene::load();
-	updateScreenDimensions();
 	mainShader->load();
 	textShader->load();
 	uiLayer.load();
@@ -294,13 +289,4 @@ void OJ_Scene::unload() {
 	}
 
 	Scene::unload();
-}
-
-void OJ_Scene::renderUi(vox::MatrixStack* _matrixStack, RenderOptions* _renderOptions) {
-	uiLayer.resize(0, sceneWidth, 0, sceneHeight);
-	uiLayer.render(_matrixStack, _renderOptions);
-}
-
-void OJ_Scene::updateScreenDimensions() {
-	glfwGetWindowSize(vox::currentContext, &sceneWidth, &sceneHeight);
 }
