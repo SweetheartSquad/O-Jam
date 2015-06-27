@@ -22,7 +22,7 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 	spawnTimer(1.0),
 	easyEnemiesLeft(0),
 	world(_world),
-	waveNumber(1),
+	waveNumber(0),
 	scene(_scene),
 	shader(_shader),
 	radius(_radius),
@@ -77,7 +77,6 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 	spawnTimer.onCompleteFunction = [this](Timeout * _this){
 		if(easyEnemiesLeft + hardEnemiesLeft > 0) {
 			spawnEnemy();
-			easyEnemiesLeft--;
 			spawnTimer.restart();
 		}
 	};
@@ -128,6 +127,7 @@ void OJ_Arena::spawnNextWave() {
 	}
 	hardEnemiesLeft = hardEnemiesPerRound;
 	spawnTimer.restart();
+	scene->showWave(waveNumber);
 }
 
 void OJ_Arena::spawnEnemy() {

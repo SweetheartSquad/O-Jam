@@ -24,29 +24,30 @@
 #include <Slider.h>
 #include <Step.h>
 #include <NumberUtils.h>
+#include <Timeout.h>
 
 OJ_Scene::OJ_Scene(Game * _game) :
 	LayeredScene(_game, 2),
-	joy(new JoystickManager()),
-	mainShader(new ComponentShaderBase(true)),
-	bulletWorld(new BulletWorld()),
 	box2DWorld(new Box2DWorld(b2Vec2(0, 0))),
 	box2DDebugDrawer(nullptr),
+	bulletWorld(new BulletWorld()),
 	cl(new OJ_ContactListener(this)),
-	textShader(new ComponentShaderText(true)),
-	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false)),
 	playerOne(new OJ_Player(3.f, new OJ_TexturePack("MOM_TORSO", "MOM_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -1)),
 	playerTwo(new OJ_Player(1.f, new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -2)),
 	stanceDistanceSq(500),
+	mainShader(new ComponentShaderBase(true)),
+	textShader(new ComponentShaderText(true)),
+	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false)),
+	joy(new JoystickManager()),
 	snapped(false),
 	snapTime(0),
+	maxCharge(3.f),
+	minCharge(1.5f),
 	specialTimer(0),
 	beamActive(false),
 	guideActive(false),
+	teamworkAngle(0),
 	guidedBullet(nullptr),
-	maxCharge(3.f),
-	minCharge(1.5f),
-	teamworkAngle(0)
 {
 
 	// Initialize and compile the shader 
@@ -107,6 +108,10 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	gameCam->addTarget(playerOne->rootComponent, 1);
 	gameCam->addTarget(playerTwo->rootComponent, 1);}
 
+	waveText = new TextArea(bulletWorld, this, font, textShader, 400);
+	waveText->setVisible(false);
+	uiLayer.addChild(waveText);
+	waveText->parents.at(0)->translate(100, 100, 0.f);
 
 #ifdef _DEBUG
 	// Add the fps display
@@ -401,6 +406,10 @@ void OJ_Scene::unload() {
 	}
 
 	Scene::unload();
+}
+
+void OJ_Scene::showWave(int _wave){
+	waveText->setText(L"WAVE " + std::to_wstring(_wave));
 }
 
 /*

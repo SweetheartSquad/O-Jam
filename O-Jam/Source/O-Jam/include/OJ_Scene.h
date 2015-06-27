@@ -7,6 +7,7 @@
 
 #include <OJ_Player.h>
 #include <OJ_Bullet.h>
+#include <TextArea.h>
 
 class JoystickManager;
 class Joystick;
@@ -47,6 +48,8 @@ public:
 
 	FollowCamera * gameCam;
 
+	TextArea * waveText;
+
 	OJ_Scene(Game * _game);
 	~OJ_Scene();
 
@@ -55,6 +58,8 @@ public:
 	
 	virtual void load() override;
 	virtual void unload() override;
+
+	void showWave(int _wave);
 
 private:
 	void handlePlayerInput(OJ_Player * _player, Joystick * _joystick);
@@ -77,4 +82,5 @@ private:
 	glm::vec2 teamworkAngle;
 
 	OJ_Bullet * guidedBullet;
+
 };
