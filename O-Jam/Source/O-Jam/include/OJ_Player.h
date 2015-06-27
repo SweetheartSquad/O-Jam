@@ -19,8 +19,8 @@ public:
 	Box2DSprite * handR;
 	Box2DSprite * handL;
 
-	b2DistanceJoint * leftHandJoint;
-	b2DistanceJoint * rightHandJoint;
+	b2PrismaticJoint * leftHandJoint;
+	b2PrismaticJoint * rightHandJoint;
 
 	float speed;
 
@@ -29,19 +29,14 @@ public:
 
 	void update(Step * _step) override;
 
-	glm::vec2 punchDir;
+	float punchAngle;
 	float punchSpeed;
 	unsigned long int punchDelay;
+	float punchReach;
 	
 	void punchL();
 	void punchR();
 	// move the player
 	// _v should be normalized in most cases, and the player speed, mass, etc will be taken into account here
 	void move(glm::vec2 _v);
-	
-private:
-	int ticksSincePunchL;
-	bool punchedL;
-	int ticksSincePunchR;
-	bool punchedR;
 };

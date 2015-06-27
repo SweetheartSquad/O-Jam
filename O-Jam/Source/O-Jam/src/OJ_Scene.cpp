@@ -193,9 +193,10 @@ void OJ_Scene::movePlayer(OJ_Player * _player, Joystick * _joystick){
 
 	// Calculate punches
 	if(_joystick != nullptr){
-		_player->punchDir = glm::vec2(0);
-		_player->punchDir.x = _joystick->getAxis(Joystick::xbox_axes::kRX);
-		_player->punchDir.y = -_joystick->getAxis(Joystick::xbox_axes::kRY);
+		glm::vec2 punchDir = glm::vec2(0);
+		punchDir.x = _joystick->getAxis(Joystick::xbox_axes::kRX);
+		punchDir.y = -_joystick->getAxis(Joystick::xbox_axes::kRY);
+		_player->punchAngle = glm::atan(punchDir.y, punchDir.x) - glm::half_pi<float>();
 
 		if(_joystick->buttonJustDown(Joystick::xbox_buttons::kR1)){
 			_player->punchR();
