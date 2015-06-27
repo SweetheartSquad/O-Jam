@@ -1,19 +1,11 @@
 #pragma once
 
 #include <Box2DWorld.h>
-#include <Box2DSuperSprite.h>
 #include <Box2DSprite.h>
 #include <TextureSampler.h>
+#include <OJ_Boxer.h>
 
-class OJ_TexturePack : public Node{
-public:
-	Texture * torsoTex;
-	Texture * handTex;
-
-	OJ_TexturePack(std::string _torsoSrc, std::string _handSrc);
-};
-
-class OJ_Player : public Box2DSuperSprite {
+class OJ_Player : public OJ_Boxer {
 public:
 	Box2DSprite * torso;
 	Box2DSprite * handR;

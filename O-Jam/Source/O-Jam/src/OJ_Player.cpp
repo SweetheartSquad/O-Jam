@@ -7,14 +7,8 @@
 
 #include <glfw\glfw3.h>
 
-OJ_TexturePack::OJ_TexturePack(std::string _torsoSrc, std::string _handSrc) :
-	torsoTex(OJ_ResourceManager::playthrough->getTexture(_torsoSrc)->texture),
-	handTex(OJ_ResourceManager::playthrough->getTexture(_handSrc)->texture)
-{
-}
-
 OJ_Player::OJ_Player(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits, int16 _groupIndex) :
-	Box2DSuperSprite(_world, _categoryBits, _maskBits, _groupIndex),
+	OJ_Boxer(_texPack, _world, _categoryBits, _maskBits, _groupIndex),
 	ticksSincePunchL(0),
 	ticksSincePunchR(0),
 	punchedL(false),
