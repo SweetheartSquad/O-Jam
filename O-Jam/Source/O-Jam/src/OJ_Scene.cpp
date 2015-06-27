@@ -17,8 +17,8 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	bulletWorld(new BulletWorld()),
 	textShader(new ComponentShaderText(true)),
 	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false)),
-	playerOne(new OJ_Player(b2World)),
-	playerTwo(new OJ_Player(b2World))
+	playerOne(new OJ_Player(nullptr, b2World, 0, 0, 0)),
+	playerTwo(new OJ_Player(nullptr, b2World, 0, 0, 0))
 {
 	// Set screen width and height
 	updateScreenDimensions();
