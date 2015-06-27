@@ -6,15 +6,25 @@
 
 class JoystickManager;
 class Game;
+class ComponentShaderBase;
+class ComponentShaderText;
+class Font;
 
 class OJ_Scene : public Scene {
+
 public:
+
 	int sceneHeight;
 	int sceneWidth;
 
-	JoystickManager * joy;
 	ComponentShaderBase * mainShader;
-	
+	ComponentShaderText * textShader;
+
+	Font * font;
+
+	JoystickManager * joy;
+	BulletWorld * bulletWorld;
+
 	Box2DWorld b2World;
 	UILayer uiLayer;
 	

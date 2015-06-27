@@ -24,7 +24,7 @@
     <ClCompile Include="..\src\WAG_Button.cpp" />
     <ClCompile Include="..\src\WAG_ResourceManager.cpp" />
     <ClCompile Include="..\src\Main.cpp" />
-    <ClCompile Include="..\src\WAG_Game.cpp" />
+    <ClCompile Include="..\src\OJ_Game.cpp" />
     <ClCompile Include="..\src\WAG_TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -40,7 +40,7 @@
     <ClInclude Include="..\include\TimeoutEffects.h" />
     <ClInclude Include="..\include\WAG_Button.h" />
     <ClInclude Include="..\include\WAG_ResourceManager.h" />
-    <ClInclude Include="..\include\WAG_Game.h" />
+    <ClInclude Include="..\include\OJ_Game.h" />
     <ClInclude Include="..\include\WAG_TestScene.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -2,10 +2,10 @@
 
 #include <Game.h>
 
-class WAG_Game : public Game{
+class OJ_Game : public Game{
 public:
-	WAG_Game();
-	~WAG_Game();
+	OJ_Game();
+	~OJ_Game();
 
 	enum BOX2D_CATEGORY{
 		kBOUNDARY = 0x0001,

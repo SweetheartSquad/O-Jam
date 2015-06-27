@@ -1,7 +1,7 @@
 #pragma once
 
 #include <WAG_TestScene.h>
-#include <WAG_Game.h>
+#include <OJ_Game.h>
 #include <WAG_ResourceManager.h>
 
 #include <MeshEntity.h>

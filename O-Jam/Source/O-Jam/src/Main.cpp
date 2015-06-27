@@ -7,7 +7,7 @@
 #include <Game.h>
 #include <WAG_ResourceManager.h>
 
-#include <WAG_Game.h>
+#include <OJ_Game.h>
 
 // memory leak debugging
 #define _CRTDBG_MAP_ALLOC
@@ -23,7 +23,7 @@ int main(void){
 	vox::initialize("WAG Challenge - demo");
 	WAG_ResourceManager::init();
 	WAG_ResourceManager::load();
-	WAG_Game * game = new WAG_Game();
+	OJ_Game * game = new OJ_Game();
 
 	while (game->isRunning){
 		game->performGameLoop();
