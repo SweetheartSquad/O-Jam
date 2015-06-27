@@ -3,6 +3,7 @@
 #include <Scene.h>
 #include <UILayer.h>
 #include <Box2DWorld.h>
+#include <Box2DDebugDrawer.h>
 
 #include <OJ_Player.h>
 
@@ -21,6 +22,7 @@ public:
 	int sceneWidth;
 	
 	Box2DWorld * box2DWorld;
+	Box2DDebugDrawer * box2DDebugDrawer;
 	BulletWorld * bulletWorld;
 
 	OJ_Player * playerOne;
