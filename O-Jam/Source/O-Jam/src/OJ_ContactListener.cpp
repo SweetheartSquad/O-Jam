@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include <OJ_Game.h>
 #include <OJ_Character.h>
+#include <OJ_Enemy.h>
 #include <Box2dWorld.h>
 #include <Box2DSprite.h>
 #include <Box2DSuperSprite.h>
@@ -79,6 +80,26 @@ void OJ_ContactListener::playerEnemyContact(b2Contact * _contact, b2Fixture * _p
 	//if(!item->destroy){
 
 	// IF fixture's linear velocity is greater than userData's root body's linear velocity?
+	Box2DSprite * hand = nullptr;
+
+	if(p->handL->body->GetFixtureList() == _playerFixture){
+		hand = p->handL;
+	}else if(p->handR->body->GetFixtureList() == _playerFixture){
+		hand = p->handR;
+	}
+
+	if(hand != nullptr){
+		glm::vec3 hPos = hand->getWorldPos();
+		glm::vec3 pPos = p->rootComponent->getWorldPos();
+
+		glm::vec3 diff = hPos - pPos;
+		float d = sqrtf(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+		if(d > 4.f){
+			// calculate?
+			float damage = 50.f;
+			e->takeDamage(damage);
+		}
+	}
 
 	/*
 		static_cast<Item *>(item)->hitPlayer();

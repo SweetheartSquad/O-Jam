@@ -35,7 +35,8 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	playerOne(new OJ_Player(3.f, new OJ_TexturePack("MOM_TORSO", "MOM_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -1)),
 	playerTwo(new OJ_Player(1.f, new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -2)),
 	arena(new OJ_Arena(box2DWorld, 50, 12)),
-	stanceDistanceSq(500)
+	stanceDistanceSq(500),
+	fastBallTarget(nullptr)
 {
 
 	// Initialize and compile the shader 
@@ -250,9 +251,14 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 			if(_playerTwo->stance == OJ_Player::Stance::kFASTBALL_SPECIAL){
 				if(fastBallTarget == nullptr){
 					fastBallTarget = findClosestEnemy(_playerTwo);
+					if(fastBallTarget == nullptr){
+						// no enemies left to target; break out of stance
+						return;
+					}
 				}
-				glm::vec3 d = fastBallTarget->rootComponent->getWorldPos() - _playerTwo->getWorldPos();
-				if(glm::length2(d) < 10.f){
+				glm::vec3 dv = fastBallTarget->rootComponent->getWorldPos() - _playerTwo->rootComponent->getWorldPos();
+				float d = glm::length2(dv);
+				if(d < 50.f){
 					// check for correct input
 					// if successful, pick a new target and start again
 					// otherwise, break out of stance
@@ -260,8 +266,8 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 					fastBallTarget = findClosestEnemy(_playerTwo);
 				}else{
 					// continue trajectory
-					d = glm::normalize(d);
-					_playerTwo->rootComponent->body->SetLinearVelocity(b2Vec2(d.x*50, d.y*50));
+					dv = glm::normalize(dv);
+					_playerTwo->rootComponent->body->SetLinearVelocity(b2Vec2(dv.x*50, dv.y*50));
 				}
 
 			}
@@ -316,14 +322,14 @@ void OJ_Scene::unload() {
 
 OJ_Enemy * OJ_Scene::findClosestEnemy(OJ_Player * _toPlayer){
 	OJ_Enemy * res = nullptr;
-	float dmax = 0;
+	float dmin = 100000000000;
 	glm::vec3 dv(0);
 	float d;
 	for(unsigned long int i = 0; i < enemies.size(); ++i){
 		dv = enemies.at(i)->rootComponent->worldPos - _toPlayer->rootComponent->getWorldPos();
-		d = glm::length2(d);
-		if(d > dmax){
-			dmax = d;
+		d = glm::length2(dv);
+		if(d < dmin){
+			dmin = d;
 			res = enemies.at(i);
 		}
 	}
@@ -334,10 +340,11 @@ void OJ_Scene::killEnemy(OJ_Enemy * _enemy){
 	for(signed long int i = enemies.size()-1; i >= 0; --i){
 		if(enemies.at(i) == _enemy){
 			enemies.erase(enemies.begin() + i);
-			return;
+			break;
 		}
 	}
 
 	removeChild(_enemy->parents.at(0));
 	delete _enemy;
 }
+	
