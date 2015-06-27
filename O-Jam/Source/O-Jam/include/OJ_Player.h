@@ -14,6 +14,7 @@ public:
 };
 
 class OJ_Player : public Box2DSuperSprite {
+public:
 	Box2DSprite * torso;
 	Box2DSprite * handR;
 	Box2DSprite * handL;

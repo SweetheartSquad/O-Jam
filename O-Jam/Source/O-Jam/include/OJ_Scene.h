@@ -28,9 +28,10 @@ public:
 	Font * font;
 
 	JoystickManager * joy;
+	
+	Box2DWorld * b2World;
 	BulletWorld * bulletWorld;
 
-	Box2DWorld b2World;
 	UILayer uiLayer;
 	
 	OJ_Scene(Game * _game);
