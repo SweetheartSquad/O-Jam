@@ -29,4 +29,6 @@ public:
 	// move the player
 	// _v should be normalized in most cases, and the player speed, mass, etc will be taken into account here
 	virtual void move(glm::vec2 _v);
+
+	virtual void takeDamage(float _damage);
 };

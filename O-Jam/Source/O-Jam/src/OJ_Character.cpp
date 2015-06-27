@@ -49,3 +49,9 @@ void OJ_Character::move(glm::vec2 _v){
 		rootComponent->applyLinearImpulseRight(_v.x * s);
 	}
 }
+
+void OJ_Character::takeDamage(float _damage){
+	health -= _damage;
+
+	//justTookDamage = true;
+}
