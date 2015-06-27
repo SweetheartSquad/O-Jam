@@ -14,7 +14,7 @@ public:
 	b2PrismaticJoint * leftHandJoint;
 	b2PrismaticJoint * rightHandJoint;
 
-	explicit OJ_Player(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits = -1, int16 _groupIndex = -1);
+	explicit OJ_Player(float _componentScale, OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits = -1, int16 _groupIndex = -1);
 	~OJ_Player();
 
 	void update(Step * _step) override;

@@ -15,7 +15,7 @@ public:
 	float punchSpeed;
 	float punchReach;
 
-	OJ_Boxer(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits = -1, int16 _groupIndex = -1);
+	OJ_Boxer(float _componentScale, OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits = -1, int16 _groupIndex = -1);
 	virtual ~OJ_Boxer();
 	
 	void update(Step * _step);

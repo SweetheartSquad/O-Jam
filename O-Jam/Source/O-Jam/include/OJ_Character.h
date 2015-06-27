@@ -21,7 +21,7 @@ public:
 	Box2DSprite * torso;
 	OJ_TexturePack * texPack;
 
-	OJ_Character(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits = -1, int16 _groupIndex = -1);
+	OJ_Character(float _componentScale, OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits = -1, int16 _groupIndex = -1);
 	
 	virtual ~OJ_Character();
 

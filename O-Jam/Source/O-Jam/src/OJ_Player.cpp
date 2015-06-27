@@ -7,8 +7,8 @@
 
 #include <glfw\glfw3.h>
 
-OJ_Player::OJ_Player(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits, int16 _groupIndex) :
-	OJ_Boxer(_texPack, _world, _categoryBits, _maskBits, _groupIndex)
+OJ_Player::OJ_Player(float _componentScale, OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits, int16 _groupIndex) :
+	OJ_Boxer(_componentScale, _texPack, _world, _categoryBits, _maskBits, _groupIndex)
 {
 }
 

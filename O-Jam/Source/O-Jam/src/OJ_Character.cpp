@@ -14,12 +14,12 @@ OJ_TexturePack::OJ_TexturePack(std::string _torsoSrc, std::string _handSrc) :
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-OJ_Character::OJ_Character(OJ_TexturePack* _texPack, Box2DWorld* _world, int16 _categoryBits, int16 _maskBits, int16 _groupIndex) :
+OJ_Character::OJ_Character(float _componentScale, OJ_TexturePack* _texPack, Box2DWorld* _world, int16 _categoryBits, int16 _maskBits, int16 _groupIndex) :
 	Box2DSuperSprite(_world, _categoryBits, _maskBits, _groupIndex),
 	speed(1.0f),
 	texPack(_texPack)
 {
-	componentScale = 1.f;
+	componentScale = _componentScale;
 	torso = new Box2DSprite(world, b2_dynamicBody, false, nullptr, texPack->torsoTex, 1, 1, 0, 0, componentScale);
 
 	addComponent(&torso);

@@ -3,8 +3,8 @@
 #include <OJ_Enemy.h>
 #include <Box2DSprite.h>
 
-OJ_Enemy::OJ_Enemy(OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits, int16 _groupIndex) :
-	OJ_Character(_texPack, _world, _categoryBits, _maskBits, -2),
+OJ_Enemy::OJ_Enemy(float _componentScale, OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits, int16 _groupIndex) :
+	OJ_Character(_componentScale, _texPack, _world, _categoryBits, _maskBits, -2),
 	target(nullptr)
 {
 
