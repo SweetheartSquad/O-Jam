@@ -37,6 +37,12 @@ public:
 	OJ_Bullet * getBullet(Texture * _tex);
 	void removeBullet(OJ_Bullet * _bullet);
 private:
-	int enemiesLeftInWave;
+	int easyEnemiesLeft;
 	Timeout spawnTimer;
+
+	int hardEnemiesLeft; 
+	int hardEnemiesPerRound;
+
+	OJ_Enemy * getEasyEnemy();
+	OJ_Enemy * getHardEnemy();
 };
