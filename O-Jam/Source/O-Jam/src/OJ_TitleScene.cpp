@@ -50,6 +50,7 @@ OJ_TitleScene::OJ_TitleScene(Game* _game) :
 	title = new NodeUI(bulletWorld, this);
 	story = new NodeUI(bulletWorld, this);
 	instructions = new NodeUI(bulletWorld, this);
+	credits = new NodeUI(bulletWorld, this);
 
 	title->setRationalWidth(1.0f);
 	title->setRationalHeight(1.0f);
@@ -60,18 +61,24 @@ OJ_TitleScene::OJ_TitleScene(Game* _game) :
 	instructions->setRationalWidth(1.0f);
 	instructions->setRationalHeight(1.0f);
 
+	credits->setRationalWidth(1.0f);
+	credits->setRationalHeight(1.0f);
+
 	title->background->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("TITLE")->texture);
 	story->background->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("STORY")->texture);
-	instructions->background->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
+	instructions->background->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("INSTRUCTIONS")->texture);
+	credits->background->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("CREDITS")->texture);
 
 	uiLayer->addChild(title);
 	uiLayer->addChild(story);
 	uiLayer->addChild(instructions);
+	uiLayer->addChild(credits);
 
 	childTransform->addChild(uiLayer, false);
 
 	story->setVisible(false);
 	instructions->setVisible(false);
+	credits->setVisible(false);
 
 	OJ_ResourceManager::songs["funker"]->play(true);
 }
@@ -90,10 +97,16 @@ void OJ_TitleScene::update(Step* _step) {
 		frame = INSTRUCTIONS;
 		instructions->setVisible(true);
 		title->setVisible(false);
-	}else if(frame == INSTRUCTIONS && joy->joysticks[0]->buttonJustDown(Joystick::kB)) {
+	}else if((frame == INSTRUCTIONS || frame == CREDITS || frame == STORY) && joy->joysticks[0]->buttonJustDown(Joystick::kB)) {
 		frame = TITLE;
 		title->setVisible(true);
 		instructions->setVisible(false);
+		credits->setVisible(false);
+		story->setVisible(false);
+	}else if(frame == TITLE && joy->joysticks[0]->buttonJustDown(Joystick::kY)) {
+		frame = CREDITS;
+		title->setVisible(false);
+		credits->setVisible(true);
 	}else if(frame == STORY && joy->joysticks[0]->buttonJustDown(Joystick::kA)) {
 		frame = TITLE;
 		title->setVisible(true);
