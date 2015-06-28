@@ -8,4 +8,5 @@ OJ_BotEnemy::OJ_BotEnemy(Box2DWorld* _world) :
 {
 	health = 500.f;
 	damage = 10.f;
+	scoreVal = 500.f;
 }

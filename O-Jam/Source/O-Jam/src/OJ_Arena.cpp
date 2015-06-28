@@ -35,7 +35,9 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 	radius(_radius),
 	hardEnemiesPerRound(1),
 	hardEnemiesLeft(0),
-	particles(new ParticleSystem(new TextureSampler(OJ_ResourceManager::playthrough->getTexture("TORSO")->texture, 1, 1), _world, -1, -1, 0))
+	particles(new ParticleSystem(new TextureSampler(OJ_ResourceManager::playthrough->getTexture("TORSO")->texture, 1, 1), _world, -1, -1, 0)),
+	startIndicatorTimer(1.5f),
+	score(0)
 {
 	particles->setShader(shader, true);
 	b2Vec2 * vs = (b2Vec2 *)malloc(sizeof(b2Vec2) * _points);
@@ -307,6 +309,7 @@ void OJ_Arena::update(Step* _step) {
 	}
 
 	spawnTimer.update(_step);
+	startIndicatorTimer.update(_step);
 
 	Entity::update(_step);
 }
@@ -325,11 +328,14 @@ void OJ_Arena::killEnemy(OJ_Enemy * _enemy){
 		p->deltaSize = -p->startSize;
 	}
 
+	score += _enemy->scoreVal;
+
 	childTransform->removeChild(_enemy->parents.at(0));
 	delete _enemy->parents.at(0); // memory leak here
 }
 
 void OJ_Arena::spawnNextWave() {
+	startIndicatorTimer.restart();
 	waveNumber++;
 	easyEnemiesLeft = (int)waveNumber * 6;
 	if(waveNumber % 4 == 0) {

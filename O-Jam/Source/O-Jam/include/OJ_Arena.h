@@ -41,6 +41,8 @@ public:
 	void removeBullet(OJ_Bullet * _bullet);
 
 	Box2DSprite * getHexTile();
+	Timeout startIndicatorTimer;
+	float score;
 private:
 	int easyEnemiesLeft;
 	Timeout spawnTimer;

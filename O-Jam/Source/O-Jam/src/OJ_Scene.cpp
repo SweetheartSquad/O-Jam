@@ -5,7 +5,6 @@
 #include <OJ_ContactListener.h>
 #include <shader/ComponentShaderBase.h>
 #include <shader/ShaderComponentTexture.h>
-#include <FpsDisplay.h>
 #include <shader/ComponentShaderText.h>
 #include <Font.h>
 #include <OJ_Player.h>
@@ -28,6 +27,7 @@
 #include <Resource.h>
 #include <ParticleSystem.h>
 #include <System.h>
+#include <Easing.h>
 
 OJ_Scene::OJ_Scene(Game * _game) :
 	LayeredScene(_game, 2),
@@ -53,9 +53,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	guidedBullet(nullptr),
 	screenSurfaceShader(new Shader("../assets/RenderSurface", false, true)),
 	screenSurface(new RenderSurface(screenSurfaceShader)),
-	screenFBO(new StandardFrameBuffer(true)),
-	waveTextTimerScaleDown(new Timeout(1.0f)),
-	waveTextTimerScaleUp(new Timeout(1.0f))
+	screenFBO(new StandardFrameBuffer(true))
 {
 	screenSurfaceShader->unload();
 	screenSurfaceShader->load();
@@ -132,13 +130,17 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	waveText->verticalAlignment = kTOP;
 	waveText->setRationalWidth(1.f);
 	waveText->setRationalHeight(1.f);
+	waveText->setMarginTop(0.05f);
 
+	scoreText = new TextArea(bulletWorld, this, font, textShader, 400);
+	scoreText->horizontalAlignment = kCENTER;
+	scoreText->verticalAlignment = kBOTTOM;
+	scoreText->setRationalWidth(1.f);
+	scoreText->setRationalHeight(1.f);
+	scoreText->setMarginBottom(0.05f);
+	
 	uiLayer.addChild(waveText);
-
-#ifdef _DEBUG
-	// Add the fps display
-	uiLayer.addChild(new FpsDisplay(bulletWorld, this, font, textShader));
-#endif
+	uiLayer.addChild(scoreText);
 
 	Slider * slider = new Slider(bulletWorld, this, 100.f, 30.f, 100.f);
 	slider->setValue(50.f);
@@ -179,6 +181,18 @@ OJ_Scene::~OJ_Scene() {
 }
 
 void OJ_Scene::update(Step* _step) {
+	if(arena->startIndicatorTimer.active){
+		waveText->parents.at(0)->scale(Easing::easeOutQuint(arena->startIndicatorTimer.elapsedSeconds, 1.5f, -0.5f, arena->startIndicatorTimer.targetSeconds), false);
+		waveText->setMarginTop(vox::NumberUtils::randomFloat(0.0025f, 0.005f) + Easing::easeOutBounce(arena->startIndicatorTimer.elapsedSeconds, 0.75f, -0.75f, arena->startIndicatorTimer.targetSeconds));
+	}else{
+		waveText->parents.at(0)->scale(vox::NumberUtils::randomFloat(0.98f, 1.02f), false);
+		waveText->setMarginTop(vox::NumberUtils::randomFloat(0.0025f, 0.005f));
+	}
+
+	std::wstringstream ws;
+	ws << "SCORE: " << arena->score;
+	scoreText->setText(ws.str());
+
 	specialTimer.update(_step);
 	snapTime += _step->deltaTime;
 	if(snapped){
