@@ -9,7 +9,7 @@ class OJ_Enemy;
 class OJ_Bullet;
 class OJ_Scene;
 class Texture;
-class b2Body;
+class Box2DSprite;
 
 class OJ_Arena : public Entity{
 public:
@@ -38,7 +38,7 @@ public:
 	OJ_Bullet * getBullet(Texture * _tex);
 	void removeBullet(OJ_Bullet * _bullet);
 
-	b2Body * getHexTile();
+	Box2DSprite * getHexTile();
 private:
 	int enemiesLeftInWave;
 	Timeout spawnTimer;
