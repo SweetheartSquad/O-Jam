@@ -63,8 +63,6 @@ private:
 	glm::vec3 snapPos;
 
 	void separatePlayers(float _multiplier);
-
-	std::vector<OJ_Bullet *> bullets;
 	//bool stanceCharged;
 	//Timeout stanceChargeTimer;
 };

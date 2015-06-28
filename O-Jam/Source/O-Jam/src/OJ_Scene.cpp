@@ -288,6 +288,24 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 				float r = 2;
 				for(float i = 0; i < 360; i += 30.f / std::min(3.f, snapTime)){
 					glm::vec2 dir(cos(i) * r, sin(i) * r);
+					
+					OJ_Bullet * explosionPart = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
+
+					b2Filter sf;
+					sf.categoryBits = OJ_Game::BOX2D_CATEGORY::kBULLET;
+					sf.maskBits = OJ_Game::BOX2D_CATEGORY::kENEMY;
+					sf.groupIndex = 0;
+					explosionPart->createFixture(sf, b2Vec2(0, 0), explosionPart, false);
+
+					explosionPart->setTranslationPhysical(snapPos.x + dir.x, snapPos.y + dir.y, 0, false);
+					explosionPart->applyLinearImpulseToCenter(dir.x*10, dir.y*10);
+				}
+			}else if(_playerTwo->stance == OJ_Player::Stance::kBEAM){
+				/*float angle = (_playerOne->punchAngle + _playerTwo->punchAngle) * 0.5f;
+
+				glm::vec2 dir(cos(angle), sin(angle));
+
+				for(float i = 0; i < 360; i += 30.f / std::min(3.f, snapTime)){
 					OJ_Bullet * explosionPart = new OJ_Bullet(100, box2DWorld, b2_dynamicBody, false, nullptr, OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture, 1, 1, 0, 0, 1.f);
 					explosionPart->setShader(mainShader, true);
 					addChild(explosionPart, 1);
@@ -301,9 +319,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 
 					explosionPart->setTranslationPhysical(snapPos.x + dir.x, snapPos.y + dir.y, 0, false);
 					explosionPart->applyLinearImpulseToCenter(dir.x*10, dir.y*10);
-				}
-			}else if(_playerTwo->stance == OJ_Player::Stance::kBEAM){
-
+				}*/
 			}else if(_playerTwo->stance == OJ_Player::Stance::kSPIN){
 
 			}

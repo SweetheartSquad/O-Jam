@@ -9,6 +9,7 @@
 #include <OJ_Scene.h>
 #include <OJ_Enemy.h>
 #include <OJ_Game.h>
+#include <OJ_Bullet.h>
 #include <Timeout.h>
 
 const float PI = 3.1415926;
@@ -78,11 +79,18 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 }
 
 void OJ_Arena::update(Step* _step) {
-		// destroy dead enemies
+	// destroy dead enemies
 	for(signed long int i = enemies.size()-1; i >= 0; --i){
 		OJ_Enemy * enemy = enemies.at(i);
 		if (enemy->dead){
 			killEnemy(enemy);
+		}
+	}
+	// destroy dead bullets
+	for(signed long int i = bullets.size()-1; i >= 0; --i){
+		OJ_Bullet * b = bullets.at(i);
+		if (b->destroyed){
+			removeBullet(b);
 		}
 	}
 
@@ -130,4 +138,26 @@ void OJ_Arena::spawnEnemy() {
 }
 
 OJ_Arena::~OJ_Arena() {
+}
+
+
+
+OJ_Bullet * OJ_Arena::getBullet(Texture * _tex){
+	OJ_Bullet * b = new OJ_Bullet(200, world, b2_dynamicBody, false, nullptr, _tex, 1, 1, 0, 0, 1.f);
+	b->setShader(shader, true);
+	childTransform->addChild(b);
+	bullets.push_back(b);
+	return b;
+}
+
+void OJ_Arena::removeBullet(OJ_Bullet * _bullet){
+	for(signed long int i = bullets.size()-1; i >= 0; --i){
+		if(bullets.at(i) == _bullet){
+			bullets.erase(bullets.begin() + i);
+			break;
+		}
+	}
+
+	childTransform->removeChild(_bullet->parents.at(0));
+	delete _bullet->parents.at(0); // memory leak here
 }

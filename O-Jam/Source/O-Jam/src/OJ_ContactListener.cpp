@@ -51,8 +51,8 @@ void OJ_ContactListener::BeginContact(b2Contact * _contact){
 		}
 
 		if(bulletFixture != nullptr){
-			if((fA.categoryBits & OJ_Game::kENEMY) != 0 && (fB.categoryBits & OJ_Game::kENEMY) != 0){
-				// Player-Player collision
+			if((fA.categoryBits & OJ_Game::kENEMY) != 0 || (fB.categoryBits & OJ_Game::kENEMY) != 0){
+				// Bullet-Enemy collision
 				bulletEnemyContact(_contact, bulletFixture, otherFixture);
 			}
 		}
@@ -125,6 +125,7 @@ void OJ_ContactListener::bulletEnemyContact(b2Contact * _contact, b2Fixture * _b
 	// if bullet is triggered as destroyed or enemy is triggered as dead, don't trigger a proper contact
 	if(!b->destroyed && !e->dead){
 		e->takeDamage(b->damage);
+		b->destroyed = true;
 	}
 }
 
