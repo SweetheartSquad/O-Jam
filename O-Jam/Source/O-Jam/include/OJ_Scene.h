@@ -7,6 +7,7 @@
 
 #include <OJ_Player.h>
 #include <OJ_Bullet.h>
+#include <TextArea.h>
 
 class JoystickManager;
 class Joystick;
@@ -17,6 +18,7 @@ class Font;
 class OJ_Enemy;
 class OJ_Arena;
 class OJ_ContactListener;
+class FollowCamera;
 
 class OJ_Scene : public LayeredScene {
 
@@ -44,6 +46,10 @@ public:
 
 	JoystickManager * joy;
 
+	FollowCamera * gameCam;
+
+	TextArea * waveText;
+
 	OJ_Scene(Game * _game);
 	~OJ_Scene();
 
@@ -53,6 +59,8 @@ public:
 	virtual void load() override;
 	virtual void unload() override;
 
+	void showWave(int _wave);
+
 private:
 	void handlePlayerInput(OJ_Player * _player, Joystick * _joystick);
 	void handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo);	
@@ -60,9 +68,19 @@ private:
 
 	bool snapped;
 	float snapTime;
+	float maxCharge;
+	float minCharge;
 	glm::vec3 snapPos;
 
 	void separatePlayers(float _multiplier);
 	//bool stanceCharged;
-	//Timeout stanceChargeTimer;
+	Timeout specialTimer;
+
+	bool beamActive;
+	bool guideActive;
+
+	glm::vec2 teamworkAngle;
+
+	OJ_Bullet * guidedBullet;
+
 };

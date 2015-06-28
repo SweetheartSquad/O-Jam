@@ -13,19 +13,24 @@
 #include <Timeout.h>
 #include <MeshInterface.h>
 
+#include <OJ_DdosEnemy.h>
+#include <OJ_BotEnemy.h>
+
 const float PI = 3.1415926;
 
 #define ARENA_TILE 10
 
 OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, float _radius, int _points) :
 	Entity(),
+	spawnTimer(1.0),
+	easyEnemiesLeft(0),
 	world(_world),
-	waveNumber(1),
+	waveNumber(0),
 	scene(_scene),
 	shader(_shader),
 	radius(_radius),
-	spawnTimer(1.0),
-	enemiesLeftInWave(0)
+	hardEnemiesPerRound(1),
+	hardEnemiesLeft(0)
 {
 	b2Vec2 * vs = (b2Vec2 *)malloc(sizeof(b2Vec2) * _points);
 	for(unsigned long int i = 0; i < _points; ++i) {
@@ -78,23 +83,24 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 		}
 	}
 	
-	int numObs = vox::NumberUtils::randomInt(10, 30);
+	int numObs = vox::NumberUtils::randomInt(10, 20);
 
 	OJ_TexturePack texPack("TORSO", "HAND");
 
 	for(unsigned long int i = 0; i < numObs; ++i) {
 		
-		float randScale = vox::NumberUtils::randomFloat(2.0f, 5.0f);
+		float randScale = vox::NumberUtils::randomFloat(2.0f, 4.0f);
 
 		Box2DSprite * sprite = new Box2DSprite(world, b2_staticBody, false, nullptr, texPack.torsoTex);
-
+		childTransform->addChild(sprite);
+		// The colliders don't match the scale
+		//sprite->parents.at(0)->scale(randScale, randScale, 1.0f);
+		sprite->setShader(_shader, true);
+		
 		b2Filter filter;
 
 		filter.categoryBits = OJ_Game::kBOUNDARY;
 		sprite->createFixture(filter);
-		sprite->setShader(_shader, true);
-		childTransform->addChild(sprite);
-		sprite->parents.at(0)->scale(randScale, randScale, 1.0f);
 		float lim = 0.75f * _radius;
 		float x = vox::NumberUtils::randomFloat(-lim, lim);
 		float y = vox::NumberUtils::randomFloat(-lim, lim);
@@ -102,9 +108,8 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 	}
 
 	spawnTimer.onCompleteFunction = [this](Timeout * _this){
-		if(enemiesLeftInWave > 0) {
+		if(easyEnemiesLeft + hardEnemiesLeft > 0) {
 			spawnEnemy();
-			enemiesLeftInWave--;
 			spawnTimer.restart();
 		}
 	};
@@ -315,7 +320,7 @@ void OJ_Arena::update(Step* _step) {
 		}
 	}
 
-	if(enemies.size() == 0 && enemiesLeftInWave == 0) {
+	if(enemies.size() == 0 && easyEnemiesLeft == 0) {
 		spawnNextWave();
 	}
 
@@ -338,12 +343,28 @@ void OJ_Arena::killEnemy(OJ_Enemy * _enemy){
 
 void OJ_Arena::spawnNextWave() {
 	waveNumber++;
-	enemiesLeftInWave = waveNumber * 10;
+	easyEnemiesLeft = (int)waveNumber * 10 * 1.2f;
+	if(waveNumber % 4 == 0) {
+		hardEnemiesPerRound++;
+	}
+	hardEnemiesLeft = hardEnemiesPerRound;
 	spawnTimer.restart();
+	scene->showWave(waveNumber);
 }
 
 void OJ_Arena::spawnEnemy() {
-	OJ_Enemy * e = new OJ_Enemy(2.f, new OJ_TexturePack("TORSO", "HAND"), world, OJ_Game::BOX2D_CATEGORY::kENEMY, OJ_Game::BOX2D_CATEGORY::kPLAYER | OJ_Game::BOX2D_CATEGORY::kBULLET, 1);
+	OJ_Enemy * e;
+	int isEnemyHard = vox::NumberUtils::randomInt(0, easyEnemiesLeft);
+	if(easyEnemiesLeft > 0 && isEnemyHard < easyEnemiesLeft / 2) {
+		e = getEasyEnemy();
+		easyEnemiesLeft--;
+	}else if(hardEnemiesLeft > 0){
+		e = getHardEnemy();
+		hardEnemiesLeft--;
+	}else {
+		e = getEasyEnemy();
+		easyEnemiesLeft--;
+	}
 	enemies.push_back(e);
 	e->setShader(shader, true);
 	childTransform->addChild(e);
@@ -361,14 +382,26 @@ void OJ_Arena::spawnEnemy() {
 OJ_Arena::~OJ_Arena() {
 }
 
-
-
-OJ_Bullet * OJ_Arena::getBullet(Texture * _tex){
-	OJ_Bullet * b = new OJ_Bullet(200, world, b2_dynamicBody, false, nullptr, _tex, 1, 1, 0, 0, 1.f);
+OJ_Bullet * OJ_Arena::getBullet(Texture * _tex, float _size){
+	OJ_Bullet * b = new OJ_Bullet(200, world, b2_dynamicBody, false, nullptr, _tex, 1, 1, 0, 0, _size);
 	b->setShader(shader, true);
 	childTransform->addChild(b);
 	bullets.push_back(b);
+
+	b2Filter sf;
+	sf.categoryBits = OJ_Game::BOX2D_CATEGORY::kBULLET;
+	sf.maskBits = OJ_Game::BOX2D_CATEGORY::kENEMY;
+	sf.groupIndex = 0;
+	b->createFixture(sf, b2Vec2(0, 0), b, false);
 	return b;
+}
+
+OJ_Enemy * OJ_Arena::getEasyEnemy() {
+	return new OJ_DdosEnemy(world);
+}
+
+OJ_Enemy* OJ_Arena::getHardEnemy() {
+	return new OJ_BotEnemy(world);
 }
 
 void OJ_Arena::removeBullet(OJ_Bullet * _bullet){
@@ -378,7 +411,6 @@ void OJ_Arena::removeBullet(OJ_Bullet * _bullet){
 			break;
 		}
 	}
-
 	childTransform->removeChild(_bullet->parents.at(0));
 	delete _bullet->parents.at(0); // memory leak here
 }

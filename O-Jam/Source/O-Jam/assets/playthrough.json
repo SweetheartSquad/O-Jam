@@ -15,6 +15,34 @@
       "height": 565
     },
     {
+      "id": "DDOS_TORSO",
+      "type": "texture",
+      "src": "torso.png",
+      "width": 565,
+      "height": 565
+    },
+    {
+      "id": "DDOS_HAND",
+      "type": "texture",
+      "src": "hand.png",
+      "width": 565,
+      "height": 565
+    },
+    {
+      "id": "BOT_TORSO",
+      "type": "texture",
+      "src": "bot_torso.png",
+      "width": 906,
+      "height": 823
+    },
+    {
+      "id": "BOT_HAND",
+      "type": "texture",
+      "src": "bot_hand.png",
+      "width": 141,
+      "height": 136
+    },
+    {
       "id": "MOM_TORSO",
       "type": "texture",
       "src": "mom_torso.png",

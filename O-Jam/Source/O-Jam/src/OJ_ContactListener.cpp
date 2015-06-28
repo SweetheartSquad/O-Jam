@@ -125,7 +125,7 @@ void OJ_ContactListener::bulletEnemyContact(b2Contact * _contact, b2Fixture * _b
 	// if bullet is triggered as destroyed or enemy is triggered as dead, don't trigger a proper contact
 	if(!b->destroyed && !e->dead){
 		e->takeDamage(b->damage);
-		b->destroyed = true;
+		b->health -= b->damage;
 	}
 }
 

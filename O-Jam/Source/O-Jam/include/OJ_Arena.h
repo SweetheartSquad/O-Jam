@@ -35,11 +35,17 @@ public:
 
 	void spawnEnemy();
 
-	OJ_Bullet * getBullet(Texture * _tex);
+	OJ_Bullet * getBullet(Texture * _tex, float _size = 1.f);
 	void removeBullet(OJ_Bullet * _bullet);
 
 	Box2DSprite * getHexTile();
 private:
-	int enemiesLeftInWave;
+	int easyEnemiesLeft;
 	Timeout spawnTimer;
+
+	int hardEnemiesLeft; 
+	int hardEnemiesPerRound;
+
+	OJ_Enemy * getEasyEnemy();
+	OJ_Enemy * getHardEnemy();
 };

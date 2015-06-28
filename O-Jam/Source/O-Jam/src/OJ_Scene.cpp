@@ -23,22 +23,33 @@
 #include <OJ_Arena.h>
 #include <Slider.h>
 #include <Step.h>
+#include <NumberUtils.h>
+#include <Timeout.h>
+#include <Resource.h>
+#include <ParticleSystem.h>
 
 OJ_Scene::OJ_Scene(Game * _game) :
 	LayeredScene(_game, 2),
-	joy(new JoystickManager()),
-	mainShader(new ComponentShaderBase(true)),
-	bulletWorld(new BulletWorld()),
 	box2DWorld(new Box2DWorld(b2Vec2(0, 0))),
 	box2DDebugDrawer(nullptr),
+	bulletWorld(new BulletWorld()),
 	cl(new OJ_ContactListener(this)),
-	textShader(new ComponentShaderText(true)),
-	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false)),
 	playerOne(new OJ_Player(3.f, new OJ_TexturePack("MOM_TORSO", "MOM_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -1)),
 	playerTwo(new OJ_Player(1.f, new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -2)),
 	stanceDistanceSq(500),
+	mainShader(new ComponentShaderBase(true)),
+	textShader(new ComponentShaderText(true)),
+	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false)),
+	joy(new JoystickManager()),
 	snapped(false),
-	snapTime(0)
+	snapTime(0),
+	maxCharge(3.f),
+	minCharge(1.5f),
+	specialTimer(0),
+	beamActive(false),
+	guideActive(false),
+	teamworkAngle(0),
+	guidedBullet(nullptr)
 {
 
 	// Initialize and compile the shader 
@@ -52,12 +63,15 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	addChild(arena, 1);
 
 	
+	auto mesh = Resource::loadMeshFromObj("../assets/meshes/background.st2").at(0);
+	mesh->textures.clear();
 	// cheryl box
-	MeshEntity * bg = new MeshEntity(MeshFactory::getCubeMesh(100));
+	MeshEntity * bg = new MeshEntity(mesh);
 	bg->setShader(mainShader,true);
 	bg->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
-	addChild(bg, 0, false);
-
+	addChild(bg, 0);
+	bg->parents.at(0)->scale(30.0f, 30.0f, 30.0f);
+	bg->parents.at(0)->rotate(90.0f, 1, 0, 0, kOBJECT);
 
 	// Add the players to the scene
 	addChild(playerOne, 1);
@@ -85,7 +99,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 
 
 	{Transform * t = new Transform();
-	FollowCamera * gameCam = new FollowCamera(10, glm::vec3(0, 0, 0), 0, 0);
+	gameCam = new FollowCamera(10, glm::vec3(0, 0, 0), 0, 0);
 	t->addChild(gameCam, false);
 	cameras.push_back(gameCam);
 	gameCam->farClip = 1000.f;
@@ -99,6 +113,9 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	gameCam->addTarget(playerOne->rootComponent, 1);
 	gameCam->addTarget(playerTwo->rootComponent, 1);}
 
+	waveText = new TextArea(bulletWorld, this, font, textShader, 400);
+	uiLayer.addChild(waveText);
+	waveText->parents.at(0)->translate(100, 100, 0.f);
 
 #ifdef _DEBUG
 	// Add the fps display
@@ -112,10 +129,27 @@ OJ_Scene::OJ_Scene(Game * _game) :
 
 	slider->parents.at(0)->translate(glm::vec3(150.f, 50.f, 0.f));
 
-	playerOne->speed = 25.f;
+	playerOne->speed = 50.f;
 	playerOne->punchSpeed = 125.f;
 	playerTwo->speed = 25.f;
 	playerTwo->punchSpeed = 125.f;
+
+
+	specialTimer.onCompleteFunction = [this](Timeout * _this){
+		this->snapped = false;
+		this->playerOne->getReady(OJ_Player::Stance::kNONE);
+		this->playerTwo->getReady(OJ_Player::Stance::kNONE);
+		this->separatePlayers(std::min(3.f, this->snapTime));
+		this->beamActive = false;
+		this->guideActive = false;
+
+		if(this->guidedBullet != nullptr){
+			this->gameCam->removeTarget(this->guidedBullet);
+			this->guidedBullet = nullptr;
+		}
+	};
+
+	OJ_ResourceManager::songs["funker"]->play(true);
 }
 
 OJ_Scene::~OJ_Scene() {
@@ -127,6 +161,7 @@ OJ_Scene::~OJ_Scene() {
 }
 
 void OJ_Scene::update(Step* _step) {
+	specialTimer.update(_step);
 	snapTime += _step->deltaTime;
 	if(snapped){
 		glm::vec3 v = snapPos - playerOne->rootComponent->getWorldPos();
@@ -140,6 +175,17 @@ void OJ_Scene::update(Step* _step) {
 		playerTwo->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
 	}
 
+	if(beamActive){
+		OJ_Bullet * beamPart = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
+					
+		beamPart->setTranslationPhysical(snapPos.x + teamworkAngle.x + vox::NumberUtils::randomFloat(-3, 3), snapPos.y + teamworkAngle.y + vox::NumberUtils::randomFloat(-3, 3), 0, false);
+		beamPart->applyLinearImpulseToCenter(teamworkAngle.x*25, teamworkAngle.y*25);
+	}
+
+	if(guideActive){
+		guidedBullet->applyLinearImpulseToCenter(teamworkAngle.x*std::min(maxCharge, snapTime)*10, teamworkAngle.y*std::min(maxCharge, snapTime)*10);
+	}
+
 	joy->update(_step);
 	unsigned int joyCnt = 2;
 	switch(joyCnt){
@@ -151,6 +197,11 @@ void OJ_Scene::update(Step* _step) {
 		default:
 			exit;
 	}
+	
+	glm::vec2 av = (playerOne->aim + playerTwo->aim) * 0.5f;
+	float angle = glm::atan(av.y, av.x);
+	teamworkAngle = glm::vec2(cos(angle), sin(angle));
+
 
 	handleStancing(playerOne, playerTwo);
 
@@ -229,11 +280,11 @@ void OJ_Scene::handlePlayerInput(OJ_Player * _player, Joystick * _joystick){
 
 	// Calculate punches
 	if(_joystick != nullptr){
-		glm::vec2 punchDir = glm::vec2(0);
-		punchDir.x = _joystick->getAxis(Joystick::xbox_axes::kRX);
-		punchDir.y = -_joystick->getAxis(Joystick::xbox_axes::kRY);
-		if(std::abs(punchDir.x) + std::abs(punchDir.y) > 0.5f){
-			_player->punchAngle = glm::atan(punchDir.y, punchDir.x) - glm::half_pi<float>();
+		_player->aim = glm::vec2(0);
+		_player->aim.x = _joystick->getAxis(Joystick::xbox_axes::kRX);
+		_player->aim.y = -_joystick->getAxis(Joystick::xbox_axes::kRY);
+		if(std::abs(_player->aim.x) + std::abs(_player->aim.y) > 0.5f){
+			_player->punchAngle = glm::atan(_player->aim.y, _player->aim.x) - glm::half_pi<float>();
 		}
 		if(_joystick->buttonJustDown(Joystick::xbox_buttons::kR1)){
 			_player->punchR();
@@ -248,7 +299,7 @@ void OJ_Scene::handlePlayerInput(OJ_Player * _player, Joystick * _joystick){
 			}
 		}else if(snapped){
 			if(_joystick->buttonDown(Joystick::xbox_buttons::kB)){
-				_player->getReady(OJ_Player::Stance::kSPIN);
+				_player->getReady(OJ_Player::Stance::kGUIDE);
 			}else if(_joystick->buttonDown(Joystick::xbox_buttons::kY)){
 				_player->getReady(OJ_Player::Stance::kBEAM);
 			}else if(_joystick->buttonDown(Joystick::xbox_buttons::kX)){
@@ -279,54 +330,43 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 			&& _playerOne->stance == _playerTwo->stance
 			&& _playerOne->stance != OJ_Player::Stance::kNONE
 			&& _playerOne->stance != OJ_Player::Stance::kPULL
-			&& snapTime > 1.5f
+			&& snapTime > minCharge
+			&& !beamActive
+			&& !guideActive
 		){
-			snapped = false;
 			_playerOne->enable();
 			_playerTwo->enable();
 			if(_playerTwo->stance == OJ_Player::Stance::kAOE){
 				float r = 2;
-				for(float i = 0; i < 360; i += 30.f / std::min(3.f, snapTime)){
+				for(float i = 0; i < 360; i += 30.f / std::min(maxCharge, snapTime)){
 					glm::vec2 dir(cos(i) * r, sin(i) * r);
 					
 					OJ_Bullet * explosionPart = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
 
-					b2Filter sf;
-					sf.categoryBits = OJ_Game::BOX2D_CATEGORY::kBULLET;
-					sf.maskBits = OJ_Game::BOX2D_CATEGORY::kENEMY;
-					sf.groupIndex = 0;
-					explosionPart->createFixture(sf, b2Vec2(0, 0), explosionPart, false);
-
 					explosionPart->setTranslationPhysical(snapPos.x + dir.x, snapPos.y + dir.y, 0, false);
 					explosionPart->applyLinearImpulseToCenter(dir.x*10, dir.y*10);
+
 				}
+				specialTimer.trigger();
 			}else if(_playerTwo->stance == OJ_Player::Stance::kBEAM){
-				/*float angle = (_playerOne->punchAngle + _playerTwo->punchAngle) * 0.5f;
+				beamActive = true;
+				specialTimer.targetSeconds = std::min(maxCharge, snapTime);
+				specialTimer.restart();
+			}else if(_playerTwo->stance == OJ_Player::Stance::kGUIDE){
+				guideActive = true;
+				specialTimer.targetSeconds = std::min(maxCharge, snapTime);
+				specialTimer.restart();
 
-				glm::vec2 dir(cos(angle), sin(angle));
+				guidedBullet = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture, std::min(maxCharge, snapTime)*3);
+				guidedBullet->life = specialTimer.targetSeconds;
+				guidedBullet->health = 999999999999999999;
 
-				for(float i = 0; i < 360; i += 30.f / std::min(3.f, snapTime)){
-					OJ_Bullet * explosionPart = new OJ_Bullet(100, box2DWorld, b2_dynamicBody, false, nullptr, OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture, 1, 1, 0, 0, 1.f);
-					explosionPart->setShader(mainShader, true);
-					addChild(explosionPart, 1);
-					bullets.push_back(explosionPart);
+				guidedBullet->setTranslationPhysical(snapPos.x + teamworkAngle.x, snapPos.y + teamworkAngle.y, 0, false);
+				guidedBullet->applyLinearImpulseToCenter(teamworkAngle.x*std::min(maxCharge, snapTime)*20, teamworkAngle.y*std::min(maxCharge, snapTime)*20);
 
-					b2Filter sf;
-					sf.categoryBits = OJ_Game::BOX2D_CATEGORY::kBULLET;
-					sf.maskBits = OJ_Game::BOX2D_CATEGORY::kENEMY;
-					sf.groupIndex = 0;
-					explosionPart->createFixture(sf, b2Vec2(0, 0), explosionPart, false);
-
-					explosionPart->setTranslationPhysical(snapPos.x + dir.x, snapPos.y + dir.y, 0, false);
-					explosionPart->applyLinearImpulseToCenter(dir.x*10, dir.y*10);
-				}*/
-			}else if(_playerTwo->stance == OJ_Player::Stance::kSPIN){
-
+				gameCam->addTarget(guidedBullet);
 			}
 			
-			_playerOne->getReady(OJ_Player::Stance::kNONE);
-			_playerTwo->getReady(OJ_Player::Stance::kNONE);
-			separatePlayers(std::min(3.f, snapTime));
 		}
 	}
 
@@ -340,18 +380,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 		}else{
 			// the players were either too far apart or didn't synchronize
 			// punish by pushing them apart
-			_playerOne->disable(0.25f);
-			_playerTwo->disable(0.25f);
-
-			glm::vec3 v = _playerOne->rootComponent->getWorldPos() - _playerTwo->rootComponent->getWorldPos();
-			v = glm::normalize(v);
-			float s = _playerOne->rootComponent->body->GetMass() * 50;
-			_playerOne->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
-
-			v = _playerTwo->rootComponent->getWorldPos() - _playerOne->rootComponent->getWorldPos();
-			v = glm::normalize(v);
-			s = _playerTwo->rootComponent->body->GetMass() * 50;
-			_playerTwo->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
+			separatePlayers(1.f);
 		}
 	}*/
 }
@@ -383,6 +412,10 @@ void OJ_Scene::unload() {
 	}
 
 	Scene::unload();
+}
+
+void OJ_Scene::showWave(int _wave){
+	waveText->setText(L"WAVE " + std::to_wstring(_wave));
 }
 
 /*
