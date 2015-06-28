@@ -97,4 +97,7 @@ private:
 
 	OJ_Bullet * guidedBullet;
 
+
+	TextArea * gameOverMessage;
+	Timeout gameOver;
 };

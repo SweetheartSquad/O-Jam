@@ -54,8 +54,16 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	guidedBullet(nullptr),
 	screenSurfaceShader(new Shader("../assets/RenderSurface", false, true)),
 	screenSurface(new RenderSurface(screenSurfaceShader)),
-	screenFBO(new StandardFrameBuffer(true))
+	screenFBO(new StandardFrameBuffer(true)),
+	gameOver(2),
+	gameOverMessage(nullptr)
 {
+
+	gameOver.onCompleteFunction = [this](Timeout * _this){
+		this->game->switchScene("MENU", true);
+	};
+	gameOver.start();
+
 	screenSurfaceShader->unload();
 	screenSurfaceShader->load();
 	screenSurface->scaleModeMag = GL_NEAREST;
@@ -348,6 +356,20 @@ void OJ_Scene::update(Step* _step) {
 			delete playerTwo->parents.at(0);
 			playerTwo = nullptr;
 		}
+	}
+
+	if(playerOne == nullptr && playerTwo == nullptr){
+		if(gameOverMessage == nullptr){
+			gameOverMessage = new TextArea(bulletWorld, this, font, textShader, 1.f);
+			gameOverMessage->setRationalHeight(1.f);
+			gameOverMessage->horizontalAlignment = kCENTER;
+			gameOverMessage->verticalAlignment = kMIDDLE;
+			gameOverMessage->setText(L"CORRUPTED");
+			uiLayer.addChild(gameOverMessage);
+		}
+		gameOver.update(_step);
+		ShaderComponentHsv * s = dynamic_cast<ShaderComponentHsv *>(dynamic_cast<ComponentShaderBase *>(mainShader)->getComponentAt(1));
+		s->setValue(Easing::easeInOutCubic(gameOver.elapsedSeconds, 1, -1, gameOver.targetSeconds/2.f));
 	}
 }
 
