@@ -307,6 +307,8 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 			&& _playerOne->stance != OJ_Player::Stance::kNONE
 			&& _playerOne->stance != OJ_Player::Stance::kPULL
 			&& snapTime > 1.5f
+			&& !beamActive
+			&& !spinActive
 		){
 			_playerOne->enable();
 			_playerTwo->enable();
