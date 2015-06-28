@@ -62,9 +62,17 @@ void OJ_Player::getReady(Stance _stance){
 }
 
 void OJ_Player::disable(float _seconds){
+	disable();
+	disableTimer.targetSeconds = _seconds;
+	disableTimer.restart();
+}
+
+void OJ_Player::disable(){
 	disabled = true;
 	stance = kNONE;
 	rootComponent->body->SetFixedRotation(false);
-	disableTimer.targetSeconds = _seconds;
-	disableTimer.restart();
+}
+
+void OJ_Player::enable(){
+	disableTimer.trigger();
 }

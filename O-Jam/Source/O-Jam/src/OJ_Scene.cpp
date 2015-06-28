@@ -21,6 +21,7 @@
 #include <Joystick.h>
 #include <OJ_Enemy.h>
 #include <OJ_Arena.h>
+#include <Step.h>
 
 OJ_Scene::OJ_Scene(Game * _game) :
 	LayeredScene(_game, 2),
@@ -36,7 +37,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	playerTwo(new OJ_Player(1.f, new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -2)),
 	stanceDistanceSq(500),
 	snapped(false),
-	snapTimer(2.f)
+	snapTime(0)
 {
 
 	// Initialize and compile the shader 
@@ -117,16 +118,16 @@ OJ_Scene::~OJ_Scene() {
 }
 
 void OJ_Scene::update(Step* _step) {
-	snapTimer.update(_step);
-	if(snapTimer.active){
+	snapTime += _step->deltaTime;
+	if(snapped){
 		glm::vec3 v = snapPos - playerOne->rootComponent->getWorldPos();
 		v = glm::normalize(v);
-		float s = playerOne->rootComponent->body->GetMass() * 10 * snapTimer.elapsedSeconds;
+		float s = playerOne->rootComponent->body->GetMass() * 10 * std::min(snapTime, 10.f);
 		playerOne->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
 
 		v = snapPos - playerTwo->rootComponent->getWorldPos();
 		v = glm::normalize(v);
-		s = playerTwo->rootComponent->body->GetMass() * 10 * snapTimer.elapsedSeconds;
+		s = playerTwo->rootComponent->body->GetMass() * 10 * std::min(snapTime, 10.f);
 		playerTwo->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
 	}
 
@@ -232,54 +233,77 @@ void OJ_Scene::handlePlayerInput(OJ_Player * _player, Joystick * _joystick){
 		}
 
 		// stancing
-		if(_joystick->buttonDown(Joystick::xbox_buttons::kA)){
-			_player->getReady(OJ_Player::Stance::kPULL);
-		}else if(_joystick->buttonDown(Joystick::xbox_buttons::kB)){
-			_player->getReady(OJ_Player::Stance::kSPIN);
-		}else if(_joystick->buttonDown(Joystick::xbox_buttons::kY)){
-			_player->getReady(OJ_Player::Stance::kBEAM);
-		}else if(_joystick->buttonDown(Joystick::xbox_buttons::kX)){
-			_player->getReady(OJ_Player::Stance::kAOE);
-		}else{
-			_player->getReady(OJ_Player::Stance::kNONE);
+		if(_player->stance == OJ_Player::Stance::kNONE && !snapped){
+			if(_joystick->buttonJustDown(Joystick::xbox_buttons::kA)){
+				_player->getReady(OJ_Player::Stance::kPULL);
+			}
+		}else if(snapped){
+			if(_joystick->buttonDown(Joystick::xbox_buttons::kB)){
+				_player->getReady(OJ_Player::Stance::kSPIN);
+			}else if(_joystick->buttonDown(Joystick::xbox_buttons::kY)){
+				_player->getReady(OJ_Player::Stance::kBEAM);
+			}else if(_joystick->buttonDown(Joystick::xbox_buttons::kX)){
+				_player->getReady(OJ_Player::Stance::kAOE);
+			}
 		}
 	}
 }
 
 void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
-	if(_playerOne->stance != OJ_Player::Stance::kNONE && _playerTwo->stance != OJ_Player::Stance::kNONE){
+	// pull
+	if(!snapped){
+		if(_playerOne->stance == OJ_Player::Stance::kPULL || _playerTwo->stance == OJ_Player::Stance::kPULL){
+			snapped = true;
+			_playerOne->disable();
+			_playerTwo->disable();
+			snapPos = (_playerOne->rootComponent->getWorldPos() + _playerTwo->rootComponent->getWorldPos()) * 0.5f;
+		}
+	}
+
+	
+	// special
+	if(snapped){
+		float dist = glm::distance2(_playerOne->rootComponent->getWorldPos(), _playerTwo->rootComponent->getWorldPos());
+		if(
+			dist < stanceDistanceSq
+			&& _playerOne->stance == _playerTwo->stance
+			&& _playerOne->stance != OJ_Player::Stance::kNONE
+			&& _playerOne->stance != OJ_Player::Stance::kAOE){
+			snapped = false;
+			_playerOne->enable();
+			_playerTwo->enable();
+			if(_playerTwo->stance == OJ_Player::Stance::kAOE){
+				float r = 2;
+				for(unsigned long int i = 0; i < 360; i += 10){
+					glm::vec2 dir(cos(i) * r, sin(i) * r);
+					Box2DSprite * explosionPart = new Box2DSprite(box2DWorld, b2_dynamicBody, false, nullptr, OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture, 1, 1, 0, 0, 1.f);
+					explosionPart->setShader(mainShader, true);
+					addChild(explosionPart, 1);
+					bullets.push_back(explosionPart);
+
+					b2Filter sf;
+					sf.categoryBits = OJ_Game::BOX2D_CATEGORY::kBULLET;
+					sf.maskBits = -1;
+					sf.groupIndex = 0;
+					explosionPart->createFixture(sf, b2Vec2(0, 0), explosionPart, false);
+
+					explosionPart->setTranslationPhysical(snapPos.x + dir.x, snapPos.y + dir.y, 0, false);
+					explosionPart->applyLinearImpulseToCenter(dir.x, dir.y);
+				}
+			}else if(_playerTwo->stance == OJ_Player::Stance::kBEAM){
+
+			}else if(_playerTwo->stance == OJ_Player::Stance::kSPIN){
+
+			}
+		}
+	}
+
+	/*if(_playerOne->stance != OJ_Player::Stance::kNONE && _playerTwo->stance != OJ_Player::Stance::kNONE){
 		float dist = glm::distance2(_playerOne->rootComponent->getWorldPos(), _playerTwo->rootComponent->getWorldPos());
 		if(dist < stanceDistanceSq && _playerOne->stance == _playerTwo->stance){
-			// initiate stance
-			if(_playerTwo->stance == OJ_Player::Stance::kPULL){
-				_playerOne->disable(snapTimer.targetSeconds);
-				_playerTwo->disable(snapTimer.targetSeconds);
-				snapTimer.restart();
-				snapPos = (_playerOne->rootComponent->getWorldPos() + _playerTwo->rootComponent->getWorldPos()) * 0.5f;
+			
 			}else if(snapTimer.active){
-				if(_playerTwo->stance == OJ_Player::Stance::kAOE){
-					float r = 2;
-					for(unsigned long int i = 0; i < 360; i += 10){
-						glm::vec2 dir(cos(i) * r, sin(i) * r);
-						Box2DSprite * explosionPart = new Box2DSprite(box2DWorld, b2_dynamicBody, false, nullptr, OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture, 1, 1, 0, 0, 1.f);
-						explosionPart->setShader(mainShader, true);
-						addChild(explosionPart, 1);
-						bullets.push_back(explosionPart);
-
-						b2Filter sf;
-						sf.categoryBits = OJ_Game::BOX2D_CATEGORY::kBULLET;
-						sf.maskBits = -1;
-						sf.groupIndex = 0;
-						explosionPart->createFixture(sf, b2Vec2(0, 0), explosionPart, false);
-
-						explosionPart->setTranslationPhysical(snapPos.x + dir.x, snapPos.y + dir.y, 0, false);
-						explosionPart->applyLinearImpulseToCenter(dir.x, dir.y);
-					}
-				}else if(_playerTwo->stance == OJ_Player::Stance::kBEAM){
-
-				}else if(_playerTwo->stance == OJ_Player::Stance::kSPIN){
-
-				}
+				
 			}
 		}else{
 			// the players were either too far apart or didn't synchronize
@@ -297,7 +321,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 			s = _playerTwo->rootComponent->body->GetMass() * 50;
 			_playerTwo->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
 		}
-	}
+	}*/
 }
 
 void OJ_Scene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOptions) {

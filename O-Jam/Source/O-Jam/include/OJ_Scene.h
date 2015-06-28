@@ -58,7 +58,7 @@ private:
 
 
 	bool snapped;
-	Timeout snapTimer;
+	float snapTime;
 	glm::vec3 snapPos;
 
 
