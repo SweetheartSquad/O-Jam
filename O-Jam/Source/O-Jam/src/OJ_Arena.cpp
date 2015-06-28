@@ -145,35 +145,149 @@ Box2DSprite * OJ_Arena::getHexTile(){
 	sprite->body = world->b2world->CreateBody(&bodyDef);
 	b2Fixture * f = sprite->body->CreateFixture(&fd);
 
+	float height = vox::NumberUtils::randomFloat(5.0f, 10.0f);
+
 	MeshInterface * m = new QuadMesh();
-	//Top-half
-	m->pushVert(Vertex(vs[0].x, vs[0].y, 0.f));
-	m->pushVert(Vertex(vs[1].x, vs[1].y, 0.f));
-	m->pushVert(Vertex(vs[2].x, vs[2].y, 0.f));
-	m->pushVert(Vertex(vs[3].x, vs[3].y, 0.f));
+	// Top face - top-half
+	m->pushVert(Vertex(vs[0].x, vs[0].y, height));
+	m->pushVert(Vertex(vs[1].x, vs[1].y, height));
+	m->pushVert(Vertex(vs[2].x, vs[2].y, height));
+	m->pushVert(Vertex(vs[3].x, vs[3].y, height));
 	m->setNormal(0, 0.0, 0.0, 1.0);
 	m->setNormal(1, 0.0, 0.0, 1.0);
 	m->setNormal(2, 0.0, 0.0, 1.0);
 	m->setNormal(3, 0.0, 0.0, 1.0);
 	m->setUV(0, 1.0, 0.5);
-	m->setUV(1, 0.5 / tan(glm::radians(30.f)), 1.0);
-	m->setUV(2, 1 - (0.5 / tan(glm::radians(30.f))), 1.0);
+	m->setUV(1, 1 - (0.5 / tan(glm::radians(60.f))), 1.0);
+	m->setUV(2, 0.5 / tan(glm::radians(60.f)), 1.0);
 	m->setUV(3, 0.0, 0.5);
 
-	// Bottom-half
-	m->pushVert(Vertex(vs[3].x, vs[3].y, 0.f));
-	m->pushVert(Vertex(vs[4].x, vs[4].y, 0.f));
-	m->pushVert(Vertex(vs[5].x, vs[5].y, 0.f));
-	m->pushVert(Vertex(vs[0].x, vs[0].y, 0.f));
+	// Top face - bottom-half
+	m->pushVert(Vertex(vs[3].x, vs[3].y, height));
+	m->pushVert(Vertex(vs[4].x, vs[4].y, height));
+	m->pushVert(Vertex(vs[5].x, vs[5].y, height));
+	m->pushVert(Vertex(vs[0].x, vs[0].y, height));
 	m->setNormal(4, 0.0, 0.0, 1.0);
 	m->setNormal(5, 0.0, 0.0, 1.0);
 	m->setNormal(6, 0.0, 0.0, 1.0);
 	m->setNormal(7, 0.0, 0.0, 1.0);
 	m->setUV(4, 0.0, 0.5);
-	m->setUV(5, 1 - (0.5 / tan(glm::radians(30.f))), 0.0);
-	m->setUV(6, 0.5 / tan(glm::radians(30.f)), 0.0);
+	m->setUV(5, 0.5 / tan(glm::radians(60.f)), 0.0);
+	m->setUV(6, 1 - (0.5 / tan(glm::radians(60.f))), 0.0);
 	m->setUV(7, 1.0, 0.5);
+	
+	// Bottom face - top-half
+	m->pushVert(Vertex(vs[0].x, vs[0].y, 0.f));
+	m->pushVert(Vertex(vs[1].x, vs[1].y, 0.f));
+	m->pushVert(Vertex(vs[2].x, vs[2].y, 0.f));
+	m->pushVert(Vertex(vs[3].x, vs[3].y, 0.f));
+	m->setNormal(8, 0.0, 0.0, -1.0);
+	m->setNormal(9, 0.0, 0.0, -1.0);
+	m->setNormal(10, 0.0, 0.0, -1.0);
+	m->setNormal(11, 0.0, 0.0, -1.0);
+	m->setUV(8, 1.0, 0.5);
+	m->setUV(9, 1 - (0.5 / tan(glm::radians(60.f))), 1.0);
+	m->setUV(10, 0.5 / tan(glm::radians(60.f)), 1.0);
+	m->setUV(11, 0.0, 0.5);
 
+	// Bottom face - bottom-half
+	m->pushVert(Vertex(vs[3].x, vs[3].y, 0.f));
+	m->pushVert(Vertex(vs[4].x, vs[4].y, 0.f));
+	m->pushVert(Vertex(vs[5].x, vs[5].y, 0.f));
+	m->pushVert(Vertex(vs[0].x, vs[0].y, 0.f));
+	m->setNormal(12, 0.0, 0.0, -1.0);
+	m->setNormal(13, 0.0, 0.0, -1.0);
+	m->setNormal(14, 0.0, 0.0, -1.0);
+	m->setNormal(15, 0.0, 0.0, -1.0);
+	m->setUV(12, 0.0, 0.5);
+	m->setUV(13, 0.5 / tan(glm::radians(60.f)), 0.0);
+	m->setUV(14, 1 - (0.5 / tan(glm::radians(60.f))), 0.0);
+	m->setUV(15, 1.0, 0.5);
+
+	// Side 1
+	m->pushVert(Vertex(vs[0].x, vs[0].y, height));
+	m->pushVert(Vertex(vs[1].x, vs[1].y, height));
+	m->pushVert(Vertex(vs[1].x, vs[1].y, 0.f));
+	m->pushVert(Vertex(vs[0].x, vs[0].y, 0.f));
+	m->setNormal(16, cos(glm::radians(30.f)), sin(glm::radians(30.f)), 0.0);
+	m->setNormal(17, cos(glm::radians(30.f)), sin(glm::radians(30.f)), 0.0);
+	m->setNormal(18, cos(glm::radians(30.f)), sin(glm::radians(30.f)), 0.0);
+	m->setNormal(19, cos(glm::radians(30.f)), sin(glm::radians(30.f)), 0.0);
+	m->setUV(16, 0.0, 1.0);
+	m->setUV(17, 1.0, 1.0);
+	m->setUV(18, 1.0, 0.0);
+	m->setUV(19, 0.0, 0.0);
+
+	// Side 2
+	m->pushVert(Vertex(vs[1].x, vs[1].y, height));
+	m->pushVert(Vertex(vs[2].x, vs[2].y, height));
+	m->pushVert(Vertex(vs[2].x, vs[2].y, 0.f));
+	m->pushVert(Vertex(vs[1].x, vs[1].y, 0.f));
+	m->setNormal(20, 0.0, 1.0, 0.0);
+	m->setNormal(21, 0.0, 1.0, 0.0);
+	m->setNormal(22, 0.0, 1.0, 0.0);
+	m->setNormal(23, 0.0, 1.0, 0.0);
+	m->setUV(20, 0.0, 1.0);
+	m->setUV(21, 1.0, 1.0);
+	m->setUV(22, 1.0, 0.0);
+	m->setUV(23, 0.0, 0.0);
+
+	// Side 3
+	m->pushVert(Vertex(vs[2].x, vs[2].y, height));
+	m->pushVert(Vertex(vs[3].x, vs[3].y, height));
+	m->pushVert(Vertex(vs[3].x, vs[3].y, 0.f));
+	m->pushVert(Vertex(vs[2].x, vs[2].y, 0.f));
+	m->setNormal(24, cos(glm::radians(150.f)), sin(glm::radians(150.f)), 0.0);
+	m->setNormal(25, cos(glm::radians(150.f)), sin(glm::radians(150.f)), 0.0);
+	m->setNormal(26, cos(glm::radians(150.f)), sin(glm::radians(150.f)), 0.0);
+	m->setNormal(27, cos(glm::radians(150.f)), sin(glm::radians(150.f)), 0.0);
+	m->setUV(24, 0.0, 1.0);
+	m->setUV(25, 1.0, 1.0);
+	m->setUV(26, 1.0, 0.0);
+	m->setUV(27, 0.0, 0.0);
+
+	// Side 4
+	m->pushVert(Vertex(vs[3].x, vs[3].y, height));
+	m->pushVert(Vertex(vs[4].x, vs[4].y, height));
+	m->pushVert(Vertex(vs[4].x, vs[4].y, 0.f));
+	m->pushVert(Vertex(vs[3].x, vs[3].y, 0.f));
+	m->setNormal(28, cos(glm::radians(210.f)), sin(glm::radians(210.f)), 0.0);
+	m->setNormal(29, cos(glm::radians(210.f)), sin(glm::radians(210.f)), 0.0);
+	m->setNormal(30, cos(glm::radians(210.f)), sin(glm::radians(210.f)), 0.0);
+	m->setNormal(31, cos(glm::radians(210.f)), sin(glm::radians(210.f)), 0.0);
+	m->setUV(28, 0.0, 1.0);
+	m->setUV(29, 1.0, 1.0);
+	m->setUV(30, 1.0, 0.0);
+	m->setUV(31, 0.0, 0.0);
+
+	// Side 5
+	m->pushVert(Vertex(vs[4].x, vs[4].y, height));
+	m->pushVert(Vertex(vs[5].x, vs[5].y, height));
+	m->pushVert(Vertex(vs[5].x, vs[5].y, 0.f));
+	m->pushVert(Vertex(vs[4].x, vs[4].y, 0.f));
+	m->setNormal(32, 0.0, -1.0, 0.0);
+	m->setNormal(33, 0.0, -1.0, 0.0);
+	m->setNormal(34, 0.0, -1.0, 0.0);
+	m->setNormal(35, 0.0, -1.0, 0.0);
+	m->setUV(32, 0.0, 1.0);
+	m->setUV(33, 1.0, 1.0);
+	m->setUV(34, 1.0, 0.0);
+	m->setUV(35, 0.0, 0.0);
+
+	// Side 6
+	m->pushVert(Vertex(vs[5].x, vs[5].y, height));
+	m->pushVert(Vertex(vs[0].x, vs[0].y, height));
+	m->pushVert(Vertex(vs[0].x, vs[0].y, 0.f));
+	m->pushVert(Vertex(vs[5].x, vs[5].y, 0.f));
+	m->setNormal(36, cos(glm::radians(330.f)), sin(glm::radians(330.f)), 0.0);
+	m->setNormal(37, cos(glm::radians(330.f)), sin(glm::radians(330.f)), 0.0);
+	m->setNormal(38, cos(glm::radians(330.f)), sin(glm::radians(330.f)), 0.0);
+	m->setNormal(39, cos(glm::radians(330.f)), sin(glm::radians(330.f)), 0.0);
+	m->setUV(36, 0.0, 1.0);
+	m->setUV(37, 1.0, 1.0);
+	m->setUV(38, 1.0, 0.0);
+	m->setUV(39, 0.0, 0.0);
+	
 	sprite->childTransform->removeChild(sprite->mesh);
 	delete sprite->mesh;
 	sprite->mesh = m;
