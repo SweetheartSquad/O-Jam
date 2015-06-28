@@ -40,7 +40,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	stanceDistanceSq(500),
 	mainShader(new ComponentShaderBase(true)),
 	textShader(new ComponentShaderText(true)),
-	font(new Font("../assets/fonts/Mathlete-Skinny.otf", 48, false)),
+	font(new Font("../assets/fonts/Asgalt-Regular.ttf", 60, false)),
 	joy(new JoystickManager()),
 	snapped(false),
 	snapTime(0),
@@ -53,7 +53,9 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	guidedBullet(nullptr),
 	screenSurfaceShader(new Shader("../assets/RenderSurface", false, true)),
 	screenSurface(new RenderSurface(screenSurfaceShader)),
-	screenFBO(new StandardFrameBuffer(true))
+	screenFBO(new StandardFrameBuffer(true)),
+	waveTextTimerScaleDown(new Timeout(1.0f)),
+	waveTextTimerScaleUp(new Timeout(1.0f))
 {
 	screenSurfaceShader->unload();
 	screenSurfaceShader->load();
@@ -126,12 +128,12 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	gameCam->addTarget(playerTwo->rootComponent, 1);}
 
 	waveText = new TextArea(bulletWorld, this, font, textShader, 400);
+	waveText->horizontalAlignment = kCENTER;
+	waveText->verticalAlignment = kTOP;
 	waveText->setRationalWidth(1.f);
 	waveText->setRationalHeight(1.f);
-	waveText->horizontalAlignment = kCENTER;
-	waveText->verticalAlignment = kMIDDLE;
+
 	uiLayer.addChild(waveText);
-	waveText->parents.at(0)->translate(100, 100, 0.f);
 
 #ifdef _DEBUG
 	// Add the fps display

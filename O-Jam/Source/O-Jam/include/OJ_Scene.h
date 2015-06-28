@@ -56,6 +56,9 @@ public:
 
 	TextArea * waveText;
 
+	Timeout * waveTextTimerScaleUp;
+	Timeout * waveTextTimerScaleDown;
+
 	OJ_Scene(Game * _game);
 	~OJ_Scene();
 
