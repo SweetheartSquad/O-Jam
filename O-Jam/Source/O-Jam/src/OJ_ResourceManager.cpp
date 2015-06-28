@@ -26,10 +26,6 @@ void OJ_ResourceManager::init(){
 	songs["funker"] = funker;
 	resources.push_back(funker);
 
-	OpenAL_Sound * thingOne = new OpenAL_SoundSimple("../assets/audio/thingOne.wav", false, false);
-	sounds["thingOne"] = thingOne;
-	resources.push_back(thingOne);
-
 	OpenAL_Sound * boof = new OpenAL_SoundSimple("../assets/audio/boof.wav", false, false);
 	sounds["boof"] = boof;
 	resources.push_back(boof);

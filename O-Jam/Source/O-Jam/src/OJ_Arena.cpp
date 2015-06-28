@@ -26,7 +26,7 @@ const float PI = 3.1415926;
 
 OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, float _radius, int _points) :
 	Entity(),
-	spawnTimer(1.0),
+	spawnTimer(0.5f),
 	easyEnemiesLeft(0),
 	world(_world),
 	waveNumber(0),
@@ -331,7 +331,7 @@ void OJ_Arena::killEnemy(OJ_Enemy * _enemy){
 
 void OJ_Arena::spawnNextWave() {
 	waveNumber++;
-	easyEnemiesLeft = (int)waveNumber * 10 * 1.2f;
+	easyEnemiesLeft = (int)waveNumber * 6;
 	if(waveNumber % 4 == 0) {
 		hardEnemiesPerRound++;
 	}

@@ -424,11 +424,11 @@ void OJ_Scene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOpti
 		checkForGlError(0,__FILE__,__LINE__);
 	}
 	if(test2 != -1){
-		glUniform1i(test2, (int)fmod((float)vox::lastTimestamp/100.f, 3.f)+1);
+		glUniform1i(test2, arena->waveNumber % 4+1);
 		checkForGlError(0,__FILE__,__LINE__);
 	}
 	if(test3 != -1){
-		glUniform1f(test3, std::abs(OJ_ResourceManager::songs["funker"]->getAmplitude()*OJ_ResourceManager::songs["funker"]->getAmplitude()*arena->waveNumber*0.5f));
+		glUniform1f(test3, std::abs(OJ_ResourceManager::songs["funker"]->getAmplitude()*OJ_ResourceManager::songs["funker"]->getAmplitude()*std::min(arena->waveNumber, 4)*0.25f));
 		checkForGlError(0,__FILE__,__LINE__);
 	}
 
