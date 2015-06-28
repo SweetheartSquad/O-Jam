@@ -19,7 +19,7 @@ int main(void){
 	_CrtMemState s1;
 	_CrtMemCheckpoint( &s1 );
 #endif
-	//vox::fullscreen = true;
+	vox::fullscreen = true;
 	vox::initialize("DDOS");
 	OJ_ResourceManager::init();
 	OJ_ResourceManager::load();

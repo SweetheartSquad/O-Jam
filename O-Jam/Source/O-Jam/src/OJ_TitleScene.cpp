@@ -38,10 +38,14 @@ OJ_TitleScene::OJ_TitleScene(Game* _game) :
 	mainShader(new ComponentShaderBase(true)),
 	uiLayer(new UILayer(this, 0, 0, 0, 0)),
 	frame(0),
-	joy(new JoystickManager())
+	joy(new JoystickManager()),
+	screenSurfaceShader(new Shader("../assets/RenderSurface", false, true)),
+	screenSurface(new RenderSurface(screenSurfaceShader)),
+	screenFBO(new StandardFrameBuffer(true))
 {
 	mainShader->addComponent(new ShaderComponentTexture(mainShader));
 	mainShader->compileShader();
+	screenSurface->load();
 
 	title = new NodeUI(bulletWorld, this);
 	story = new NodeUI(bulletWorld, this);
@@ -68,6 +72,8 @@ OJ_TitleScene::OJ_TitleScene(Game* _game) :
 
 	story->setVisible(false);
 	instructions->setVisible(false);
+
+	OJ_ResourceManager::songs["funker"]->play(true);
 }
 
 OJ_TitleScene::~OJ_TitleScene() {
@@ -95,6 +101,7 @@ void OJ_TitleScene::update(Step* _step) {
 		instructions->setVisible(false);
 		game->scenes.insert(std::pair<std::string, Scene *>("GAME", new OJ_Scene(game)));
 		game->switchScene("GAME", false);
+		OJ_ResourceManager::songs["funker"]->stop();
 	}
 
 	glm::uvec2 sd = vox::getScreenDimensions();
@@ -103,7 +110,46 @@ void OJ_TitleScene::update(Step* _step) {
 }
 
 void OJ_TitleScene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOptions) {
+	
+	//clear();
+	glUseProgram(screenSurfaceShader->getProgramId());
+	GLint test = glGetUniformLocation(screenSurfaceShader->getProgramId(), "time");
+	checkForGlError(0,__FILE__,__LINE__);
+
+	GLint test2 = glGetUniformLocation(screenSurfaceShader->getProgramId(), "distortionMode");
+	checkForGlError(0,__FILE__,__LINE__);
+
+	GLint test3 = glGetUniformLocation(screenSurfaceShader->getProgramId(), "mult");
+	checkForGlError(0,__FILE__,__LINE__);
+
+	if(test != -1){
+		glUniform1f(test, (float)vox::lastTimestamp);
+		checkForGlError(0,__FILE__,__LINE__);
+	}
+	if(test2 != -1){
+		glUniform1i(test2, 1);
+		checkForGlError(0,__FILE__,__LINE__);
+	}
+	if(test3 != -1){
+		glUniform1f(test3, std::abs(OJ_ResourceManager::songs["funker"]->getAmplitude()*OJ_ResourceManager::songs["funker"]->getAmplitude()*0.8f));
+		checkForGlError(0,__FILE__,__LINE__);
+	}
+
+	float scale = vox::NumberUtils::randomFloat(1.0, 8);
+	game->setViewport(0, 0, game->viewPortWidth * 1 / scale, game->viewPortHeight * 1 / scale);
+	screenFBO->resize(game->viewPortWidth, game->viewPortHeight);
+
+	//Bind frameBuffer
+	screenFBO->bindFrameBuffer();
+	//render the scene to the buffer
 	Scene::render(_matrixStack, _renderOptions);
+	game->setViewport(0, 0, game->viewPortWidth*scale, game->viewPortHeight*scale);
+
+	//Render the buffer to the render surface
+	screenSurface->render(screenFBO->getTextureId());
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	uiLayer->render(_matrixStack, _renderOptions);
 }
 
 void OJ_TitleScene::load() {

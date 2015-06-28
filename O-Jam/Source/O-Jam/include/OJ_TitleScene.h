@@ -31,7 +31,11 @@ class FollowCamera;
 
 class OJ_TitleScene : public Scene {
 public:
+	
 
+	Shader * screenSurfaceShader;
+	RenderSurface * screenSurface;
+	StandardFrameBuffer * screenFBO;
 	int frame;
 
 	BulletWorld * bulletWorld;
