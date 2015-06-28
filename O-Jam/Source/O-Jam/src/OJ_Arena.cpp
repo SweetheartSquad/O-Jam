@@ -9,15 +9,19 @@
 #include <OJ_Scene.h>
 #include <OJ_Enemy.h>
 #include <OJ_Game.h>
+#include <Timeout.h>
 
 const float PI = 3.1415926;
 
 OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, float _radius, int _points) :
 	Entity(),
 	world(_world),
-	waveNumber(0),
+	waveNumber(1),
 	scene(_scene),
-	shader(_shader)
+	shader(_shader),
+	radius(_radius),
+	spawnTimer(1.0),
+	enemiesLeftInWave(0)
 {
 	b2Vec2 * vs = (b2Vec2 *)malloc(sizeof(b2Vec2) * _points);
 	for(unsigned long int i = 0; i < _points; ++i) {
@@ -51,22 +55,26 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 
 		Box2DSprite * sprite = new Box2DSprite(world, b2_staticBody, false, nullptr, texPack.torsoTex);
 
-		sprite->createFixture(b2Filter());
+		b2Filter filter;
 
+		filter.categoryBits = OJ_Game::kBOUNDARY;
+		sprite->createFixture(filter);
 		sprite->setShader(_shader, true);
-		
 		childTransform->addChild(sprite);
-
 		sprite->parents.at(0)->scale(randScale, randScale, 1.0f);
-		
 		float lim = 0.75f * _radius;
-
 		float x = vox::NumberUtils::randomFloat(-lim, lim);
-		
 		float y = vox::NumberUtils::randomFloat(-lim, lim);
-
 		sprite->setTranslationPhysical(x, y, 0.f);
 	}
+
+	spawnTimer.onCompleteFunction = [this](Timeout * _this){
+		if(enemiesLeftInWave > 0) {
+			spawnEnemy();
+			enemiesLeftInWave--;
+			spawnTimer.restart();
+		}
+	};
 }
 
 void OJ_Arena::update(Step* _step) {
@@ -78,9 +86,12 @@ void OJ_Arena::update(Step* _step) {
 		}
 	}
 
-	if(enemies.size() == 0) {
+	if(enemies.size() == 0 && enemiesLeftInWave == 0) {
 		spawnNextWave();
 	}
+
+	spawnTimer.update(_step);
+
 	Entity::update(_step);
 }
 
@@ -97,17 +108,25 @@ void OJ_Arena::killEnemy(OJ_Enemy * _enemy){
 }
 
 void OJ_Arena::spawnNextWave() {
-	for(unsigned long int i = 0; i < 100; ++i){
-		OJ_Enemy * e = new OJ_Enemy(2.f, new OJ_TexturePack("TORSO", "HAND"), world, OJ_Game::BOX2D_CATEGORY::kENEMY, -1, 1);
-		enemies.push_back(e);
-		e->setShader(shader, true);
-		childTransform->addChild(e);
-		e->rootComponent->maxVelocity = b2Vec2(10.0f, 10.0f);
-		e->speed = 10.0f;
+	waveNumber++;
+	enemiesLeftInWave = waveNumber * 10;
+	spawnTimer.restart();
+}
 
-		// This doesn't belong here
-		e->targetCharacter(scene->playerOne);
-	}
+void OJ_Arena::spawnEnemy() {
+	OJ_Enemy * e = new OJ_Enemy(2.f, new OJ_TexturePack("TORSO", "HAND"), world, OJ_Game::BOX2D_CATEGORY::kENEMY, OJ_Game::BOX2D_CATEGORY::kPLAYER | OJ_Game::BOX2D_CATEGORY::kBULLET, 1);
+	enemies.push_back(e);
+	e->setShader(shader, true);
+	childTransform->addChild(e);
+	e->rootComponent->maxVelocity = b2Vec2(10.0f, 10.0f);
+	e->speed = 10.0f;
+
+	float ang = PI * 2.0 / 100.f * vox::NumberUtils::randomInt(1, 99);
+	b2Vec2 pos(cos(ang) * radius * 1.2f, sin(ang) * radius * 1.2f);
+
+	e->translateComponents(pos.x, pos.y, 0.f);
+	// This doesn't belong here
+	e->targetCharacter(scene->playerOne);
 }
 
 OJ_Arena::~OJ_Arena() {

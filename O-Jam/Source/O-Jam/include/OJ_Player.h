@@ -24,8 +24,12 @@ public:
 		kSPIN
 	} stance;
 	void getReady(Stance _stance);
-
+	
+	// disables until enable is called
+	void disable();
+	// disabled until _seconds has elapsed or enable is called
 	void disable(float _seconds);
+	void enable();
 
 private:
 	bool disabled;
