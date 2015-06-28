@@ -17,6 +17,7 @@ class Font;
 class OJ_Enemy;
 class OJ_Arena;
 class OJ_ContactListener;
+class FollowCamera;
 
 class OJ_Scene : public LayeredScene {
 
@@ -44,6 +45,8 @@ public:
 
 	JoystickManager * joy;
 
+	FollowCamera * gameCam;
+
 	OJ_Scene(Game * _game);
 	~OJ_Scene();
 
@@ -61,6 +64,7 @@ private:
 	bool snapped;
 	float snapTime;
 	float maxCharge;
+	float minCharge;
 	glm::vec3 snapPos;
 
 	void separatePlayers(float _multiplier);
@@ -68,5 +72,9 @@ private:
 	Timeout specialTimer;
 
 	bool beamActive;
-	bool spinActive;
+	bool guideActive;
+
+	glm::vec2 teamworkAngle;
+
+	OJ_Bullet * guidedBullet;
 };

@@ -142,8 +142,8 @@ OJ_Arena::~OJ_Arena() {
 
 
 
-OJ_Bullet * OJ_Arena::getBullet(Texture * _tex){
-	OJ_Bullet * b = new OJ_Bullet(200, world, b2_dynamicBody, false, nullptr, _tex, 1, 1, 0, 0, 1.f);
+OJ_Bullet * OJ_Arena::getBullet(Texture * _tex, float _size){
+	OJ_Bullet * b = new OJ_Bullet(200, world, b2_dynamicBody, false, nullptr, _tex, 1, 1, 0, 0, _size);
 	b->setShader(shader, true);
 	childTransform->addChild(b);
 	bullets.push_back(b);

@@ -34,7 +34,7 @@ public:
 
 	void spawnEnemy();
 
-	OJ_Bullet * getBullet(Texture * _tex);
+	OJ_Bullet * getBullet(Texture * _tex, float _size = 1.f);
 	void removeBullet(OJ_Bullet * _bullet);
 private:
 	int enemiesLeftInWave;

@@ -23,7 +23,7 @@ public:
 		kPULL,
 		kAOE,
 		kBEAM,
-		kSPIN
+		kGUIDE
 	} stance;
 	void getReady(Stance _stance);
 	

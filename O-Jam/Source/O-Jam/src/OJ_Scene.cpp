@@ -42,8 +42,11 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	snapTime(0),
 	specialTimer(0),
 	beamActive(false),
-	spinActive(false),
-	maxCharge(3.f)
+	guideActive(false),
+	guidedBullet(nullptr),
+	maxCharge(3.f),
+	minCharge(1.5f),
+	teamworkAngle(0)
 {
 
 	// Initialize and compile the shader 
@@ -90,7 +93,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 
 
 	{Transform * t = new Transform();
-	FollowCamera * gameCam = new FollowCamera(10, glm::vec3(0, 0, 0), 0, 0);
+	gameCam = new FollowCamera(10, glm::vec3(0, 0, 0), 0, 0);
 	t->addChild(gameCam, false);
 	cameras.push_back(gameCam);
 	gameCam->farClip = 1000.f;
@@ -129,7 +132,12 @@ OJ_Scene::OJ_Scene(Game * _game) :
 		this->playerTwo->getReady(OJ_Player::Stance::kNONE);
 		this->separatePlayers(std::min(3.f, this->snapTime));
 		this->beamActive = false;
-		this->spinActive = false;
+		this->guideActive = false;
+
+		if(this->guidedBullet != nullptr){
+			this->gameCam->removeTarget(this->guidedBullet);
+			this->guidedBullet = nullptr;
+		}
 	};
 }
 
@@ -157,14 +165,14 @@ void OJ_Scene::update(Step* _step) {
 	}
 
 	if(beamActive){
-		glm::vec2 av = (playerOne->aim + playerTwo->aim) * 0.5f;
-		float angle = glm::atan(av.y, av.x);
-		glm::vec2 dir(cos(angle), sin(angle));
-
 		OJ_Bullet * beamPart = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
 					
-		beamPart->setTranslationPhysical(snapPos.x + dir.x + vox::NumberUtils::randomFloat(-3, 3), snapPos.y + dir.y + vox::NumberUtils::randomFloat(-3, 3), 0, false);
-		beamPart->applyLinearImpulseToCenter(dir.x*25, dir.y*25);
+		beamPart->setTranslationPhysical(snapPos.x + teamworkAngle.x + vox::NumberUtils::randomFloat(-3, 3), snapPos.y + teamworkAngle.y + vox::NumberUtils::randomFloat(-3, 3), 0, false);
+		beamPart->applyLinearImpulseToCenter(teamworkAngle.x*25, teamworkAngle.y*25);
+	}
+
+	if(guideActive){
+		guidedBullet->applyLinearImpulseToCenter(teamworkAngle.x*std::min(maxCharge, snapTime)*10, teamworkAngle.y*std::min(maxCharge, snapTime)*10);
 	}
 
 	joy->update(_step);
@@ -178,6 +186,11 @@ void OJ_Scene::update(Step* _step) {
 		default:
 			exit;
 	}
+	
+	glm::vec2 av = (playerOne->aim + playerTwo->aim) * 0.5f;
+	float angle = glm::atan(av.y, av.x);
+	teamworkAngle = glm::vec2(cos(angle), sin(angle));
+
 
 	handleStancing(playerOne, playerTwo);
 
@@ -275,7 +288,7 @@ void OJ_Scene::handlePlayerInput(OJ_Player * _player, Joystick * _joystick){
 			}
 		}else if(snapped){
 			if(_joystick->buttonDown(Joystick::xbox_buttons::kB)){
-				_player->getReady(OJ_Player::Stance::kSPIN);
+				_player->getReady(OJ_Player::Stance::kGUIDE);
 			}else if(_joystick->buttonDown(Joystick::xbox_buttons::kY)){
 				_player->getReady(OJ_Player::Stance::kBEAM);
 			}else if(_joystick->buttonDown(Joystick::xbox_buttons::kX)){
@@ -306,9 +319,9 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 			&& _playerOne->stance == _playerTwo->stance
 			&& _playerOne->stance != OJ_Player::Stance::kNONE
 			&& _playerOne->stance != OJ_Player::Stance::kPULL
-			&& snapTime > 1.5f
+			&& snapTime > minCharge
 			&& !beamActive
-			&& !spinActive
+			&& !guideActive
 		){
 			_playerOne->enable();
 			_playerTwo->enable();
@@ -328,10 +341,19 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 				beamActive = true;
 				specialTimer.targetSeconds = std::min(maxCharge, snapTime);
 				specialTimer.restart();
-			}else if(_playerTwo->stance == OJ_Player::Stance::kSPIN){
-				spinActive = true;
+			}else if(_playerTwo->stance == OJ_Player::Stance::kGUIDE){
+				guideActive = true;
 				specialTimer.targetSeconds = std::min(maxCharge, snapTime);
 				specialTimer.restart();
+
+				guidedBullet = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture, std::min(maxCharge, snapTime)*3);
+				guidedBullet->life = specialTimer.targetSeconds;
+				guidedBullet->health = 999999999999999999;
+
+				guidedBullet->setTranslationPhysical(snapPos.x + teamworkAngle.x, snapPos.y + teamworkAngle.y, 0, false);
+				guidedBullet->applyLinearImpulseToCenter(teamworkAngle.x*std::min(maxCharge, snapTime)*20, teamworkAngle.y*std::min(maxCharge, snapTime)*20);
+
+				gameCam->addTarget(guidedBullet);
 			}
 			
 		}
@@ -347,18 +369,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 		}else{
 			// the players were either too far apart or didn't synchronize
 			// punish by pushing them apart
-			_playerOne->disable(0.25f);
-			_playerTwo->disable(0.25f);
-
-			glm::vec3 v = _playerOne->rootComponent->getWorldPos() - _playerTwo->rootComponent->getWorldPos();
-			v = glm::normalize(v);
-			float s = _playerOne->rootComponent->body->GetMass() * 50;
-			_playerOne->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
-
-			v = _playerTwo->rootComponent->getWorldPos() - _playerOne->rootComponent->getWorldPos();
-			v = glm::normalize(v);
-			s = _playerTwo->rootComponent->body->GetMass() * 50;
-			_playerTwo->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
+			separatePlayers(1.f);
 		}
 	}*/
 }
