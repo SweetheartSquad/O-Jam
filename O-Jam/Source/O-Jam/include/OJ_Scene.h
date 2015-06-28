@@ -60,9 +60,13 @@ private:
 
 	bool snapped;
 	float snapTime;
+	float maxCharge;
 	glm::vec3 snapPos;
 
 	void separatePlayers(float _multiplier);
 	//bool stanceCharged;
-	//Timeout stanceChargeTimer;
+	Timeout specialTimer;
+
+	bool beamActive;
+	bool spinActive;
 };

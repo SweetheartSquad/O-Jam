@@ -147,6 +147,12 @@ OJ_Bullet * OJ_Arena::getBullet(Texture * _tex){
 	b->setShader(shader, true);
 	childTransform->addChild(b);
 	bullets.push_back(b);
+
+	b2Filter sf;
+	sf.categoryBits = OJ_Game::BOX2D_CATEGORY::kBULLET;
+	sf.maskBits = OJ_Game::BOX2D_CATEGORY::kENEMY;
+	sf.groupIndex = 0;
+	b->createFixture(sf, b2Vec2(0, 0), b, false);
 	return b;
 }
 

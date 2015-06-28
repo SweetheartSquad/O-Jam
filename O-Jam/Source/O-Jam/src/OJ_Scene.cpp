@@ -23,6 +23,7 @@
 #include <OJ_Arena.h>
 #include <Slider.h>
 #include <Step.h>
+#include <NumberUtils.h>
 
 OJ_Scene::OJ_Scene(Game * _game) :
 	LayeredScene(_game, 2),
@@ -38,7 +39,11 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	playerTwo(new OJ_Player(1.f, new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -2)),
 	stanceDistanceSq(500),
 	snapped(false),
-	snapTime(0)
+	snapTime(0),
+	specialTimer(0),
+	beamActive(false),
+	spinActive(false),
+	maxCharge(3.f)
 {
 
 	// Initialize and compile the shader 
@@ -116,6 +121,16 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	playerOne->punchSpeed = 125.f;
 	playerTwo->speed = 25.f;
 	playerTwo->punchSpeed = 125.f;
+
+
+	specialTimer.onCompleteFunction = [this](Timeout * _this){
+		this->snapped = false;
+		this->playerOne->getReady(OJ_Player::Stance::kNONE);
+		this->playerTwo->getReady(OJ_Player::Stance::kNONE);
+		this->separatePlayers(std::min(3.f, this->snapTime));
+		this->beamActive = false;
+		this->spinActive = false;
+	};
 }
 
 OJ_Scene::~OJ_Scene() {
@@ -127,6 +142,7 @@ OJ_Scene::~OJ_Scene() {
 }
 
 void OJ_Scene::update(Step* _step) {
+	specialTimer.update(_step);
 	snapTime += _step->deltaTime;
 	if(snapped){
 		glm::vec3 v = snapPos - playerOne->rootComponent->getWorldPos();
@@ -138,6 +154,17 @@ void OJ_Scene::update(Step* _step) {
 		v = glm::normalize(v);
 		s = playerTwo->rootComponent->body->GetMass() * 10 * std::min(snapTime, 10.f);
 		playerTwo->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
+	}
+
+	if(beamActive){
+		glm::vec2 av = (playerOne->aim + playerTwo->aim) * 0.5f;
+		float angle = glm::atan(av.y, av.x);
+		glm::vec2 dir(cos(angle), sin(angle));
+
+		OJ_Bullet * beamPart = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
+					
+		beamPart->setTranslationPhysical(snapPos.x + dir.x + vox::NumberUtils::randomFloat(-3, 3), snapPos.y + dir.y + vox::NumberUtils::randomFloat(-3, 3), 0, false);
+		beamPart->applyLinearImpulseToCenter(dir.x*25, dir.y*25);
 	}
 
 	joy->update(_step);
@@ -229,11 +256,11 @@ void OJ_Scene::handlePlayerInput(OJ_Player * _player, Joystick * _joystick){
 
 	// Calculate punches
 	if(_joystick != nullptr){
-		glm::vec2 punchDir = glm::vec2(0);
-		punchDir.x = _joystick->getAxis(Joystick::xbox_axes::kRX);
-		punchDir.y = -_joystick->getAxis(Joystick::xbox_axes::kRY);
-		if(std::abs(punchDir.x) + std::abs(punchDir.y) > 0.5f){
-			_player->punchAngle = glm::atan(punchDir.y, punchDir.x) - glm::half_pi<float>();
+		_player->aim = glm::vec2(0);
+		_player->aim.x = _joystick->getAxis(Joystick::xbox_axes::kRX);
+		_player->aim.y = -_joystick->getAxis(Joystick::xbox_axes::kRY);
+		if(std::abs(_player->aim.x) + std::abs(_player->aim.y) > 0.5f){
+			_player->punchAngle = glm::atan(_player->aim.y, _player->aim.x) - glm::half_pi<float>();
 		}
 		if(_joystick->buttonJustDown(Joystick::xbox_buttons::kR1)){
 			_player->punchR();
@@ -281,52 +308,30 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 			&& _playerOne->stance != OJ_Player::Stance::kPULL
 			&& snapTime > 1.5f
 		){
-			snapped = false;
 			_playerOne->enable();
 			_playerTwo->enable();
 			if(_playerTwo->stance == OJ_Player::Stance::kAOE){
 				float r = 2;
-				for(float i = 0; i < 360; i += 30.f / std::min(3.f, snapTime)){
+				for(float i = 0; i < 360; i += 30.f / std::min(maxCharge, snapTime)){
 					glm::vec2 dir(cos(i) * r, sin(i) * r);
 					
 					OJ_Bullet * explosionPart = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
 
-					b2Filter sf;
-					sf.categoryBits = OJ_Game::BOX2D_CATEGORY::kBULLET;
-					sf.maskBits = OJ_Game::BOX2D_CATEGORY::kENEMY;
-					sf.groupIndex = 0;
-					explosionPart->createFixture(sf, b2Vec2(0, 0), explosionPart, false);
-
 					explosionPart->setTranslationPhysical(snapPos.x + dir.x, snapPos.y + dir.y, 0, false);
 					explosionPart->applyLinearImpulseToCenter(dir.x*10, dir.y*10);
+
 				}
+				specialTimer.trigger();
 			}else if(_playerTwo->stance == OJ_Player::Stance::kBEAM){
-				/*float angle = (_playerOne->punchAngle + _playerTwo->punchAngle) * 0.5f;
-
-				glm::vec2 dir(cos(angle), sin(angle));
-
-				for(float i = 0; i < 360; i += 30.f / std::min(3.f, snapTime)){
-					OJ_Bullet * explosionPart = new OJ_Bullet(100, box2DWorld, b2_dynamicBody, false, nullptr, OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture, 1, 1, 0, 0, 1.f);
-					explosionPart->setShader(mainShader, true);
-					addChild(explosionPart, 1);
-					bullets.push_back(explosionPart);
-
-					b2Filter sf;
-					sf.categoryBits = OJ_Game::BOX2D_CATEGORY::kBULLET;
-					sf.maskBits = OJ_Game::BOX2D_CATEGORY::kENEMY;
-					sf.groupIndex = 0;
-					explosionPart->createFixture(sf, b2Vec2(0, 0), explosionPart, false);
-
-					explosionPart->setTranslationPhysical(snapPos.x + dir.x, snapPos.y + dir.y, 0, false);
-					explosionPart->applyLinearImpulseToCenter(dir.x*10, dir.y*10);
-				}*/
+				beamActive = true;
+				specialTimer.targetSeconds = std::min(maxCharge, snapTime);
+				specialTimer.restart();
 			}else if(_playerTwo->stance == OJ_Player::Stance::kSPIN){
-
+				spinActive = true;
+				specialTimer.targetSeconds = std::min(maxCharge, snapTime);
+				specialTimer.restart();
 			}
 			
-			_playerOne->getReady(OJ_Player::Stance::kNONE);
-			_playerTwo->getReady(OJ_Player::Stance::kNONE);
-			separatePlayers(std::min(3.f, snapTime));
 		}
 	}
 

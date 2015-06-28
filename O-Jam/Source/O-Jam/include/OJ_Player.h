@@ -16,6 +16,8 @@ public:
 	virtual void punchL() override;
 	virtual void punchR() override;
 	
+	glm::vec2 aim;
+
 	enum Stance {
 		kNONE,
 		kPULL,

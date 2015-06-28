@@ -11,7 +11,8 @@ OJ_Player::OJ_Player(float _componentScale, OJ_TexturePack * _texPack, Box2DWorl
 	OJ_Boxer(_componentScale, _texPack, _world, _categoryBits, _maskBits, _groupIndex),
 	stance(kNONE),
 	disabled(false),
-	disableTimer(1)
+	disableTimer(1),
+	aim(0)
 {
 	rootComponent->body->SetFixedRotation(true);
 
