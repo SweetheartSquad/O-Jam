@@ -5,7 +5,7 @@
 #include <OJ_TitleScene.h>
 
 OJ_Game::OJ_Game() :
-	Game(true, std::pair<std::string, Scene *>("test", new OJ_TitleScene(this)), false)
+	Game(true, std::pair<std::string, Scene *>("MENU", new OJ_TitleScene(this)), false)
 {
 }
 

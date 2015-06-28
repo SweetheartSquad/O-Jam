@@ -51,6 +51,8 @@ public:
 
 	Font * font;
 
+	UILayer * uiLayer;
+
 	JoystickManager * joy;
 
 	FollowCamera * gameCam;

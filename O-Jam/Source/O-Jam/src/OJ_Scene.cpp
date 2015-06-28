@@ -31,7 +31,7 @@
 #include <Easing.h>
 
 OJ_Scene::OJ_Scene(Game * _game) :
-	LayeredScene(_game, 2),
+	LayeredScene(_game, 3),
 	box2DWorld(new Box2DWorld(b2Vec2(0, 0))),
 	box2DDebugDrawer(nullptr),
 	bulletWorld(new BulletWorld()),
@@ -39,8 +39,8 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	playerOne(new OJ_Player(3.f, new OJ_TexturePack("MOM_TORSO", "MOM_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -1)),
 	playerTwo(new OJ_Player(1.f, new OJ_TexturePack("SON_TORSO", "SON_HAND"), box2DWorld, OJ_Game::BOX2D_CATEGORY::kPLAYER, -1, -2)),
 	stanceDistanceSq(500),
-	mainShader(new ComponentShaderBase(true)),
-	textShader(new ComponentShaderText(true)),
+	mainShader(new ComponentShaderBase(false)),
+	textShader(new ComponentShaderText(false)),
 	font(new Font("../assets/fonts/Asgalt-Regular.ttf", 60, false)),
 	joy(new JoystickManager()),
 	snapped(false),
@@ -56,7 +56,8 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	screenSurface(new RenderSurface(screenSurfaceShader)),
 	screenFBO(new StandardFrameBuffer(true)),
 	gameOver(2),
-	gameOverMessage(nullptr)
+	gameOverMessage(nullptr),
+	uiLayer(new UILayer(this, 0,0,0,0))
 {
 
 	gameOver.onCompleteFunction = [this](Timeout * _this){
@@ -140,8 +141,8 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	scoreText->setRationalHeight(1.f);
 	scoreText->setMarginBottom(0.05f);
 	
-	uiLayer.addChild(waveText);
-	uiLayer.addChild(scoreText);
+	uiLayer->addChild(waveText);
+	uiLayer->addChild(scoreText);
 
 
 	playerOneHealth = new Slider(bulletWorld, this, 200.f, 20.f, playerOne->health);
@@ -164,7 +165,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	hl->horizontalAlignment = kCENTER;
 	hl->verticalAlignment = kMIDDLE;
 	hl->setMarginTop(0.8f);
-	uiLayer.addChild(hl);
+	uiLayer->addChild(hl);
 	
 	playerOneHealth->parents.at(0)->translate(glm::vec3(0, 50.f, 0.f));
 	playerTwoHealth->parents.at(0)->translate(glm::vec3(0, 50.f, 0.f));
@@ -195,14 +196,21 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	};
 
 	OJ_ResourceManager::songs["DDoS"]->play(true);
+
+	addChild(uiLayer, 2, false);
 }
 
 OJ_Scene::~OJ_Scene() {
-	delete mainShader;
-	delete textShader;
+	deleteChildTransform();
 	delete joy;
 	delete bulletWorld;
 	delete box2DWorld;
+
+	for(auto i : OJ_ResourceManager::songs){
+		i.second->stop();
+	}for(auto i : OJ_ResourceManager::sounds){
+		i.second->stop();
+	}
 }
 
 void OJ_Scene::update(Step* _step) {
@@ -319,8 +327,8 @@ void OJ_Scene::update(Step* _step) {
 	Scene::update(_step);
 
 	glm::uvec2 sd = vox::getScreenDimensions();
-	uiLayer.resize(0, sd.x, 0, sd.y);
-	uiLayer.update(_step);
+	uiLayer->resize(0, sd.x, 0, sd.y);
+	uiLayer->update(_step);
 
 
 	if(playerOne != nullptr){
@@ -356,7 +364,7 @@ void OJ_Scene::update(Step* _step) {
 			gameOverMessage->horizontalAlignment = kCENTER;
 			gameOverMessage->verticalAlignment = kMIDDLE;
 			gameOverMessage->setText(L"CORRUPTED");
-			uiLayer.addChild(gameOverMessage);
+			uiLayer->addChild(gameOverMessage);
 		}
 		gameOver.update(_step);
 		ShaderComponentHsv * s = dynamic_cast<ShaderComponentHsv *>(dynamic_cast<ComponentShaderBase *>(mainShader)->getComponentAt(1));
@@ -539,14 +547,14 @@ void OJ_Scene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOpti
 	screenSurface->render(screenFBO->getTextureId());
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	uiLayer.render(_matrixStack, _renderOptions);
+	uiLayer->render(_matrixStack, _renderOptions);
 }
 
 void OJ_Scene::load() {
 	Scene::load();
 	mainShader->load();
 	textShader->load();
-	uiLayer.load();
+	uiLayer->load();
 	font->load();
 
 	if(box2DDebugDrawer != nullptr){
@@ -558,7 +566,7 @@ void OJ_Scene::unload() {
 	mainShader->unload();
 	textShader->unload();
 	font->unload();
-	uiLayer.unload();
+	uiLayer->unload();
 
 	if(box2DDebugDrawer != nullptr){
 		box2DDebugDrawer->unload();
