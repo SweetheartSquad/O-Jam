@@ -16,6 +16,7 @@ public:
 
 	virtual void playerPlayerContact(b2Contact * _contact);
 	virtual void playerEnemyContact(b2Contact* b2_contact, b2Fixture * _playerFixture, b2Fixture * _enemyFixture);
+	virtual void bulletEnemyContact(b2Contact* b2_contact, b2Fixture * _bulletFixture, b2Fixture * _enemyFixture);
 
 	virtual void EndContact(b2Contact* _contact) override;
   

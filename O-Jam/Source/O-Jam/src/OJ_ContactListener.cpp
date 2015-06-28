@@ -40,6 +40,22 @@ void OJ_ContactListener::BeginContact(b2Contact * _contact){
 			// Player-Enemy collision
 			playerEnemyContact(_contact, playerFixture, otherFixture);
 		}
+	}else{
+		b2Fixture * bulletFixture = nullptr;
+		if((fA.categoryBits & OJ_Game::kBULLET) != 0){
+			bulletFixture = _contact->GetFixtureA();
+			otherFixture = _contact->GetFixtureB();
+		}else if((fB.categoryBits & OJ_Game::kBULLET) != 0){
+			bulletFixture = _contact->GetFixtureB();
+			otherFixture = _contact->GetFixtureA();
+		}
+
+		if(bulletFixture != nullptr){
+			if((fA.categoryBits & OJ_Game::kENEMY) != 0 && (fB.categoryBits & OJ_Game::kENEMY) != 0){
+				// Player-Player collision
+				bulletEnemyContact(_contact, bulletFixture, otherFixture);
+			}
+		}
 	}
 
 	/*
@@ -71,11 +87,11 @@ void OJ_ContactListener::playerPlayerContact(b2Contact * _contact){
 }
 
 void OJ_ContactListener::playerEnemyContact(b2Contact * _contact, b2Fixture * _playerFixture, b2Fixture * _enemyFixture){
-	//std::cout << "Player-Item Collision" << std::endl;
+	//std::cout << "Player-Enemy Collision" << std::endl;
 	OJ_Player * p = static_cast<OJ_Player *>(_playerFixture->GetUserData());
 	OJ_Enemy * e = static_cast<OJ_Enemy *>(_enemyFixture->GetUserData());
 
-	// if an item is triggered as dead, don't trigger a proper contact
+	// if player or enemy is triggered as dead, don't trigger a proper contact
 	if(!p->dead && !e->dead){
 		Box2DSprite * hand = nullptr;
 
@@ -98,6 +114,17 @@ void OJ_ContactListener::playerEnemyContact(b2Contact * _contact, b2Fixture * _p
 			// enemy - body attack!
 			//p->takeDamage(e->damage);
 		}
+	}
+}
+
+void OJ_ContactListener::bulletEnemyContact(b2Contact * _contact, b2Fixture * _bulletFixture, b2Fixture * _enemyFixture){
+	//std::cout << "Bullet-Enemy Collision" << std::endl;
+	OJ_Bullet * b = static_cast<OJ_Bullet *>(_bulletFixture->GetUserData());
+	OJ_Enemy * e = static_cast<OJ_Enemy *>(_enemyFixture->GetUserData());
+
+	// if bullet is triggered as destroyed or enemy is triggered as dead, don't trigger a proper contact
+	if(!b->destroyed && !e->dead){
+		e->takeDamage(b->damage);
 	}
 }
 
