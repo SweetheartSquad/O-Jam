@@ -300,6 +300,19 @@ void OJ_Arena::update(Step* _step) {
 		OJ_Enemy * enemy = enemies.at(i);
 		if (enemy->dead){
 			killEnemy(enemy);
+		}else{
+			float d1 = 999999999999;
+			float d2 = 999999999999;
+			if(scene->playerOne != nullptr){
+				d1 = glm::distance2(scene->playerOne->rootComponent->getWorldPos(), enemy->rootComponent->getWorldPos());
+			}if(scene->playerTwo != nullptr){
+				d2 = glm::distance2(scene->playerTwo->rootComponent->getWorldPos(), enemy->rootComponent->getWorldPos());
+			}
+			if(d1 < d2){
+				enemy->targetCharacter(scene->playerOne);
+			}else{
+				enemy->targetCharacter(scene->playerTwo);
+			}
 		}
 	}
 	// destroy dead bullets
@@ -388,8 +401,6 @@ void OJ_Arena::spawnEnemyAt(OJ_Enemy * e, b2Vec2 _pos) {
 	e->rootComponent->maxVelocity = b2Vec2(10.0f, 10.0f);
 	
 	e->translateComponents(_pos.x, _pos.y, 0.f);
-	// This doesn't belong here
-	e->targetCharacter(scene->playerOne);
 }
 
 OJ_Arena::~OJ_Arena() {

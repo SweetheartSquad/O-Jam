@@ -57,23 +57,6 @@ void OJ_ContactListener::BeginContact(b2Contact * _contact){
 			}
 		}
 	}
-
-	/*
-	// behaviour stuff
-	b2Fixture * behaviourFixture = nullptr;
-
-	if((fA.categoryBits & OJ_Game::kBEHAVIOUR) != 0){
-		behaviourFixture = _contact->GetFixtureA();
-		otherFixture = _contact->GetFixtureB();
-	}else if((fB.categoryBits & OJ_Game::kBEHAVIOUR) != 0){
-		behaviourFixture = _contact->GetFixtureB();
-		otherFixture = _contact->GetFixtureA();
-	}
-
-	if(behaviourFixture != nullptr){
-		static_cast<Behaviour *>(behaviourFixture->GetUserData())->evaluateBeginContact(otherFixture);
-	}
-	*/
 }
 
 void OJ_ContactListener::playerPlayerContact(b2Contact * _contact){
@@ -112,7 +95,7 @@ void OJ_ContactListener::playerEnemyContact(b2Contact * _contact, b2Fixture * _p
 			}
 		}else{
 			// enemy - body attack!
-			//p->takeDamage(e->damage);
+			p->takeDamage(e->damage);
 		}
 	}
 }

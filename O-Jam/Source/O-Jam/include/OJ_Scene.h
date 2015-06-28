@@ -77,7 +77,7 @@ public:
 
 private:
 	void handlePlayerInput(OJ_Player * _player, Joystick * _joystick);
-	void handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo);	
+	void handleStancing();	
 
 
 	bool snapped;

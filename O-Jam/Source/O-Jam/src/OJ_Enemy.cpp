@@ -15,8 +15,10 @@ OJ_Enemy::~OJ_Enemy(){
 
 }
 
-void OJ_Enemy::update(Step * _step) {
-	moveTowards(target->rootComponent->body->GetPosition() + b2Vec2(std::rand()%25 - std::rand()%25, std::rand()%25 - std::rand()%25));
+void OJ_Enemy::update(Step * _step){
+	if(target != nullptr){
+		moveTowards(target->rootComponent->body->GetPosition() + b2Vec2(std::rand()%25 - std::rand()%25, std::rand()%25 - std::rand()%25));
+	}
 	OJ_Character::update(_step);
 }
 

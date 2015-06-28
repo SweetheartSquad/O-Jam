@@ -189,8 +189,6 @@ OJ_Scene::~OJ_Scene() {
 }
 
 void OJ_Scene::update(Step* _step) {
-	playerOneHealth->setValue(playerOne->health);
-	playerTwoHealth->setValue(playerTwo->health);
 
 	if(arena->startIndicatorTimer.active){
 		waveText->parents.at(0)->scale(Easing::easeOutQuint(arena->startIndicatorTimer.elapsedSeconds, 1.5f, -0.5f, arena->startIndicatorTimer.targetSeconds), false);
@@ -232,20 +230,26 @@ void OJ_Scene::update(Step* _step) {
 	unsigned int joyCnt = 2;
 	switch(joyCnt){
 		case 2:
-			handlePlayerInput(playerTwo, joy->joysticks[1]);
+			if(playerTwo != nullptr){
+				handlePlayerInput(playerTwo, joy->joysticks[1]);
+			}
 		case 1:
-			handlePlayerInput(playerOne, joy->joysticks[0]);
+			if(playerOne != nullptr){
+				handlePlayerInput(playerOne, joy->joysticks[0]);
+			}
 			break;
 		default:
 			exit;
 	}
 	
-	glm::vec2 av = (playerOne->aim + playerTwo->aim) * 0.5f;
-	float angle = glm::atan(av.y, av.x);
-	teamworkAngle = glm::vec2(cos(angle), sin(angle));
+	if(playerOne != nullptr && playerTwo != nullptr){
+		glm::vec2 av = (playerOne->aim + playerTwo->aim) * 0.5f;
+		float angle = glm::atan(av.y, av.x);
+		teamworkAngle = glm::vec2(cos(angle), sin(angle));
+	}
 
 
-	handleStancing(playerOne, playerTwo);
+	handleStancing();
 
 	if(keyboard->keyJustUp(GLFW_KEY_2)){
 		if(box2DDebugDrawer != nullptr){
@@ -300,6 +304,33 @@ void OJ_Scene::update(Step* _step) {
 	glm::uvec2 sd = vox::getScreenDimensions();
 	uiLayer.resize(0, sd.x, 0, sd.y);
 	uiLayer.update(_step);
+
+
+	if(playerOne != nullptr){
+		playerOneHealth->setValue(playerOne->health);
+		if(playerOne->dead){
+			gameCam->removeTarget(playerOne->rootComponent);
+			if(playerTwo != nullptr){
+				separatePlayers(1);
+			}
+			removeChild(playerOne->parents.at(0));
+			delete playerOne->parents.at(0);
+			playerOne = nullptr;
+		}
+	}
+	
+	if(playerTwo != nullptr){
+		playerTwoHealth->setValue(playerTwo->health);
+		if(playerTwo->dead){
+			gameCam->removeTarget(playerTwo->rootComponent);
+			if(playerOne != nullptr){
+				separatePlayers(1);
+			}
+			removeChild(playerTwo->parents.at(0));
+			delete playerTwo->parents.at(0);
+			playerTwo = nullptr;
+		}
+	}
 }
 
 void OJ_Scene::handlePlayerInput(OJ_Player * _player, Joystick * _joystick){
@@ -354,36 +385,39 @@ void OJ_Scene::handlePlayerInput(OJ_Player * _player, Joystick * _joystick){
 	}
 }
 
-void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
+void OJ_Scene::handleStancing(){
+	if(playerOne == nullptr || playerTwo == nullptr){
+		return;
+	}
 	// pull
 	if(!snapped){
-		if(_playerOne->stance == OJ_Player::Stance::kPULL || _playerTwo->stance == OJ_Player::Stance::kPULL){
+		if(playerOne->stance == OJ_Player::Stance::kPULL || playerTwo->stance == OJ_Player::Stance::kPULL){
 			snapped = true;
 			OJ_ResourceManager::sounds["charge"]->play(true);
-			_playerOne->disable();
-			_playerTwo->disable();
+			playerOne->disable();
+			playerTwo->disable();
 			snapTime = 0;
-			snapPos = (_playerOne->rootComponent->getWorldPos() + _playerTwo->rootComponent->getWorldPos()) * 0.5f;
+			snapPos = (playerOne->rootComponent->getWorldPos() + playerTwo->rootComponent->getWorldPos()) * 0.5f;
 		}
 	}
 
 	
 	// special
 	if(snapped){
-		float dist = glm::distance2(_playerOne->rootComponent->getWorldPos(), _playerTwo->rootComponent->getWorldPos());
+		float dist = glm::distance2(playerOne->rootComponent->getWorldPos(), playerTwo->rootComponent->getWorldPos());
 		if(
 			dist < stanceDistanceSq
-			&& _playerOne->stance == _playerTwo->stance
-			&& _playerOne->stance != OJ_Player::Stance::kNONE
-			&& _playerOne->stance != OJ_Player::Stance::kPULL
+			&& playerOne->stance == playerTwo->stance
+			&& playerOne->stance != OJ_Player::Stance::kNONE
+			&& playerOne->stance != OJ_Player::Stance::kPULL
 			&& snapTime > minCharge
 			&& !beamActive
 			&& !guideActive
 		){
 			OJ_ResourceManager::sounds["charge"]->stop();
-			_playerOne->enable();
-			_playerTwo->enable();
-			if(_playerTwo->stance == OJ_Player::Stance::kAOE){
+			playerOne->enable();
+			playerTwo->enable();
+			if(playerTwo->stance == OJ_Player::Stance::kAOE){
 				OJ_ResourceManager::sounds["blast"]->play();
 				float r = 2;
 				for(float i = 0; i < 360; i += 30.f / std::min(maxCharge, snapTime)){
@@ -396,12 +430,12 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 
 				}
 				specialTimer.trigger();
-			}else if(_playerTwo->stance == OJ_Player::Stance::kBEAM){
+			}else if(playerTwo->stance == OJ_Player::Stance::kBEAM){
 				OJ_ResourceManager::sounds["pew"]->play(true);
 				beamActive = true;
 				specialTimer.targetSeconds = std::min(maxCharge, snapTime);
 				specialTimer.restart();
-			}else if(_playerTwo->stance == OJ_Player::Stance::kGUIDE){
+			}else if(playerTwo->stance == OJ_Player::Stance::kGUIDE){
 				OJ_ResourceManager::sounds["blast"]->play();
 				guideActive = true;
 				specialTimer.targetSeconds = std::min(maxCharge, snapTime);
@@ -526,6 +560,7 @@ OJ_Enemy * OJ_Scene::findClosestEnemy(OJ_Player * _toPlayer){
 
 
 void OJ_Scene::separatePlayers(float _multiplier){
+	snapped = false;
 	playerOne->disable(0.25f*_multiplier);
 	playerTwo->disable(0.25f*_multiplier);
 
