@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Entity.h>
+#include <Timeout.h>
 
 class Box2DWorld;
 class Shader;
@@ -11,6 +12,7 @@ class OJ_Arena : public Entity{
 public:
 
 	int waveNumber;
+	float radius;
 
 	Box2DWorld * world;
 	Shader * shader;
@@ -26,4 +28,10 @@ public:
 	void killEnemy(OJ_Enemy * _enemy);
 
 	void spawnNextWave();
+
+	void spawnEnemy();
+
+private:
+	int enemiesLeftInWave;
+	Timeout spawnTimer;
 };
