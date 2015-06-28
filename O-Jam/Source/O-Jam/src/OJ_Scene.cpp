@@ -211,7 +211,7 @@ void OJ_Scene::update(Step* _step) {
 	}
 
 	if(beamActive){
-		OJ_Bullet * beamPart = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
+		OJ_Bullet * beamPart = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("BULLET")->texture);
 		beamPart->setTranslationPhysical(snapPos.x + teamworkAngle.x + vox::NumberUtils::randomFloat(-3, 3), snapPos.y + teamworkAngle.y + vox::NumberUtils::randomFloat(-3, 3), 0, false);
 		beamPart->applyLinearImpulseToCenter(teamworkAngle.x*25, teamworkAngle.y*25);
 	}
@@ -381,7 +381,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 				for(float i = 0; i < 360; i += 30.f / std::min(maxCharge, snapTime)){
 					glm::vec2 dir(cos(i) * r, sin(i) * r);
 					
-					OJ_Bullet * explosionPart = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
+					OJ_Bullet * explosionPart = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("BULLET")->texture);
 
 					explosionPart->setTranslationPhysical(snapPos.x + dir.x, snapPos.y + dir.y, 0, false);
 					explosionPart->applyLinearImpulseToCenter(dir.x*10, dir.y*10);
@@ -399,7 +399,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 				specialTimer.targetSeconds = std::min(maxCharge, snapTime);
 				specialTimer.restart();
 
-				guidedBullet = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture, std::min(maxCharge, snapTime)*3);
+				guidedBullet = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("BULLET")->texture, std::min(maxCharge, snapTime)*3);
 				guidedBullet->life = specialTimer.targetSeconds;
 				guidedBullet->health = 999999999999999999;
 
@@ -448,7 +448,7 @@ void OJ_Scene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOpti
 		checkForGlError(0,__FILE__,__LINE__);
 	}
 	if(test3 != -1){
-		glUniform1f(test3, std::abs(OJ_ResourceManager::songs["funker"]->getAmplitude()*OJ_ResourceManager::songs["funker"]->getAmplitude()*std::min(arena->waveNumber, 4)*0.25f));
+		glUniform1f(test3, std::abs(OJ_ResourceManager::songs["funker"]->getAmplitude()*OJ_ResourceManager::songs["funker"]->getAmplitude()*std::min(arena->waveNumber, 4)*2.f));
 		checkForGlError(0,__FILE__,__LINE__);
 	}
 

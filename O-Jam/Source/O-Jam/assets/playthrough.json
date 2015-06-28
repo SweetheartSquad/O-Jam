@@ -50,6 +50,13 @@
       "height": 199
     },
     {
+      "id": "BULLET",
+      "type": "texture",
+      "src": "bullet.png",
+      "width": 199,
+      "height": 199
+    },
+    {
       "id": "MOM_TORSO",
       "type": "texture",
       "src": "mom_torso.png",
