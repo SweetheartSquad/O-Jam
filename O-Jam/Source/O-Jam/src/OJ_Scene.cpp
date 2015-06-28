@@ -5,6 +5,7 @@
 #include <OJ_ContactListener.h>
 #include <shader/ComponentShaderBase.h>
 #include <shader/ShaderComponentTexture.h>
+#include <shader/ShaderComponentHsv.h>
 #include <shader/ComponentShaderText.h>
 #include <Font.h>
 #include <OJ_Player.h>
@@ -62,6 +63,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	screenSurface->configureDefaultVertexAttributes(screenSurfaceShader);
 	// Initialize and compile the shader 
 	mainShader->addComponent(new ShaderComponentTexture(mainShader));
+	mainShader->addComponent(new ShaderComponentHsv(mainShader, 0, 1, 1));
 	mainShader->compileShader();
 
 	// Set the text color to white
@@ -141,18 +143,32 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	
 	uiLayer.addChild(waveText);
 	uiLayer.addChild(scoreText);
-	
+
+
 	playerOneHealth = new Slider(bulletWorld, this, 200.f, 20.f, playerOne->health);
 	playerOneHealth->setValue(playerOne->health);
 	playerOneHealth->fill->setBackgroundColour(-1.f, -1.f, 0);
-	uiLayer.addChild(playerOneHealth);
+	playerOneHealth->setRationalWidth(0.4f);
+	playerOneHealth->setMarginRight(0.1f);
+
 	playerTwoHealth = new Slider(bulletWorld, this, 200.f, 20.f, playerOne->health);
 	playerTwoHealth->setValue(playerTwo->health);
 	playerTwoHealth->fill->setBackgroundColour(-1.f, -1.f, 0);
-	uiLayer.addChild(playerTwoHealth);
+	playerTwoHealth->setRationalWidth(0.4f);
+	playerTwoHealth->setMarginLeft(0.1f);
 	
-	playerOneHealth->parents.at(0)->translate(glm::vec3(150.f, 50.f, 0.f));
-	playerTwoHealth->parents.at(0)->translate(glm::vec3(150.f, 80.f, 0.f));
+	HorizontalLinearLayout * hl = new HorizontalLinearLayout(bulletWorld, this);
+	hl->setRationalWidth(1.f);
+	hl->setRationalHeight(1.f);
+	hl->addChild(playerOneHealth);
+	hl->addChild(playerTwoHealth);
+	hl->horizontalAlignment = kCENTER;
+	hl->verticalAlignment = kMIDDLE;
+	hl->setMarginTop(0.8f);
+	uiLayer.addChild(hl);
+	
+	playerOneHealth->parents.at(0)->translate(glm::vec3(0, 50.f, 0.f));
+	playerTwoHealth->parents.at(0)->translate(glm::vec3(0, 50.f, 0.f));
 
 	playerOne->speed = 75.f;
 	playerOne->punchSpeed = 125.f;
@@ -162,9 +178,11 @@ OJ_Scene::OJ_Scene(Game * _game) :
 
 	specialTimer.onCompleteFunction = [this](Timeout * _this){
 		this->snapped = false;
-		this->playerOne->getReady(OJ_Player::Stance::kNONE);
-		this->playerTwo->getReady(OJ_Player::Stance::kNONE);
-		this->separatePlayers(std::min(3.f, this->snapTime));
+		if(playerOne != nullptr){
+			this->playerOne->getReady(OJ_Player::Stance::kNONE);
+		}if(playerTwo != nullptr){
+			this->playerTwo->getReady(OJ_Player::Stance::kNONE);
+		}this->separatePlayers(std::min(3.f, this->snapTime));
 		this->beamActive = false;
 		this->guideActive = false;
 
@@ -420,25 +438,25 @@ void OJ_Scene::handleStancing(){
 			if(playerTwo->stance == OJ_Player::Stance::kAOE){
 				OJ_ResourceManager::sounds["blast"]->play();
 				float r = 2;
-				for(float i = 0; i < 360; i += 30.f / std::min(maxCharge, snapTime)){
+				for(float i = 0; i < 360; i += 10.f / std::min(maxCharge, snapTime)){
 					glm::vec2 dir(cos(i) * r, sin(i) * r);
 					
 					OJ_Bullet * explosionPart = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("BULLET")->texture);
 
-					explosionPart->setTranslationPhysical(snapPos.x + dir.x, snapPos.y + dir.y, 0, false);
-					explosionPart->applyLinearImpulseToCenter(dir.x*10, dir.y*10);
+					explosionPart->setTranslationPhysical(snapPos.x + dir.x + vox::NumberUtils::randomFloat(-2.5, 2.5), snapPos.y + dir.y + vox::NumberUtils::randomFloat(-2.5, 2.5), 0, false);
+					explosionPart->applyLinearImpulseToCenter(dir.x*10 + vox::NumberUtils::randomFloat(-2.5, 2.5), dir.y*10 + vox::NumberUtils::randomFloat(-2.5, 2.5));
 
 				}
 				specialTimer.trigger();
 			}else if(playerTwo->stance == OJ_Player::Stance::kBEAM){
 				OJ_ResourceManager::sounds["pew"]->play(true);
 				beamActive = true;
-				specialTimer.targetSeconds = std::min(maxCharge, snapTime);
+				specialTimer.targetSeconds = std::min(maxCharge, snapTime)*0.75f;
 				specialTimer.restart();
 			}else if(playerTwo->stance == OJ_Player::Stance::kGUIDE){
 				OJ_ResourceManager::sounds["blast"]->play();
 				guideActive = true;
-				specialTimer.targetSeconds = std::min(maxCharge, snapTime);
+				specialTimer.targetSeconds = std::min(maxCharge, snapTime)*1.25f;
 				specialTimer.restart();
 
 				guidedBullet = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("BULLET")->texture, std::min(maxCharge, snapTime)*3);
@@ -560,6 +578,10 @@ OJ_Enemy * OJ_Scene::findClosestEnemy(OJ_Player * _toPlayer){
 
 
 void OJ_Scene::separatePlayers(float _multiplier){
+	if(playerOne == nullptr || playerTwo == nullptr){
+		return;
+	}
+
 	snapped = false;
 	playerOne->disable(0.25f*_multiplier);
 	playerTwo->disable(0.25f*_multiplier);

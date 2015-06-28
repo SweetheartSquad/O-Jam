@@ -4,6 +4,9 @@
 #include <OJ_ResourceManager.h>
 #include <Box2DSprite.h>
 #include <OJ_Game.h>
+#include <shader\ShaderComponentHsv.h>
+#include <shader\ComponentShaderBase.h>
+#include <Easing.h>
 
 OJ_TexturePack::OJ_TexturePack(std::string _torsoSrc, std::string _handSrc) :
 	torsoTex(OJ_ResourceManager::playthrough->getTexture(_torsoSrc)->texture),
@@ -21,8 +24,8 @@ OJ_Character::OJ_Character(float _damage, float _componentScale, OJ_TexturePack*
 	health(100.f),
 	damage(_damage),
 	dead(false),
-	justTookDamage(false),
-	texPack(_texPack)
+	texPack(_texPack),
+	hitTimer(0.2f)
 {
 	componentScale = _componentScale;
 	torso = new Box2DSprite(world, b2_dynamicBody, false, nullptr, texPack->torsoTex, 1, 1, 0, 0, componentScale);
@@ -53,6 +56,19 @@ void OJ_Character::update(Step * _step){
 	if(health <= 0.0f) {
 		die();
 	}
+	hitTimer.update(_step);
+}
+
+void OJ_Character::render(vox::MatrixStack * _matrixStack, RenderOptions * _renderOptions){
+	ShaderComponentHsv * s = dynamic_cast<ShaderComponentHsv *>(dynamic_cast<ComponentShaderBase *>(shader)->getComponentAt(1));
+	float g = s->getSaturation();
+	float ng = 1;
+	if(hitTimer.active){
+		ng = Easing::easeInCubic(hitTimer.elapsedSeconds, 2, -1, hitTimer.targetSeconds);
+	}
+	s->setSaturation(ng);
+	Box2DSuperSprite::render(_matrixStack, _renderOptions);
+	s->setSaturation(g);
 }
 
 void OJ_Character::move(glm::vec2 _v){
@@ -65,8 +81,7 @@ void OJ_Character::move(glm::vec2 _v){
 
 void OJ_Character::takeDamage(float _damage){
 	health -= _damage;
-
-	//justTookDamage = true;
+	hitTimer.restart();
 }
 
 void OJ_Character::die(){

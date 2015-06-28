@@ -2,6 +2,7 @@
 
 #include <Box2DSuperSprite.h>
 #include <Box2DWorld.h>
+#include <Timeout.h>
 
 class OJ_TexturePack : public Node{
 public:
@@ -14,7 +15,7 @@ public:
 class OJ_Character : public Box2DSuperSprite {
 public:
 	bool dead;
-	bool justTookDamage;
+	Timeout hitTimer;
 
 	float health;
 	float damage;
@@ -27,7 +28,8 @@ public:
 
 	OJ_Character(float _damage, float _componentScale, OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits = -1, int16 _groupIndex = 0);
 	
-	void update(Step * _step) override;
+	virtual void update(Step * _step) override;
+	virtual void render(vox::MatrixStack * _matrixStack, RenderOptions * _renderOptions) override;
 
 	virtual ~OJ_Character();
 

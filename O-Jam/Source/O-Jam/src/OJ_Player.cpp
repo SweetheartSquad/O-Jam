@@ -15,6 +15,7 @@ OJ_Player::OJ_Player(float _componentScale, OJ_TexturePack * _texPack, Box2DWorl
 	disableTimer(1),
 	aim(0)
 {
+	health = 500.f;
 	rootComponent->body->SetFixedRotation(true);
 
 	disableTimer.onCompleteFunction = [this](Timeout * _this){
