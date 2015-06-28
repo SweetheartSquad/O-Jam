@@ -49,7 +49,7 @@ OJ_SceneScoreAttack::OJ_SceneScoreAttack(Game * _game) :
 	screenSurfaceShader(new Shader("../assets/RenderSurface", false, true)),
 	screenSurface(new RenderSurface(screenSurfaceShader)),
 	screenFBO(new StandardFrameBuffer(true)),
-	gameOver(2),
+	gameOver(20),
 	gameOverMessage(nullptr),
 	uiLayer(new UILayer(this, 0,0,0,0))
 {
@@ -290,19 +290,21 @@ void OJ_SceneScoreAttack::update(Step* _step) {
 	glm::uvec2 sd = vox::getScreenDimensions();
 	uiLayer->resize(0, sd.x, 0, sd.y);
 	uiLayer->update(_step);
-
-	if(playerOne == nullptr && playerTwo == nullptr){
+	
+	gameOver.update(_step);
+	if(gameOver.targetSeconds - gameOver.elapsedSeconds < 10){
 		if(gameOverMessage == nullptr){
 			gameOverMessage = new TextArea(bulletWorld, this, font, textShader, 1.f);
 			gameOverMessage->setRationalHeight(1.f);
 			gameOverMessage->horizontalAlignment = kCENTER;
 			gameOverMessage->verticalAlignment = kMIDDLE;
-			gameOverMessage->setText(L"CORRUPTED");
+			gameOverMessage->setText(L"TIME'S UP!");
 			uiLayer->addChild(gameOverMessage);
+			playerOne->disable(10);
+			playerTwo->disable(10);
 		}
-		gameOver.update(_step);
 		ShaderComponentHsv * s = dynamic_cast<ShaderComponentHsv *>(dynamic_cast<ComponentShaderBase *>(mainShader)->getComponentAt(1));
-		s->setValue(Easing::easeInOutCubic(gameOver.elapsedSeconds, 1, -1, gameOver.targetSeconds/2.f));
+		s->setValue(Easing::easeInOutCubic(gameOver.elapsedSeconds - (gameOver.targetSeconds-10), 1, -1, 10.f));
 	}
 }
 

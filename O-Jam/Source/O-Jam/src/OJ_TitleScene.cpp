@@ -63,7 +63,7 @@ OJ_TitleScene::OJ_TitleScene(Game* _game) :
 
 	title->background->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("TITLE")->texture);
 	story->background->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("STORY")->texture);
-	instructions->background->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
+	instructions->background->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("INSTRUCTIONS")->texture);
 
 	uiLayer->addChild(title);
 	uiLayer->addChild(story);
@@ -103,7 +103,7 @@ void OJ_TitleScene::update(Step* _step) {
 		game->scenes.insert(std::pair<std::string, Scene *>("GAME", new OJ_SceneSurvival(game)));
 		game->switchScene("GAME", false);
 		OJ_ResourceManager::songs["funker"]->stop();
-	}else if(frame == STORY && joy->joysticks[0]->buttonJustDown(Joystick::kSTART)) {
+	}else if(frame == STORY && joy->joysticks[0]->buttonJustDown(Joystick::kX)) {
 		frame = TITLE;
 		title->setVisible(true);
 		story->setVisible(false);

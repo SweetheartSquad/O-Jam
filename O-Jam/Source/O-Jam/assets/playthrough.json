@@ -17,7 +17,7 @@
     {
       "id": "INSTRUCTIONS",
       "type": "texture",
-      "src": "story_screen.png",
+      "src": "instructions_screen.png",
       "width": 1920,
       "height": 1080
     },
