@@ -256,6 +256,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 			snapped = true;
 			_playerOne->disable();
 			_playerTwo->disable();
+			snapTime = 0;
 			snapPos = (_playerOne->rootComponent->getWorldPos() + _playerTwo->rootComponent->getWorldPos()) * 0.5f;
 		}
 	}
@@ -268,7 +269,8 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 			dist < stanceDistanceSq
 			&& _playerOne->stance == _playerTwo->stance
 			&& _playerOne->stance != OJ_Player::Stance::kNONE
-			&& _playerOne->stance != OJ_Player::Stance::kAOE){
+			&& _playerOne->stance != OJ_Player::Stance::kPULL
+		){
 			snapped = false;
 			_playerOne->enable();
 			_playerTwo->enable();
@@ -283,7 +285,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 
 					b2Filter sf;
 					sf.categoryBits = OJ_Game::BOX2D_CATEGORY::kBULLET;
-					sf.maskBits = -1;
+					sf.maskBits = OJ_Game::BOX2D_CATEGORY::kENEMY;
 					sf.groupIndex = 0;
 					explosionPart->createFixture(sf, b2Vec2(0, 0), explosionPart, false);
 
@@ -295,6 +297,9 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 			}else if(_playerTwo->stance == OJ_Player::Stance::kSPIN){
 
 			}
+			
+			_playerOne->getReady(OJ_Player::Stance::kNONE);
+			_playerTwo->getReady(OJ_Player::Stance::kNONE);
 		}
 	}
 

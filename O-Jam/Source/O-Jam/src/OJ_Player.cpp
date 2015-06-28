@@ -56,9 +56,7 @@ void OJ_Player::punchL(){
 }
 
 void OJ_Player::getReady(Stance _stance){
-	if(!disabled){
-		stance = _stance;
-	}
+	stance = _stance;
 }
 
 void OJ_Player::disable(float _seconds){
