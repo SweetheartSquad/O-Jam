@@ -15,6 +15,7 @@
 
 #include <OJ_DdosEnemy.h>
 #include <OJ_TrojanEnemy.h>
+#include <OJ_AmoebaEnemy.h>
 #include <OJ_BotEnemy.h>
 #include <OJ_ResourceManager.h>
 #include <ParticleSystem.h>
@@ -40,6 +41,8 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 	trojansLeft(0),
 	botsPerWave(1),
 	trojansPreWave(1),
+	amoebaPerWave(1),
+	amoebasLeft(0),
 	particles(new ParticleSystem(new TextureSampler(OJ_ResourceManager::playthrough->getTexture("TORSO")->texture, 1, 1), _world, -1, -1, 0)),
 	startIndicatorTimer(1.5f),
 	componentMultMutlt(0),
@@ -364,11 +367,15 @@ void OJ_Arena::spawnNextWave() {
 	if(waveNumber % 5 == 0) {
 		trojansPreWave++;
 	}
+	if(waveNumber % 4 == 0) {
+		amoebaPerWave++;
+	}
 
 	trojansLeft = trojansPreWave;
 	botsLeft = botsPerWave;
+	amoebasLeft = amoebaPerWave;
 
-	hardEnemiesLeft = trojansPreWave + botsPerWave;
+	hardEnemiesLeft = trojansPreWave + botsPerWave + amoebaPerWave;
 
 	spawnTimer.restart();
 	scene->showWave(waveNumber);
@@ -428,34 +435,76 @@ OJ_Enemy * OJ_Arena::getEasyEnemy() {
 }
 
 OJ_Enemy* OJ_Arena::getHardEnemy() {
-	if(trojansLeft == 0) {
+	if(botsLeft == 0) {
 		trojansLeft--;
 		float compMult = vox::NumberUtils::randomFloat(1.0f, 2.f + componentMultMutlt);
 		OJ_Enemy * e = new OJ_TrojanEnemy(world, this, compMult);
 		e->speed = 2.5f;
 		return e;
+		if(amoebasLeft != 0) {
+			amoebasLeft--;
+			OJ_Enemy * e = new OJ_AmoebaEnemy(world, this, 1.0f);
+			e->speed = 5.f;
+			return e;
+		}else {
+			trojansLeft--;
+			float compMult = vox::NumberUtils::randomFloat(1.0f, 2.f + componentMultMutlt);
+			OJ_Enemy * e = new OJ_TrojanEnemy(world, this, compMult);
+			e->speed = 2.5f;
+			return e;	
+		}
 	}
-	if(botsLeft == 0) {	
-		botsLeft--;
-		float compMult = vox::NumberUtils::randomFloat(1.0f, 1.5f + componentMultMutlt);
-		OJ_Enemy * e = new OJ_BotEnemy(world, compMult);
-		e->speed = 10.0f;
-		return e;
-	}
-	
-	int i = vox::NumberUtils::randomInt(0, 10);
 
-	if(i >= 5) {
+	if(amoebasLeft == 0) {
+		if(botsLeft != 0) {
+			botsLeft--;
+			float compMult = vox::NumberUtils::randomFloat(1.0f, 1.5f + componentMultMutlt);
+			OJ_Enemy * e = new OJ_BotEnemy(world, compMult);
+			e->speed = 10.0f;
+			return e;
+		}else {
+			trojansLeft--;
+			float compMult = vox::NumberUtils::randomFloat(1.0f, 2.f + componentMultMutlt);
+			OJ_Enemy * e = new OJ_TrojanEnemy(world, this, compMult);
+			e->speed = 2.5f;
+			return e;	
+		}
+	}
+
+	if(trojansLeft == 0) {	
+		if(amoebasLeft != 0) {
+			amoebasLeft--;
+			OJ_Enemy * e = new OJ_AmoebaEnemy(world, this, 1.0f);
+			e->speed = 5.f;
+			return e;
+		}else {
+			botsLeft--;
+			float compMult = vox::NumberUtils::randomFloat(1.0f, 1.5f + componentMultMutlt);
+			OJ_Enemy * e = new OJ_BotEnemy(world, compMult);
+			e->speed = 10.0f;
+			return e;
+		}
+	}
+
+
+	int i = vox::NumberUtils::randomInt(0, 15);
+
+	if(i <= 5) {
 		botsLeft--;
 		float compMult = vox::NumberUtils::randomFloat(1.0f, 2.f + componentMultMutlt);
 		OJ_Enemy * e = new OJ_BotEnemy(world, compMult);
 		e->speed = 10.0f;
 		return e;
-	}else {
+	}else if(i > 5 && i <= 10){
 		trojansLeft--;
 		float compMult = vox::NumberUtils::randomFloat(1.0f, 1.5f + componentMultMutlt);
 		OJ_Enemy * e = new OJ_TrojanEnemy(world, this, compMult);
 		e->speed = 2.5f;
+		return e;
+	}else{
+		amoebasLeft--;
+		OJ_Enemy * e = new OJ_AmoebaEnemy(world, this, 1.0f);
+		e->speed = 5.f;
 		return e;
 	}
 }

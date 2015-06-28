@@ -58,9 +58,11 @@ private:
 
 	int trojansPreWave;
 	int botsPerWave;
+	int amoebaPerWave;
 
 	int trojansLeft;
 	int botsLeft;
+	int amoebasLeft;
 
 	float componentMultMutlt;
 };
