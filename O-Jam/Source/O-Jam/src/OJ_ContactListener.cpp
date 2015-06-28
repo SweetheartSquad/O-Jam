@@ -5,6 +5,7 @@
 #include <OJ_Game.h>
 #include <OJ_Character.h>
 #include <OJ_Enemy.h>
+#include <OJ_Bullet.h>
 #include <Box2dWorld.h>
 #include <Box2DSprite.h>
 #include <Box2DSuperSprite.h>

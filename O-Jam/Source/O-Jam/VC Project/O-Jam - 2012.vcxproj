@@ -24,6 +24,8 @@
     <ClCompile Include="..\src\OJ_Boxer.cpp" />
     <ClCompile Include="..\src\OJ_Character.cpp" />
     <ClCompile Include="..\src\OJ_Scene.cpp" />
+    <ClCompile Include="..\src\OJ_SceneScoreAttack.cpp" />
+    <ClCompile Include="..\src\OJ_SceneSurvival.cpp" />
     <ClCompile Include="..\src\OJ_Player.cpp" />
     <ClCompile Include="..\src\OJ_TitleScene.cpp" />
     <ClCompile Include="..\src\OJ_TrojanEnemy.cpp" />
@@ -46,6 +48,8 @@
     <ClInclude Include="..\include\OJ_Boxer.h" />
     <ClInclude Include="..\include\OJ_Character.h" />
     <ClInclude Include="..\include\OJ_Scene.h" />
+    <ClInclude Include="..\include\OJ_SceneScoreAttack.h" />
+    <ClInclude Include="..\include\OJ_SceneSurvival.h" />
     <ClInclude Include="..\include\OJ_Player.h" />
     <ClInclude Include="..\include\OJ_TitleScene.h" />
     <ClInclude Include="..\include\OJ_TrojanEnemy.h" />

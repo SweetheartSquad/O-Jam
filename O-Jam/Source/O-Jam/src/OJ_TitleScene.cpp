@@ -1,6 +1,7 @@
 #pragma once
 
-#include <OJ_Scene.h>
+#include <OJ_SceneSurvival.h>
+#include <OJ_SceneScoreAttack.h>
 #include <OJ_Game.h>
 #include <OJ_ContactListener.h>
 #include <shader/ComponentShaderBase.h>
@@ -99,7 +100,15 @@ void OJ_TitleScene::update(Step* _step) {
 		title->setVisible(true);
 		story->setVisible(false);
 		instructions->setVisible(false);
-		game->scenes.insert(std::pair<std::string, Scene *>("GAME", new OJ_Scene(game)));
+		game->scenes.insert(std::pair<std::string, Scene *>("GAME", new OJ_SceneSurvival(game)));
+		game->switchScene("GAME", false);
+		OJ_ResourceManager::songs["funker"]->stop();
+	}else if(frame == STORY && joy->joysticks[0]->buttonJustDown(Joystick::kSTART)) {
+		frame = TITLE;
+		title->setVisible(true);
+		story->setVisible(false);
+		instructions->setVisible(false);
+		game->scenes.insert(std::pair<std::string, Scene *>("GAME", new OJ_SceneScoreAttack(game)));
 		game->switchScene("GAME", false);
 		OJ_ResourceManager::songs["funker"]->stop();
 	}
