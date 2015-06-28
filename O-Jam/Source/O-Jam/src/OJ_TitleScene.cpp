@@ -111,6 +111,7 @@ void OJ_TitleScene::update(Step* _step) {
 		frame = TITLE;
 		title->setVisible(true);
 		story->setVisible(false);
+		credits->setVisible(false);
 		instructions->setVisible(false);
 		game->scenes.insert(std::pair<std::string, Scene *>("GAME", new OJ_Scene(game)));
 		game->switchScene("GAME", false);

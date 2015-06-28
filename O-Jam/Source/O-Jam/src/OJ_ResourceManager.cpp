@@ -29,7 +29,6 @@ void OJ_ResourceManager::init(){
 	OpenAL_Sound * DDoS = new OpenAL_SoundSimple("../assets/audio/Directed Denial of Service.wav", false, false);
 	songs["DDoS"] = DDoS;
 	resources.push_back(DDoS);
-	alSourcef(DDoS->source->sourceId, AL_GAIN, 2);
 
 	OpenAL_Sound * boof = new OpenAL_SoundSimple("../assets/audio/boof.wav", false, false);
 	sounds["boof"] = boof;
