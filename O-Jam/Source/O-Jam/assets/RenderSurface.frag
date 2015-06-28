@@ -25,9 +25,9 @@ vec2 distort(vec2 _uv){
 vec4 colour(vec4 _rgba){
 	vec4 res = _rgba;
 	if(distortionMode == 0){
-		res.x = rand1(vec2(_rgba.y, _rgba.z));
+		res.x = Texcoord.x;
 		res.y = rand2(vec2(_rgba.x, _rgba.z));
-		res.z = rand2(vec2(_rgba.x, _rgba.y));
+		res.z = rand2(vec2(Texcoord.y, res.z));
 	}else if(distortionMode == 1){
 		res.x = rand2(vec2(_rgba.y, _rgba.z));
 		res.y = rand2(vec2(_rgba.x, _rgba.z));
