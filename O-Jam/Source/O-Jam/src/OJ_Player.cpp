@@ -48,7 +48,7 @@ void OJ_Player::move(glm::vec2 _v){
 void OJ_Player::punchR(){
 	if(!disabled){
 		OJ_Boxer::punchR();
-		alSourcef(AL_PITCH, OJ_ResourceManager::sounds["boof"]->source->sourceId, vox::NumberUtils::randomFloat(0.25, 5.f));
+		alSourcef(OJ_ResourceManager::sounds["boof"]->source->sourceId, AL_PITCH, vox::NumberUtils::randomFloat(0.25, 5.f));
 		OJ_ResourceManager::sounds["boof"]->play();
 	}
 }
@@ -56,7 +56,7 @@ void OJ_Player::punchR(){
 void OJ_Player::punchL(){
 	if(!disabled){
 		OJ_Boxer::punchL();
-		alSourcef(AL_PITCH, OJ_ResourceManager::sounds["boof2"]->source->sourceId, vox::NumberUtils::randomFloat(0.25, 5.f));
+		alSourcef(OJ_ResourceManager::sounds["boof2"]->source->sourceId, AL_PITCH, vox::NumberUtils::randomFloat(0.25, 5.f));
 		OJ_ResourceManager::sounds["boof2"]->play();
 	}
 }

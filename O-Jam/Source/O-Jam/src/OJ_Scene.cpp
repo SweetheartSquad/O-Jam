@@ -188,7 +188,7 @@ void OJ_Scene::update(Step* _step) {
 
 	if(beamActive){
 		OJ_Bullet * beamPart = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
-		alSourcef(AL_PITCH, OJ_ResourceManager::sounds["pew"]->source->sourceId, vox::NumberUtils::randomFloat(0.5, 2.f));
+		alSourcef(OJ_ResourceManager::sounds["pew"]->source->sourceId, AL_PITCH, vox::NumberUtils::randomFloat(0.5, 2.f));
 		OJ_ResourceManager::sounds["pew"]->play();
 		beamPart->setTranslationPhysical(snapPos.x + teamworkAngle.x + vox::NumberUtils::randomFloat(-3, 3), snapPos.y + teamworkAngle.y + vox::NumberUtils::randomFloat(-3, 3), 0, false);
 		beamPart->applyLinearImpulseToCenter(teamworkAngle.x*25, teamworkAngle.y*25);
@@ -399,6 +399,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 
 void OJ_Scene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOptions) {
 	//clear();
+	glUseProgram(screenSurfaceShader->getProgramId());
 	GLint test = glGetUniformLocation(screenSurfaceShader->getProgramId(), "time");
 	checkForGlError(0,__FILE__,__LINE__);
 
@@ -408,7 +409,6 @@ void OJ_Scene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOpti
 	GLint test3 = glGetUniformLocation(screenSurfaceShader->getProgramId(), "mult");
 	checkForGlError(0,__FILE__,__LINE__);
 
-	//std::cout << "is program: " << glIsProgram(screenSurfaceShader->getProgramId());
 	if(test != -1){
 		glUniform1f(test, (float)vox::lastTimestamp);
 		checkForGlError(0,__FILE__,__LINE__);
@@ -418,7 +418,7 @@ void OJ_Scene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOpti
 		checkForGlError(0,__FILE__,__LINE__);
 	}
 	if(test3 != -1){
-		glUniform1f(test3, std::abs(OJ_ResourceManager::songs["funker"]->getAmplitude())*3);
+		glUniform1f(test3, std::abs(OJ_ResourceManager::songs["funker"]->getAmplitude()*OJ_ResourceManager::songs["funker"]->getAmplitude()));
 		checkForGlError(0,__FILE__,__LINE__);
 	}
 	float scale = vox::NumberUtils::randomFloat(1.0, 7.5);
