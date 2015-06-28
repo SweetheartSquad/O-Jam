@@ -42,6 +42,7 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 	trojansPreWave(1),
 	particles(new ParticleSystem(new TextureSampler(OJ_ResourceManager::playthrough->getTexture("TORSO")->texture, 1, 1), _world, -1, -1, 0)),
 	startIndicatorTimer(1.5f),
+	componentMultMutlt(0),
 	score(0)
 {
 	particles->setShader(shader, true);
@@ -342,6 +343,7 @@ void OJ_Arena::killEnemy(OJ_Enemy * _enemy){
 void OJ_Arena::spawnNextWave() {
 	startIndicatorTimer.restart();
 	waveNumber++;
+	componentMultMutlt += 0.1f * waveNumber; 
 	easyEnemiesLeft = (int)waveNumber * 6;
 	if(waveNumber % 3 == 0) {
 		botsPerWave++;
@@ -409,30 +411,33 @@ OJ_Bullet * OJ_Arena::getBullet(Texture * _tex, float _size){
 }
 
 OJ_Enemy * OJ_Arena::getEasyEnemy() {
-	return new OJ_DdosEnemy(world);
+	float compMult = vox::NumberUtils::randomFloat(1.0f, 2.f + componentMultMutlt);
+	return new OJ_DdosEnemy(world, compMult);
 }
 
 OJ_Enemy* OJ_Arena::getHardEnemy() {
 	if(trojansLeft == 0) {
 		trojansLeft--;
-		return new OJ_BotEnemy(world);
+		float compMult = vox::NumberUtils::randomFloat(1.0f, 2.f + componentMultMutlt);
+		return new OJ_BotEnemy(world, compMult);
 	}
 	if(botsLeft == 0) {	
 		botsLeft--;
-		return new OJ_TrojanEnemy(world, this);
+		float compMult = vox::NumberUtils::randomFloat(1.0f, 1.5f + componentMultMutlt);
+		return new OJ_TrojanEnemy(world, this, compMult);
 	}
 	
 	int i = vox::NumberUtils::randomInt(0, 10);
 
 	if(i >= 5) {
 		botsLeft--;
-		return new OJ_BotEnemy(world);
+		float compMult = vox::NumberUtils::randomFloat(1.0f, 2.f + componentMultMutlt);
+		return new OJ_BotEnemy(world, compMult);
 	}else {
 		trojansLeft--;
-		return new OJ_TrojanEnemy(world, this);
+		float compMult = vox::NumberUtils::randomFloat(1.0f, 1.5f + componentMultMutlt);
+		return new OJ_TrojanEnemy(world, this, compMult);
 	}
-
-	return new OJ_TrojanEnemy(world, this);
 }
 
 void OJ_Arena::removeBullet(OJ_Bullet * _bullet){

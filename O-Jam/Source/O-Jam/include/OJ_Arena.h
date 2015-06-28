@@ -61,4 +61,6 @@ private:
 
 	int trojansLeft;
 	int botsLeft;
+
+	float componentMultMutlt;
 };

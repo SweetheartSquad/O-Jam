@@ -5,6 +5,6 @@
 class OJ_BotEnemy : public OJ_Enemy {
 public:
 
-	OJ_BotEnemy(Box2DWorld * _world);
+	OJ_BotEnemy(Box2DWorld * _world, float _componentmult);
 
 };

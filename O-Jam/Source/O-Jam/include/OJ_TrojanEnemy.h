@@ -10,7 +10,7 @@ public:
 	Timeout * spawnTimer;
 	OJ_Arena * arena;
 
-	OJ_TrojanEnemy(Box2DWorld * _world, OJ_Arena * _arena);
+	OJ_TrojanEnemy(Box2DWorld * _world, OJ_Arena * _arena, float _componentmult);
 	~OJ_TrojanEnemy();
 
 	void update(Step * _step) override;
