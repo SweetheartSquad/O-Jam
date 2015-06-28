@@ -140,7 +140,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 
 	slider->parents.at(0)->translate(glm::vec3(150.f, 50.f, 0.f));
 
-	playerOne->speed = 50.f;
+	playerOne->speed = 75.f;
 	playerOne->punchSpeed = 125.f;
 	playerTwo->speed = 25.f;
 	playerTwo->punchSpeed = 125.f;
@@ -421,6 +421,7 @@ void OJ_Scene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOpti
 		glUniform1f(test3, std::abs(OJ_ResourceManager::songs["funker"]->getAmplitude()*OJ_ResourceManager::songs["funker"]->getAmplitude()));
 		checkForGlError(0,__FILE__,__LINE__);
 	}
+
 	float scale = vox::NumberUtils::randomFloat(1.0, 7.5);
 	game->setViewport(0, 0, game->viewPortWidth * 1 / scale, game->viewPortHeight * 1 / scale);
 	screenFBO->resize(game->viewPortWidth, game->viewPortHeight);
