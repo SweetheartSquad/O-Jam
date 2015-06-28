@@ -61,6 +61,7 @@ private:
 	float snapTime;
 	glm::vec3 snapPos;
 
+	void separatePlayers(float _multiplier);
 
 	std::vector<Box2DSprite *> bullets;
 	//bool stanceCharged;

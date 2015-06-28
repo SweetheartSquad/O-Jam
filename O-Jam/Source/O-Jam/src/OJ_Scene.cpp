@@ -279,13 +279,14 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 			&& _playerOne->stance == _playerTwo->stance
 			&& _playerOne->stance != OJ_Player::Stance::kNONE
 			&& _playerOne->stance != OJ_Player::Stance::kPULL
+			&& snapTime > 1.5f
 		){
 			snapped = false;
 			_playerOne->enable();
 			_playerTwo->enable();
 			if(_playerTwo->stance == OJ_Player::Stance::kAOE){
 				float r = 2;
-				for(unsigned long int i = 0; i < 360; i += 10){
+				for(float i = 0; i < 360; i += 30.f / std::min(3.f, snapTime)){
 					glm::vec2 dir(cos(i) * r, sin(i) * r);
 					Box2DSprite * explosionPart = new Box2DSprite(box2DWorld, b2_dynamicBody, false, nullptr, OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture, 1, 1, 0, 0, 1.f);
 					explosionPart->setShader(mainShader, true);
@@ -299,7 +300,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 					explosionPart->createFixture(sf, b2Vec2(0, 0), explosionPart, false);
 
 					explosionPart->setTranslationPhysical(snapPos.x + dir.x, snapPos.y + dir.y, 0, false);
-					explosionPart->applyLinearImpulseToCenter(dir.x, dir.y);
+					explosionPart->applyLinearImpulseToCenter(dir.x*10, dir.y*10);
 				}
 			}else if(_playerTwo->stance == OJ_Player::Stance::kBEAM){
 
@@ -309,6 +310,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 			
 			_playerOne->getReady(OJ_Player::Stance::kNONE);
 			_playerTwo->getReady(OJ_Player::Stance::kNONE);
+			separatePlayers(std::min(3.f, snapTime));
 		}
 	}
 
@@ -384,3 +386,19 @@ OJ_Enemy * OJ_Scene::findClosestEnemy(OJ_Player * _toPlayer){
 	return res;
 }
 */
+
+
+void OJ_Scene::separatePlayers(float _multiplier){
+	playerOne->disable(0.25f*_multiplier);
+	playerTwo->disable(0.25f*_multiplier);
+
+	glm::vec3 v = playerOne->rootComponent->getWorldPos() - playerTwo->rootComponent->getWorldPos();
+	v = glm::normalize(v);
+	float s = playerOne->rootComponent->body->GetMass() * 50 * _multiplier;
+	playerOne->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
+
+	v = playerTwo->rootComponent->getWorldPos() - playerOne->rootComponent->getWorldPos();
+	v = glm::normalize(v);
+	s = playerTwo->rootComponent->body->GetMass() * 50 * _multiplier;
+	playerTwo->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
+}
