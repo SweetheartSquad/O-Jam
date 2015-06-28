@@ -10,6 +10,7 @@
 #include <TextArea.h>
 #include <RenderSurface.h>
 #include <StandardFrameBuffer.h>
+#include <Slider.h>
 
 class JoystickManager;
 class Joystick;
@@ -56,6 +57,9 @@ public:
 	
 	TextArea * waveText;
 	TextArea * scoreText;
+	
+	Slider * playerOneHealth;
+	Slider * playerTwoHealth;
 
 	Timeout * waveTextTimerScaleUp;
 	Timeout * waveTextTimerScaleDown;
