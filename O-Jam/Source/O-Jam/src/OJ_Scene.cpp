@@ -288,7 +288,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 				float r = 2;
 				for(float i = 0; i < 360; i += 30.f / std::min(3.f, snapTime)){
 					glm::vec2 dir(cos(i) * r, sin(i) * r);
-					Box2DSprite * explosionPart = new Box2DSprite(box2DWorld, b2_dynamicBody, false, nullptr, OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture, 1, 1, 0, 0, 1.f);
+					OJ_Bullet * explosionPart = new OJ_Bullet(100, box2DWorld, b2_dynamicBody, false, nullptr, OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture, 1, 1, 0, 0, 1.f);
 					explosionPart->setShader(mainShader, true);
 					addChild(explosionPart, 1);
 					bullets.push_back(explosionPart);

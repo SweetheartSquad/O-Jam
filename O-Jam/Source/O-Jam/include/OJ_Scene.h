@@ -6,6 +6,7 @@
 #include <Box2DDebugDrawer.h>
 
 #include <OJ_Player.h>
+#include <OJ_Bullet.h>
 
 class JoystickManager;
 class Joystick;
@@ -63,7 +64,7 @@ private:
 
 	void separatePlayers(float _multiplier);
 
-	std::vector<Box2DSprite *> bullets;
+	std::vector<OJ_Bullet *> bullets;
 	//bool stanceCharged;
 	//Timeout stanceChargeTimer;
 };

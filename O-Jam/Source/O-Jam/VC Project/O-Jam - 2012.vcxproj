@@ -17,6 +17,7 @@
     <ClCompile Include="..\src\DialogueSay.cpp" />
     <ClCompile Include="..\src\DialogueText.cpp" />
     <ClCompile Include="..\src\OJ_Arena.cpp" />
+    <ClCompile Include="..\src\OJ_Bullet.cpp" />
     <ClCompile Include="..\src\OJ_ContactListener.cpp" />
     <ClCompile Include="..\src\OJ_Enemy.cpp" />
     <ClCompile Include="..\src\JsonPlaythroughParser.cpp" />
@@ -39,6 +40,7 @@
     <ClInclude Include="..\include\DialogueSay.h" />
     <ClInclude Include="..\include\DialogueText.h" />
     <ClInclude Include="..\include\OJ_Arena.h" />
+    <ClInclude Include="..\include\OJ_Bullet.h" />
     <ClInclude Include="..\include\OJ_ContactListener.h" />
     <ClInclude Include="..\include\OJ_Enemy.h" />
     <ClInclude Include="..\include\JsonPlaythroughParser.h" />
