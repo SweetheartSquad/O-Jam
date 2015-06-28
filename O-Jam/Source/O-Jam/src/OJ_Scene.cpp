@@ -141,13 +141,18 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	
 	uiLayer.addChild(waveText);
 	uiLayer.addChild(scoreText);
-
-	Slider * slider = new Slider(bulletWorld, this, 100.f, 30.f, 100.f);
-	slider->setValue(50.f);
-	slider->fill->setBackgroundColour(0.f, -1.f, -1.f);
-	uiLayer.addChild(slider);
-
-	slider->parents.at(0)->translate(glm::vec3(150.f, 50.f, 0.f));
+	
+	playerOneHealth = new Slider(bulletWorld, this, 200.f, 20.f, playerOne->health);
+	playerOneHealth->setValue(playerOne->health);
+	playerOneHealth->fill->setBackgroundColour(-1.f, -1.f, 0);
+	uiLayer.addChild(playerOneHealth);
+	playerTwoHealth = new Slider(bulletWorld, this, 200.f, 20.f, playerOne->health);
+	playerTwoHealth->setValue(playerTwo->health);
+	playerTwoHealth->fill->setBackgroundColour(-1.f, -1.f, 0);
+	uiLayer.addChild(playerTwoHealth);
+	
+	playerOneHealth->parents.at(0)->translate(glm::vec3(150.f, 50.f, 0.f));
+	playerTwoHealth->parents.at(0)->translate(glm::vec3(150.f, 80.f, 0.f));
 
 	playerOne->speed = 75.f;
 	playerOne->punchSpeed = 125.f;
@@ -184,6 +189,9 @@ OJ_Scene::~OJ_Scene() {
 }
 
 void OJ_Scene::update(Step* _step) {
+	playerOneHealth->setValue(playerOne->health);
+	playerTwoHealth->setValue(playerTwo->health);
+
 	if(arena->startIndicatorTimer.active){
 		waveText->parents.at(0)->scale(Easing::easeOutQuint(arena->startIndicatorTimer.elapsedSeconds, 1.5f, -0.5f, arena->startIndicatorTimer.targetSeconds), false);
 		waveText->setMarginTop(vox::NumberUtils::randomFloat(0.0025f, 0.005f) + Easing::easeOutBounce(arena->startIndicatorTimer.elapsedSeconds, 0.75f, -0.75f, arena->startIndicatorTimer.targetSeconds));
@@ -444,15 +452,15 @@ void OJ_Scene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOpti
 		checkForGlError(0,__FILE__,__LINE__);
 	}
 	if(test2 != -1){
-		glUniform1i(test2, arena->waveNumber % 4+1);
+		glUniform1i(test2, arena->waveNumber % 5+1);
 		checkForGlError(0,__FILE__,__LINE__);
 	}
 	if(test3 != -1){
-		glUniform1f(test3, std::abs(OJ_ResourceManager::songs["funker"]->getAmplitude()*OJ_ResourceManager::songs["funker"]->getAmplitude()*std::min(arena->waveNumber, 4)*2.f));
+		glUniform1f(test3, std::abs(OJ_ResourceManager::songs["DDoS"]->getAmplitude()*OJ_ResourceManager::songs["DDoS"]->getAmplitude()*std::min(arena->waveNumber, 8)*0.1f));
 		checkForGlError(0,__FILE__,__LINE__);
 	}
 
-	float scale = vox::NumberUtils::randomFloat(1.0, 7.5);
+	float scale = vox::NumberUtils::randomFloat(1.0, std::min(arena->waveNumber, 8)*2);
 	game->setViewport(0, 0, game->viewPortWidth * 1 / scale, game->viewPortHeight * 1 / scale);
 	screenFBO->resize(game->viewPortWidth, game->viewPortHeight);
 
