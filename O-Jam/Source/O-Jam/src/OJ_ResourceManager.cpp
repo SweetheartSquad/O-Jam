@@ -37,4 +37,8 @@ void OJ_ResourceManager::init(){
 	OpenAL_Sound * pew = new OpenAL_SoundSimple("../assets/audio/pew.wav", false, false);
 	sounds["pew"] = pew;
 	resources.push_back(pew);
+
+	OpenAL_Sound * charge = new OpenAL_SoundSimple("../assets/audio/charge.wav", false, false);
+	sounds["charge"] = charge;
+	resources.push_back(charge);
 }

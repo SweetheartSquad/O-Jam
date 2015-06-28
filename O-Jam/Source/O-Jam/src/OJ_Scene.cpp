@@ -163,6 +163,9 @@ OJ_Scene::OJ_Scene(Game * _game) :
 		this->beamActive = false;
 		this->guideActive = false;
 
+		OJ_ResourceManager::sounds["charge"]->stop();
+		OJ_ResourceManager::sounds["pew"]->stop();
+
 		if(this->guidedBullet != nullptr){
 			this->gameCam->removeTarget(this->guidedBullet);
 			this->guidedBullet = nullptr;
@@ -209,8 +212,6 @@ void OJ_Scene::update(Step* _step) {
 
 	if(beamActive){
 		OJ_Bullet * beamPart = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
-		alSourcef(OJ_ResourceManager::sounds["pew"]->source->sourceId, AL_PITCH, vox::NumberUtils::randomFloat(0.5, 2.f));
-		OJ_ResourceManager::sounds["pew"]->play();
 		beamPart->setTranslationPhysical(snapPos.x + teamworkAngle.x + vox::NumberUtils::randomFloat(-3, 3), snapPos.y + teamworkAngle.y + vox::NumberUtils::randomFloat(-3, 3), 0, false);
 		beamPart->applyLinearImpulseToCenter(teamworkAngle.x*25, teamworkAngle.y*25);
 	}
@@ -350,6 +351,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 	if(!snapped){
 		if(_playerOne->stance == OJ_Player::Stance::kPULL || _playerTwo->stance == OJ_Player::Stance::kPULL){
 			snapped = true;
+			OJ_ResourceManager::sounds["charge"]->play(true);
 			_playerOne->disable();
 			_playerTwo->disable();
 			snapTime = 0;
@@ -370,6 +372,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 			&& !beamActive
 			&& !guideActive
 		){
+			OJ_ResourceManager::sounds["charge"]->stop();
 			_playerOne->enable();
 			_playerTwo->enable();
 			if(_playerTwo->stance == OJ_Player::Stance::kAOE){
@@ -385,6 +388,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 				}
 				specialTimer.trigger();
 			}else if(_playerTwo->stance == OJ_Player::Stance::kBEAM){
+				OJ_ResourceManager::sounds["pew"]->play(true);
 				beamActive = true;
 				specialTimer.targetSeconds = std::min(maxCharge, snapTime);
 				specialTimer.restart();
