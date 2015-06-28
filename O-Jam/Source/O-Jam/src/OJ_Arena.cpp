@@ -16,6 +16,9 @@
 #include <OJ_DdosEnemy.h>
 #include <OJ_BotEnemy.h>
 #include <OJ_ResourceManager.h>
+#include <ParticleSystem.h>
+#include <Particle.h>
+#include <NumberUtils.h>
 
 const float PI = 3.1415926;
 
@@ -31,8 +34,10 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 	shader(_shader),
 	radius(_radius),
 	hardEnemiesPerRound(1),
-	hardEnemiesLeft(0)
+	hardEnemiesLeft(0),
+	particles(new ParticleSystem(new TextureSampler(OJ_ResourceManager::playthrough->getTexture("TORSO")->texture, 1, 1), _world, -1, -1, 0))
 {
+	particles->setShader(shader, true);
 	b2Vec2 * vs = (b2Vec2 *)malloc(sizeof(b2Vec2) * _points);
 	for(unsigned long int i = 0; i < _points; ++i) {
 		float ang = PI * 2.0 / _points * i;
@@ -90,6 +95,8 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 			spawnTimer.restart();
 		}
 	};
+
+	childTransform->addChild(particles, false);
 }
 
 Box2DSprite * OJ_Arena::getHexTile(){
@@ -310,6 +317,12 @@ void OJ_Arena::killEnemy(OJ_Enemy * _enemy){
 			enemies.erase(enemies.begin() + i);
 			break;
 		}
+	}
+	glm::vec3 pos = _enemy->rootComponent->getWorldPos();
+	for(unsigned long int i = 0; i < 10; ++i){
+		Particle * p = particles->addParticle(pos);
+		p->startSize += vox::NumberUtils::randomFloat(0, 1);
+		p->deltaSize = -p->startSize;
 	}
 
 	childTransform->removeChild(_enemy->parents.at(0));

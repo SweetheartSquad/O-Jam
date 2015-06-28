@@ -10,6 +10,7 @@ class OJ_Bullet;
 class OJ_Scene;
 class Texture;
 class Box2DSprite;
+class ParticleSystem;
 
 class OJ_Arena : public Entity{
 public:
@@ -23,6 +24,7 @@ public:
 	
 	std::vector<OJ_Enemy *> enemies;
 	std::vector<OJ_Bullet *> bullets;
+	ParticleSystem * particles;
 
 	OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, float _radius, int _points);
 	~OJ_Arena();
