@@ -72,9 +72,9 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 	free(vs);
 	
 	// hex tile grid
-	for(unsigned int r = 0; r < _radius; ++r){
+	for(unsigned int r = 2; r < _radius; ++r){
 		// rings
-
+		int count = 0;
 		glm::vec3 pos = glm::vec3(0.f, ARENA_TILE * r, 0.f);
 		// align next tile angle
 		glm::vec3 unit = glm::vec3(cos(glm::radians(210.f)) * ARENA_TILE, sin(glm::radians(210.f)) * ARENA_TILE, 0.f);
@@ -82,7 +82,8 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 		for(unsigned int t = 0; t < r * 6; ++t){
 
 			// decide if obstacle is here
-			if(vox::NumberUtils::randomInt(1, 6) == 1){
+			if(count <= 4 && vox::NumberUtils::randomInt(1, 6) == 1){
+				count++;
 				// place obstacle
 				Box2DSprite * sprite = getHexTile();
 				sprite->setShader(shader, true);

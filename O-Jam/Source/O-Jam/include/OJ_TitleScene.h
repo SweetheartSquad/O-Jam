@@ -17,6 +17,7 @@
 #define TITLE 0
 #define STORY 1
 #define INSTRUCTIONS 2
+#define CREDITS 3
 
 class JoystickManager;
 class Joystick;
@@ -32,7 +33,6 @@ class FollowCamera;
 class OJ_TitleScene : public Scene {
 public:
 	
-
 	Shader * screenSurfaceShader;
 	RenderSurface * screenSurface;
 	StandardFrameBuffer * screenFBO;
@@ -45,6 +45,7 @@ public:
 	NodeUI * title;
 	NodeUI * story;
 	NodeUI * instructions;
+	NodeUI * credits;
 
 	JoystickManager * joy;
 
