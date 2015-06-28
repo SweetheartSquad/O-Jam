@@ -26,6 +26,10 @@ void OJ_ResourceManager::init(){
 	songs["funker"] = funker;
 	resources.push_back(funker);
 
+	OpenAL_Sound * DDoS = new OpenAL_SoundSimple("../assets/audio/Directed Denial of Service.wav", false, false);
+	songs["DDoS"] = DDoS;
+	resources.push_back(DDoS);
+
 	OpenAL_Sound * boof = new OpenAL_SoundSimple("../assets/audio/boof.wav", false, false);
 	sounds["boof"] = boof;
 	resources.push_back(boof);
@@ -37,4 +41,12 @@ void OJ_ResourceManager::init(){
 	OpenAL_Sound * pew = new OpenAL_SoundSimple("../assets/audio/pew.wav", false, false);
 	sounds["pew"] = pew;
 	resources.push_back(pew);
+
+	OpenAL_Sound * charge = new OpenAL_SoundSimple("../assets/audio/charge.wav", false, false);
+	sounds["charge"] = charge;
+	resources.push_back(charge);
+
+	OpenAL_Sound * blast = new OpenAL_SoundSimple("../assets/audio/blast.wav", false, false);
+	sounds["blast"] = blast;
+	resources.push_back(blast);
 }

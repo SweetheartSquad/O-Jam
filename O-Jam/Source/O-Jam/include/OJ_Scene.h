@@ -53,8 +53,9 @@ public:
 	JoystickManager * joy;
 
 	FollowCamera * gameCam;
-
+	
 	TextArea * waveText;
+	TextArea * scoreText;
 
 	Timeout * waveTextTimerScaleUp;
 	Timeout * waveTextTimerScaleDown;

@@ -5,7 +5,8 @@
 
 OJ_Enemy::OJ_Enemy(float _componentScale, OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits, int16 _groupIndex) :
 	OJ_Character(5.f, _componentScale, _texPack, _world, _categoryBits, _maskBits, _groupIndex),
-	target(nullptr)
+	target(nullptr),
+	scoreVal(50.f)
 {
 
 }
