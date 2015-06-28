@@ -39,17 +39,17 @@ JsonPlaythroughParser::JsonPlaythroughParser(std::string _jsonSrc) :
 		Log::error("JSON parse failed: " + reader.getFormattedErrorMessages() + "\n" + jsonLoaded);
 	}else{
 		
-		 Json::Value charactersJson = root["characters"];
+		 /*Json::Value charactersJson = root["characters"];
 		 for(auto i = 0; i < charactersJson.size(); ++i) {
 			Character * c = new Character(charactersJson[i]);
 			characters[c->id] = c;
-		 }
+		 }*/
 
-		 Json::Value conversationsJson = root["conversations"];
+		 /*Json::Value conversationsJson = root["conversations"];
 		 for(auto i = 0; i < conversationsJson.size(); ++i) {
 			 Conversation * c = new Conversation(conversationsJson[i]);
 			 conversations[c->id] = c;
-		 }
+		 }*/
 
 		 Json::Value texturesJson = root["assets"];
 		 for(auto i = 0; i < texturesJson.size(); ++i) {

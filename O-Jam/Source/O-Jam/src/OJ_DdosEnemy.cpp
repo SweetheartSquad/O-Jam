@@ -4,6 +4,6 @@
 #include <OJ_Game.h>
 
 OJ_DdosEnemy::OJ_DdosEnemy(Box2DWorld * _world) : 
-	OJ_Enemy(2.f, new OJ_TexturePack("DDOS_TORSO", "DDOS_HAND"), _world, OJ_Game::BOX2D_CATEGORY::kENEMY, OJ_Game::BOX2D_CATEGORY::kPLAYER | OJ_Game::BOX2D_CATEGORY::kBULLET, 1)
+	OJ_Enemy(2.f, new OJ_TexturePack("DDOS_TORSO", "DDOS_HAND"), _world, OJ_Game::BOX2D_CATEGORY::kENEMY, OJ_Game::BOX2D_CATEGORY::kPLAYER | OJ_Game::BOX2D_CATEGORY::kBULLET | OJ_Game::BOX2D_CATEGORY::kBOUNDARY, 1)
 {
 }

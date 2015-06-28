@@ -69,6 +69,20 @@
       "src": "son_hand.png",
       "width": 142,
       "height": 142
+    },
+    {
+      "id": "test",
+      "type": "texture",
+      "src": "test.png",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "id": "test2",
+      "type": "texture",
+      "src": "test2.png",
+      "width": 1024,
+      "height": 1024
     }
   ],
   "characters": [

@@ -27,6 +27,7 @@
 #include <Timeout.h>
 #include <Resource.h>
 #include <ParticleSystem.h>
+#include <System.h>
 
 OJ_Scene::OJ_Scene(Game * _game) :
 	LayeredScene(_game, 2),
@@ -49,9 +50,16 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	beamActive(false),
 	guideActive(false),
 	teamworkAngle(0),
-	guidedBullet(nullptr)
+	guidedBullet(nullptr),
+	screenSurfaceShader(new Shader("../assets/RenderSurface", false, true)),
+	screenSurface(new RenderSurface(screenSurfaceShader)),
+	screenFBO(new StandardFrameBuffer(true))
 {
-
+	screenSurfaceShader->unload();
+	screenSurfaceShader->load();
+	screenSurface->scaleModeMag = GL_NEAREST;
+	screenSurface->load();
+	screenSurface->configureDefaultVertexAttributes(screenSurfaceShader);
 	// Initialize and compile the shader 
 	mainShader->addComponent(new ShaderComponentTexture(mainShader));
 	mainShader->compileShader();
@@ -59,11 +67,15 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	// Set the text color to white
 	textShader->setColor(1.0f, 1.0f, 1.0f);
 	
-	arena = new OJ_Arena(this, box2DWorld, mainShader, 50, 12);
+	arena = new OJ_Arena(this, box2DWorld, mainShader, 6, 6);
 	addChild(arena, 1);
 
-	
-	auto mesh = Resource::loadMeshFromObj("../assets/meshes/background.st2").at(0);
+	MeshEntity * m = new MeshEntity(Resource::loadMeshFromObj("../assets/meshes/hexArena.obj").at(0));
+	addChild(m, 0);
+	m->parents.at(0)->scale(arena->radius * 10.f);
+	m->setShader(mainShader, true);
+	m->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("test")->texture);
+	/*auto mesh = Resource::loadMeshFromObj("../assets/meshes/background.st2").at(0);
 	mesh->textures.clear();
 	// cheryl box
 	MeshEntity * bg = new MeshEntity(mesh);
@@ -71,7 +83,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	bg->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
 	addChild(bg, 0);
 	bg->parents.at(0)->scale(30.0f, 30.0f, 30.0f);
-	bg->parents.at(0)->rotate(90.0f, 1, 0, 0, kOBJECT);
+	bg->parents.at(0)->rotate(90.0f, 1, 0, 0, kOBJECT);*/
 
 	// Add the players to the scene
 	addChild(playerOne, 1);
@@ -114,6 +126,10 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	gameCam->addTarget(playerTwo->rootComponent, 1);}
 
 	waveText = new TextArea(bulletWorld, this, font, textShader, 400);
+	waveText->setRationalWidth(1.f);
+	waveText->setRationalHeight(1.f);
+	waveText->horizontalAlignment = kCENTER;
+	waveText->verticalAlignment = kMIDDLE;
 	uiLayer.addChild(waveText);
 	waveText->parents.at(0)->translate(100, 100, 0.f);
 
@@ -129,7 +145,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 
 	slider->parents.at(0)->translate(glm::vec3(150.f, 50.f, 0.f));
 
-	playerOne->speed = 50.f;
+	playerOne->speed = 75.f;
 	playerOne->punchSpeed = 125.f;
 	playerTwo->speed = 25.f;
 	playerTwo->punchSpeed = 125.f;
@@ -177,7 +193,8 @@ void OJ_Scene::update(Step* _step) {
 
 	if(beamActive){
 		OJ_Bullet * beamPart = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
-					
+		alSourcef(OJ_ResourceManager::sounds["pew"]->source->sourceId, AL_PITCH, vox::NumberUtils::randomFloat(0.5, 2.f));
+		OJ_ResourceManager::sounds["pew"]->play();
 		beamPart->setTranslationPhysical(snapPos.x + teamworkAngle.x + vox::NumberUtils::randomFloat(-3, 3), snapPos.y + teamworkAngle.y + vox::NumberUtils::randomFloat(-3, 3), 0, false);
 		beamPart->applyLinearImpulseToCenter(teamworkAngle.x*25, teamworkAngle.y*25);
 	}
@@ -254,6 +271,9 @@ void OJ_Scene::update(Step* _step) {
 	box2DWorld->update(_step);
 
 	Scene::update(_step);
+
+	glm::uvec2 sd = vox::getScreenDimensions();
+	uiLayer.resize(0, sd.x, 0, sd.y);
 	uiLayer.update(_step);
 }
 
@@ -386,7 +406,45 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 }
 
 void OJ_Scene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOptions) {
+	//clear();
+	glUseProgram(screenSurfaceShader->getProgramId());
+	GLint test = glGetUniformLocation(screenSurfaceShader->getProgramId(), "time");
+	checkForGlError(0,__FILE__,__LINE__);
+
+	GLint test2 = glGetUniformLocation(screenSurfaceShader->getProgramId(), "distortionMode");
+	checkForGlError(0,__FILE__,__LINE__);
+
+	GLint test3 = glGetUniformLocation(screenSurfaceShader->getProgramId(), "mult");
+	checkForGlError(0,__FILE__,__LINE__);
+
+	if(test != -1){
+		glUniform1f(test, (float)vox::lastTimestamp);
+		checkForGlError(0,__FILE__,__LINE__);
+	}
+	if(test2 != -1){
+		glUniform1i(test2, (int)fmod((float)vox::lastTimestamp/100.f, 3.f)+1);
+		checkForGlError(0,__FILE__,__LINE__);
+	}
+	if(test3 != -1){
+		glUniform1f(test3, std::abs(OJ_ResourceManager::songs["funker"]->getAmplitude()*OJ_ResourceManager::songs["funker"]->getAmplitude()*arena->waveNumber*0.5f));
+		checkForGlError(0,__FILE__,__LINE__);
+	}
+
+	float scale = vox::NumberUtils::randomFloat(1.0, 7.5);
+	game->setViewport(0, 0, game->viewPortWidth * 1 / scale, game->viewPortHeight * 1 / scale);
+	screenFBO->resize(game->viewPortWidth, game->viewPortHeight);
+
+	//Bind frameBuffer
+	screenFBO->bindFrameBuffer();
+	//render the scene to the buffer
 	LayeredScene::render(_matrixStack, _renderOptions);
+	game->setViewport(0, 0, game->viewPortWidth*scale, game->viewPortHeight*scale);
+
+	//Render the buffer to the render surface
+	screenSurface->render(screenFBO->getTextureId());
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	uiLayer.render(_matrixStack, _renderOptions);
 }
 
 void OJ_Scene::load() {
