@@ -48,7 +48,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	// Set the text color to white
 	textShader->setColor(1.0f, 1.0f, 1.0f);
 	
-	arena = new OJ_Arena(this, box2DWorld, mainShader, 50, 12);
+	arena = new OJ_Arena(this, box2DWorld, mainShader, 6, 6);
 	addChild(arena, 1);
 
 	

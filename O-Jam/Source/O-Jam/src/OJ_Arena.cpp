@@ -14,6 +14,8 @@
 
 const float PI = 3.1415926;
 
+#define ARENA_TILE 10
+
 OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, float _radius, int _points) :
 	Entity(),
 	world(_world),
@@ -27,7 +29,7 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 	b2Vec2 * vs = (b2Vec2 *)malloc(sizeof(b2Vec2) * _points);
 	for(unsigned long int i = 0; i < _points; ++i) {
 		float ang = PI * 2.0 / _points * i;
-		b2Vec2 pos(cos(ang) * _radius, sin(ang) * _radius);
+		b2Vec2 pos(cos(ang) * _radius * ARENA_TILE, sin(ang) * _radius * ARENA_TILE);
 		vs[i] = pos;
 	}
 
@@ -45,7 +47,35 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 	b2Fixture * f = chainBody->CreateFixture(&fd);
 
 	free(vs);
+	
+	// hex tile grid
+	for(unsigned int r = 0; r < 3; ++r){
+		// rings
+		glm::vec3 pos = glm::vec3(0.f, ARENA_TILE * r, 0.f);
+		glm::vec3 unit = glm::vec3(0, - ARENA_TILE, 0.f);
 
+		glm::vec4 unitRotated = glm::rotate(-60.f, glm::vec3(0,0,1)) * glm::vec4(unit.x, unit.y, unit.z, 1);
+		unit = glm::vec3(unitRotated.x, unitRotated.y, unitRotated.z);
+
+		for(unsigned int t = 0; t < r * 6; ++t){
+
+			// decide if obstacle is here
+			if(vox::NumberUtils::randomInt(1, 6) >= 1){
+				// place obstacle
+				b2Body * body = getHexTile();
+				body->SetTransform(b2Vec2(pos.x, pos.y), 0.f); 
+				
+			}
+			pos = pos + unit;
+
+			if((t+1) % (r) == 0){
+				// change direction vector & pos.x
+				glm::vec4 unitRotated = glm::rotate(60.f, glm::vec3(0,0,1)) * glm::vec4(unit.x, unit.y, unit.z, 1);
+				unit = glm::vec3(unitRotated.x, unitRotated.y, unitRotated.z);
+			}
+		}
+	}
+	
 	int numObs = vox::NumberUtils::randomInt(10, 30);
 
 	OJ_TexturePack texPack("TORSO", "HAND");
@@ -76,6 +106,48 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 			spawnTimer.restart();
 		}
 	};
+}
+
+b2Body * OJ_Arena::getHexTile(){
+	b2Vec2 * vs = (b2Vec2 *)malloc(sizeof(b2Vec2) * 6);
+	for(unsigned long int i = 0; i < 6; ++i) {
+		float ang = PI * 2.0 / 6 * i;
+		b2Vec2 pos(cos(ang) * ARENA_TILE * 0.5, sin(ang) * ARENA_TILE * 0.5);
+		vs[i] = pos;
+	}
+
+	b2ChainShape  * chain = new b2ChainShape();
+	chain->CreateLoop(vs, 6);
+
+	b2FixtureDef fd;
+	fd.shape = chain;
+
+	b2BodyDef bodyDef;
+	bodyDef.position.Set(0, 0);
+	bodyDef.type = b2_staticBody;
+	
+	b2Body * chainBody = world->b2world->CreateBody(&bodyDef);
+	b2Fixture * f = chainBody->CreateFixture(&fd);
+
+	free(vs);
+	/*
+	OJ_TexturePack texPack("TORSO", "HAND");
+
+	Box2DSprite * sprite = new Box2DSprite(world, b2_staticBody, false, nullptr, texPack.torsoTex);
+
+	b2Filter filter;
+
+	filter.categoryBits = OJ_Game::kBOUNDARY;
+	sprite->createFixture(filter);
+	sprite->setShader(_shader, true);
+	childTransform->addChild(sprite);
+	//sprite->parents.at(0)->scale(randScale, randScale, 1.0f);
+	float lim = 0.75f * _radius;
+	float x = vox::NumberUtils::randomFloat(-lim, lim);
+	float y = vox::NumberUtils::randomFloat(-lim, lim);
+	sprite->setTranslationPhysical(x, y, 0.f);
+	*/
+	return chainBody;
 }
 
 void OJ_Arena::update(Step* _step) {
