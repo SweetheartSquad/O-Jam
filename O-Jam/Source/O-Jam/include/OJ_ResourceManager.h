@@ -12,6 +12,7 @@ class OJ_ResourceManager : public ResourceManager{
 public:
 	static Texture * cursor;
 	static Texture * cheryl;
+
 	static JsonPlaythroughParser * playthrough;
 
 	static std::string speaker;

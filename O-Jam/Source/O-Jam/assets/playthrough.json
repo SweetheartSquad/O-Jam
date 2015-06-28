@@ -1,6 +1,27 @@
 {
   "assets": [
     {
+      "id": "TITLE",
+      "type": "texture",
+      "src": "title_screen.png",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "id": "STORY",
+      "type": "texture",
+      "src": "story_screen.png",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "id": "INSTRUCTIONS",
+      "type": "texture",
+      "src": "story_screen.png",
+      "width": 1920,
+      "height": 1080
+    },
+    {
       "id": "TORSO",
       "type": "texture",
       "src": "torso.png",

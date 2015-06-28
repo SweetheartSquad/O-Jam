@@ -9,11 +9,11 @@
 
 Texture * OJ_ResourceManager::cursor = new Texture("../assets/engine basics/cursor.png", 32, 32, true, false);
 Texture * OJ_ResourceManager::cheryl = new Texture("../assets/engine basics/img_cheryl.jpg", 256, 256, true, false);
+
 JsonPlaythroughParser * OJ_ResourceManager::playthrough = nullptr;
 
 std::map<std::string, OpenAL_Sound *> OJ_ResourceManager::songs;
 std::map<std::string, OpenAL_Sound *> OJ_ResourceManager::sounds;
-
 
 std::string OJ_ResourceManager::speaker = "blip";
 
