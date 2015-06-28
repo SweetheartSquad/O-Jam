@@ -89,17 +89,17 @@ void OJ_TitleScene::update(Step* _step) {
 		title->setVisible(true);
 		instructions->setVisible(false);
 	}else if(frame == STORY && joy->joysticks[0]->buttonJustDown(Joystick::kA)) {
-		// Start game;
+		frame = TITLE;
+		title->setVisible(true);
+		story->setVisible(false);
+		instructions->setVisible(false);
+		game->scenes.insert(std::pair<std::string, Scene *>("GAME", new OJ_Scene(game)));
+		game->switchScene("GAME", false);
 	}
 
 	glm::uvec2 sd = vox::getScreenDimensions();
 	uiLayer->resize(0, sd.x, 0, sd.y);
 	Scene::update(_step);
-
-	if(keyboard->keyJustDown(GLFW_KEY_SPACE)){
-		game->scenes.insert(std::pair<std::string, Scene *>("GAME", new OJ_Scene(game)));
-		game->switchScene("GAME", false);
-	}
 }
 
 void OJ_TitleScene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOptions) {

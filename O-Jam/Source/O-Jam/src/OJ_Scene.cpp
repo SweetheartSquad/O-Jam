@@ -127,14 +127,14 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	gameCam->addTarget(playerOne->rootComponent, 1);
 	gameCam->addTarget(playerTwo->rootComponent, 1);}
 
-	waveText = new TextArea(bulletWorld, this, font, textShader, 400);
+	waveText = new TextArea(bulletWorld, this, font, textShader, 1.f);
 	waveText->horizontalAlignment = kCENTER;
 	waveText->verticalAlignment = kTOP;
 	waveText->setRationalWidth(1.f);
 	waveText->setRationalHeight(1.f);
 	waveText->setMarginTop(0.05f);
 
-	scoreText = new TextArea(bulletWorld, this, font, textShader, 400);
+	scoreText = new TextArea(bulletWorld, this, font, textShader, 1.f);
 	scoreText->horizontalAlignment = kCENTER;
 	scoreText->verticalAlignment = kBOTTOM;
 	scoreText->setRationalWidth(1.f);

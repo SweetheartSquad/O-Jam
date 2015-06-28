@@ -19,8 +19,8 @@ int main(void){
 	_CrtMemState s1;
 	_CrtMemCheckpoint( &s1 );
 #endif
-
-	vox::initialize("WAG Challenge - demo");
+	//vox::fullscreen = true;
+	vox::initialize("DDOS");
 	OJ_ResourceManager::init();
 	OJ_ResourceManager::load();
 	OJ_Game * game = new OJ_Game();
