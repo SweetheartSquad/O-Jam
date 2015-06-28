@@ -45,9 +45,9 @@
     {
       "id": "TROJAN_TORSO",
       "type": "texture",
-      "src": "bullet.png",
-      "width": 199,
-      "height": 199
+      "src": "trogan.png",
+      "width": 2048,
+      "height": 2048
     },
     {
       "id": "BULLET",

@@ -417,21 +417,21 @@ OJ_Enemy * OJ_Arena::getEasyEnemy() {
 }
 
 OJ_Enemy* OJ_Arena::getHardEnemy() {
-	if(trojansLeft == 0) {
+	if(botsLeft == 0) {
 		trojansLeft--;
 		float compMult = vox::NumberUtils::randomFloat(1.0f, 2.f + componentMultMutlt);
 		OJ_Enemy * e = new OJ_TrojanEnemy(world, this, compMult);
 		e->speed = 2.5f;
 		return e;
 	}
-	if(botsLeft == 0) {	
+	if(trojansLeft == 0) {	
 		botsLeft--;
 		float compMult = vox::NumberUtils::randomFloat(1.0f, 1.5f + componentMultMutlt);
 		OJ_Enemy * e = new OJ_BotEnemy(world, compMult);
 		e->speed = 10.0f;
 		return e;
 	}
-	
+
 	int i = vox::NumberUtils::randomInt(0, 10);
 
 	if(i >= 5) {
