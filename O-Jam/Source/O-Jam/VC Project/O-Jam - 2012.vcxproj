@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Asset.cpp" />
+    <ClCompile Include="..\src\OJ_AmeobaEnemy.cpp" />
     <ClCompile Include="..\src\OJ_Arena.cpp" />
     <ClCompile Include="..\src\OJ_BotEnemy.cpp" />
     <ClCompile Include="..\src\OJ_Bullet.cpp" />
@@ -32,6 +33,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Asset.h" />
+    <ClInclude Include="..\include\OJ_AmoebaEnemy.h" />
     <ClInclude Include="..\include\OJ_Arena.h" />
     <ClInclude Include="..\include\OJ_BotEnemy.h" />
     <ClInclude Include="..\include\OJ_Bullet.h" />
