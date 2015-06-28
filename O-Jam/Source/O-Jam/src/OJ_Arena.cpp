@@ -386,7 +386,6 @@ void OJ_Arena::spawnEnemyAt(OJ_Enemy * e, b2Vec2 _pos) {
 	e->setShader(shader, true);
 	childTransform->addChild(e);
 	e->rootComponent->maxVelocity = b2Vec2(10.0f, 10.0f);
-	e->speed = 10.0f;
 	
 	e->translateComponents(_pos.x, _pos.y, 0.f);
 	// This doesn't belong here
@@ -412,19 +411,25 @@ OJ_Bullet * OJ_Arena::getBullet(Texture * _tex, float _size){
 
 OJ_Enemy * OJ_Arena::getEasyEnemy() {
 	float compMult = vox::NumberUtils::randomFloat(1.0f, 2.f + componentMultMutlt);
-	return new OJ_DdosEnemy(world, compMult);
+	OJ_Enemy * e = new OJ_DdosEnemy(world, compMult);
+	e->speed = 10.0f;
+	return e;
 }
 
 OJ_Enemy* OJ_Arena::getHardEnemy() {
 	if(trojansLeft == 0) {
 		trojansLeft--;
 		float compMult = vox::NumberUtils::randomFloat(1.0f, 2.f + componentMultMutlt);
-		return new OJ_BotEnemy(world, compMult);
+		OJ_Enemy * e = new OJ_TrojanEnemy(world, this, compMult);
+		e->speed = 2.5f;
+		return e;
 	}
 	if(botsLeft == 0) {	
 		botsLeft--;
 		float compMult = vox::NumberUtils::randomFloat(1.0f, 1.5f + componentMultMutlt);
-		return new OJ_TrojanEnemy(world, this, compMult);
+		OJ_Enemy * e = new OJ_BotEnemy(world, compMult);
+		e->speed = 10.0f;
+		return e;
 	}
 	
 	int i = vox::NumberUtils::randomInt(0, 10);
@@ -432,11 +437,15 @@ OJ_Enemy* OJ_Arena::getHardEnemy() {
 	if(i >= 5) {
 		botsLeft--;
 		float compMult = vox::NumberUtils::randomFloat(1.0f, 2.f + componentMultMutlt);
-		return new OJ_BotEnemy(world, compMult);
+		OJ_Enemy * e = new OJ_BotEnemy(world, compMult);
+		e->speed = 10.0f;
+		return e;
 	}else {
 		trojansLeft--;
 		float compMult = vox::NumberUtils::randomFloat(1.0f, 1.5f + componentMultMutlt);
-		return new OJ_TrojanEnemy(world, this, compMult);
+		OJ_Enemy * e = new OJ_TrojanEnemy(world, this, compMult);
+		e->speed = 2.5f;
+		return e;
 	}
 }
 
