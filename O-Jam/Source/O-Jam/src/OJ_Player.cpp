@@ -31,6 +31,7 @@ void OJ_Player::update(Step * _step){
 		rootComponent->body->SetTransform(rootComponent->body->GetWorldCenter(), punchAngle);
 	}
 	OJ_Boxer::update(_step);
+	health = std::min(500.f, health + 0.02f);
 }
 
 OJ_Player::~OJ_Player() {
