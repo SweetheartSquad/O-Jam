@@ -21,6 +21,7 @@
 #include <Joystick.h>
 #include <OJ_Enemy.h>
 #include <OJ_Arena.h>
+#include <Slider.h>
 
 OJ_Scene::OJ_Scene(Game * _game) :
 	LayeredScene(_game, 2),
@@ -48,6 +49,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	
 	arena = new OJ_Arena(this, box2DWorld, mainShader, 50, 12);
 	addChild(arena, 1);
+
 	
 	// cheryl box
 	MeshEntity * bg = new MeshEntity(MeshFactory::getCubeMesh(100));
@@ -101,6 +103,13 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	// Add the fps display
 	uiLayer.addChild(new FpsDisplay(bulletWorld, this, font, textShader));
 #endif
+
+	Slider * slider = new Slider(bulletWorld, this, 100.f, 30.f, 100.f);
+	slider->setValue(50.f);
+	slider->fill->setBackgroundColour(0.f, -1.f, -1.f);
+	uiLayer.addChild(slider);
+
+	slider->parents.at(0)->translate(glm::vec3(150.f, 50.f, 0.f));
 
 	playerOne->speed = 25.f;
 	playerOne->punchSpeed = 125.f;
