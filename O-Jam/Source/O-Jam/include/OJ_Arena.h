@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Entity.h>
+#include <Box2D/Box2D.h>
 #include <Timeout.h>
 
 class Box2DWorld;
@@ -33,9 +34,14 @@ public:
 
 	void killEnemy(OJ_Enemy * _enemy);
 
+	OJ_Enemy * getEasyEnemy();
+	OJ_Enemy * getHardEnemy();
+
 	void spawnNextWave();
 
 	void spawnEnemy();
+
+	void spawnEnemyAt(OJ_Enemy * e, b2Vec2 _pos);
 
 	OJ_Bullet * getBullet(Texture * _tex, float _size = 1.f);
 	void removeBullet(OJ_Bullet * _bullet);
@@ -48,6 +54,9 @@ private:
 	int hardEnemiesLeft; 
 	int hardEnemiesPerRound;
 
-	OJ_Enemy * getEasyEnemy();
-	OJ_Enemy * getHardEnemy();
+	int trojansPreWave;
+	int botsPerWave;
+
+	int trojansLeft;
+	int botsLeft;
 };

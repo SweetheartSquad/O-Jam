@@ -14,6 +14,7 @@
 #include <MeshInterface.h>
 
 #include <OJ_DdosEnemy.h>
+#include <OJ_TrojanEnemy.h>
 #include <OJ_BotEnemy.h>
 #include <OJ_ResourceManager.h>
 #include <ParticleSystem.h>
@@ -33,8 +34,12 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 	scene(_scene),
 	shader(_shader),
 	radius(_radius),
-	hardEnemiesPerRound(1),
+	hardEnemiesPerRound(0),
 	hardEnemiesLeft(0),
+	botsLeft(0),
+	trojansLeft(0),
+	botsPerWave(1),
+	trojansPreWave(1),
 	particles(new ParticleSystem(new TextureSampler(OJ_ResourceManager::playthrough->getTexture("TORSO")->texture, 1, 1), _world, -1, -1, 0))
 {
 	particles->setShader(shader, true);
@@ -332,10 +337,18 @@ void OJ_Arena::killEnemy(OJ_Enemy * _enemy){
 void OJ_Arena::spawnNextWave() {
 	waveNumber++;
 	easyEnemiesLeft = (int)waveNumber * 6;
-	if(waveNumber % 4 == 0) {
-		hardEnemiesPerRound++;
+	if(waveNumber % 3 == 0) {
+		botsPerWave++;
 	}
-	hardEnemiesLeft = hardEnemiesPerRound;
+	if(waveNumber % 5 == 0) {
+		trojansPreWave++;
+	}
+
+	trojansLeft = trojansPreWave;
+	botsLeft = botsPerWave;
+
+	hardEnemiesLeft = trojansPreWave + botsPerWave;
+
 	spawnTimer.restart();
 	scene->showWave(waveNumber);
 }
@@ -353,16 +366,21 @@ void OJ_Arena::spawnEnemy() {
 		e = getEasyEnemy();
 		easyEnemiesLeft--;
 	}
+
+	float ang = PI * 2.0 / 100.f * vox::NumberUtils::randomInt(1, 99);
+	b2Vec2 pos(cos(ang) * radius * 1.2f, sin(ang) * radius * 1.2f);
+
+	spawnEnemyAt(e, pos);
+}
+
+void OJ_Arena::spawnEnemyAt(OJ_Enemy * e, b2Vec2 _pos) {
 	enemies.push_back(e);
 	e->setShader(shader, true);
 	childTransform->addChild(e);
 	e->rootComponent->maxVelocity = b2Vec2(10.0f, 10.0f);
 	e->speed = 10.0f;
-
-	float ang = PI * 2.0 / 100.f * vox::NumberUtils::randomInt(1, 99);
-	b2Vec2 pos(cos(ang) * radius * 1.2f, sin(ang) * radius * 1.2f);
-
-	e->translateComponents(pos.x, pos.y, 0.f);
+	
+	e->translateComponents(_pos.x, _pos.y, 0.f);
 	// This doesn't belong here
 	e->targetCharacter(scene->playerOne);
 }
@@ -389,7 +407,26 @@ OJ_Enemy * OJ_Arena::getEasyEnemy() {
 }
 
 OJ_Enemy* OJ_Arena::getHardEnemy() {
-	return new OJ_BotEnemy(world);
+	if(trojansLeft == 0) {
+		trojansLeft--;
+		return new OJ_BotEnemy(world);
+	}
+	if(botsLeft == 0) {	
+		botsLeft--;
+		return new OJ_TrojanEnemy(world, this);
+	}
+	
+	int i = vox::NumberUtils::randomInt(0, 10);
+
+	if(i >= 5) {
+		botsLeft--;
+		return new OJ_BotEnemy(world);
+	}else {
+		trojansLeft--;
+		return new OJ_TrojanEnemy(world, this);
+	}
+
+	return new OJ_TrojanEnemy(world, this);
 }
 
 void OJ_Arena::removeBullet(OJ_Bullet * _bullet){

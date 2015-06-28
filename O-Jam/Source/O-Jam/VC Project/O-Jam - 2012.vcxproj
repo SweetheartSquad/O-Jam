@@ -24,6 +24,7 @@
     <ClCompile Include="..\src\OJ_Character.cpp" />
     <ClCompile Include="..\src\OJ_Scene.cpp" />
     <ClCompile Include="..\src\OJ_Player.cpp" />
+    <ClCompile Include="..\src\OJ_TrojanEnemy.cpp" />
     <ClCompile Include="..\src\TimeoutEffects.cpp" />
     <ClCompile Include="..\src\OJ_ResourceManager.cpp" />
     <ClCompile Include="..\src\Main.cpp" />
@@ -43,6 +44,7 @@
     <ClInclude Include="..\include\OJ_Character.h" />
     <ClInclude Include="..\include\OJ_Scene.h" />
     <ClInclude Include="..\include\OJ_Player.h" />
+    <ClInclude Include="..\include\OJ_TrojanEnemy.h" />
     <ClInclude Include="..\include\TimeoutEffects.h" />
     <ClInclude Include="..\include\OJ_ResourceManager.h" />
     <ClInclude Include="..\include\OJ_Game.h" />
