@@ -7,7 +7,8 @@ OJ_Bullet::OJ_Bullet(float _damage, Box2DWorld * _world, b2BodyType _bodyType, b
 	destroyed(false),
 	damage(_damage),
 	age(0),
-	life(3)
+	life(3),
+	health(1)
 {
 
 }	
@@ -18,7 +19,7 @@ OJ_Bullet::~OJ_Bullet(){
 
 void OJ_Bullet::update(Step * _step){
 	age += _step->deltaTime;
-	if(age > life){
+	if(age > life || health <= 0){
 		destroyed = true;
 	}
 	Box2DSprite::update(_step);

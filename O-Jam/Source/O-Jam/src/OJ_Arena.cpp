@@ -26,7 +26,7 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 	scene(_scene),
 	shader(_shader),
 	radius(_radius),
-	hardEnemiesPerRound(5),
+	hardEnemiesPerRound(1),
 	hardEnemiesLeft(0)
 {
 	b2Vec2 * vs = (b2Vec2 *)malloc(sizeof(b2Vec2) * _points);
@@ -160,11 +160,17 @@ void OJ_Arena::spawnEnemy() {
 OJ_Arena::~OJ_Arena() {
 }
 
-OJ_Bullet * OJ_Arena::getBullet(Texture * _tex){
-	OJ_Bullet * b = new OJ_Bullet(200, world, b2_dynamicBody, false, nullptr, _tex, 1, 1, 0, 0, 1.f);
+OJ_Bullet * OJ_Arena::getBullet(Texture * _tex, float _size){
+	OJ_Bullet * b = new OJ_Bullet(200, world, b2_dynamicBody, false, nullptr, _tex, 1, 1, 0, 0, _size);
 	b->setShader(shader, true);
 	childTransform->addChild(b);
 	bullets.push_back(b);
+
+	b2Filter sf;
+	sf.categoryBits = OJ_Game::BOX2D_CATEGORY::kBULLET;
+	sf.maskBits = OJ_Game::BOX2D_CATEGORY::kENEMY;
+	sf.groupIndex = 0;
+	b->createFixture(sf, b2Vec2(0, 0), b, false);
 	return b;
 }
 
