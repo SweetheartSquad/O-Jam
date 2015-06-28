@@ -6,6 +6,7 @@
 #include <MeshInterface.h>
 
 #include <glfw\glfw3.h>
+#include <NumberUtils.h>
 
 OJ_Player::OJ_Player(float _componentScale, OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits, int16 _groupIndex) :
 	OJ_Boxer(_componentScale, _texPack, _world, _categoryBits, _maskBits, _groupIndex),
@@ -47,14 +48,16 @@ void OJ_Player::move(glm::vec2 _v){
 void OJ_Player::punchR(){
 	if(!disabled){
 		OJ_Boxer::punchR();
-		OJ_ResourceManager::sounds["thingOne"]->play();
+		alSourcef(AL_PITCH, OJ_ResourceManager::sounds["boof"]->source->sourceId, vox::NumberUtils::randomFloat(0.25, 5.f));
+		OJ_ResourceManager::sounds["boof"]->play();
 	}
 }
 
 void OJ_Player::punchL(){
 	if(!disabled){
 		OJ_Boxer::punchL();
-		OJ_ResourceManager::sounds["thingOne"]->play();
+		alSourcef(AL_PITCH, OJ_ResourceManager::sounds["boof2"]->source->sourceId, vox::NumberUtils::randomFloat(0.25, 5.f));
+		OJ_ResourceManager::sounds["boof2"]->play();
 	}
 }
 

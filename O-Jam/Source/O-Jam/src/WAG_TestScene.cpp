@@ -189,13 +189,9 @@ WAG_TestScene::~WAG_TestScene(){
 
 
 void WAG_TestScene::update(Step * _step){
-	OJ_ResourceManager::stream->update(_step);
 	// handle inputs
 	joy->update(_step);
 	
-	if(keyboard->keyJustUp(GLFW_KEY_P)){	
-		OJ_ResourceManager::stream->play(true);
-	}
 	if(keyboard->keyJustUp(GLFW_KEY_E)){	
 		std::wcout << L"Calling RequestJSONValueAsync..." << std::endl;
 		//RequestJSONValueAsync(label);

@@ -12,11 +12,9 @@ class OJ_ResourceManager : public ResourceManager{
 public:
 	static Texture * cursor;
 	static Texture * cheryl;
-	static OpenAL_Sound * stream;
 	static JsonPlaythroughParser * playthrough;
 
 	static std::string speaker;
-	static std::map<std::string, OpenAL_Sound *> voices;
 	static std::map<std::string, OpenAL_Sound *> songs;
 	static std::map<std::string, OpenAL_Sound *> sounds;
 

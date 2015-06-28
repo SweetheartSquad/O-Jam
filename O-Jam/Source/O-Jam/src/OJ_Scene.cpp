@@ -49,9 +49,16 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	beamActive(false),
 	guideActive(false),
 	teamworkAngle(0),
-	guidedBullet(nullptr)
+	guidedBullet(nullptr),
+	screenSurfaceShader(new Shader("../assets/RenderSurface", false, true)),
+	screenSurface(new RenderSurface(screenSurfaceShader)),
+	screenFBO(new StandardFrameBuffer(true))
 {
-
+	screenSurfaceShader->unload();
+	screenSurfaceShader->load();
+	screenSurface->scaleModeMag = GL_NEAREST;
+	screenSurface->load();
+	screenSurface->configureDefaultVertexAttributes(screenSurfaceShader);
 	// Initialize and compile the shader 
 	mainShader->addComponent(new ShaderComponentTexture(mainShader));
 	mainShader->compileShader();
@@ -181,7 +188,8 @@ void OJ_Scene::update(Step* _step) {
 
 	if(beamActive){
 		OJ_Bullet * beamPart = arena->getBullet(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
-					
+		alSourcef(AL_PITCH, OJ_ResourceManager::sounds["pew"]->source->sourceId, vox::NumberUtils::randomFloat(0.5, 2.f));
+		OJ_ResourceManager::sounds["pew"]->play();
 		beamPart->setTranslationPhysical(snapPos.x + teamworkAngle.x + vox::NumberUtils::randomFloat(-3, 3), snapPos.y + teamworkAngle.y + vox::NumberUtils::randomFloat(-3, 3), 0, false);
 		beamPart->applyLinearImpulseToCenter(teamworkAngle.x*25, teamworkAngle.y*25);
 	}
@@ -390,7 +398,44 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 }
 
 void OJ_Scene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOptions) {
+	//clear();
+	GLint test = glGetUniformLocation(screenSurfaceShader->getProgramId(), "time");
+	checkForGlError(0,__FILE__,__LINE__);
+
+	GLint test2 = glGetUniformLocation(screenSurfaceShader->getProgramId(), "distortionMode");
+	checkForGlError(0,__FILE__,__LINE__);
+
+	GLint test3 = glGetUniformLocation(screenSurfaceShader->getProgramId(), "mult");
+	checkForGlError(0,__FILE__,__LINE__);
+
+	//std::cout << "is program: " << glIsProgram(screenSurfaceShader->getProgramId());
+	if(test != -1){
+		glUniform1f(test, (float)vox::lastTimestamp);
+		checkForGlError(0,__FILE__,__LINE__);
+	}
+	if(test2 != -1){
+		glUniform1i(test2, vox::NumberUtils::randomInt(0,3));
+		checkForGlError(0,__FILE__,__LINE__);
+	}
+	if(test3 != -1){
+		glUniform1f(test3, std::abs(OJ_ResourceManager::songs["funker"]->getAmplitude())*3);
+		checkForGlError(0,__FILE__,__LINE__);
+	}
+	float scale = vox::NumberUtils::randomFloat(1.0, 7.5);
+	game->setViewport(0, 0, game->viewPortWidth * 1 / scale, game->viewPortHeight * 1 / scale);
+	screenFBO->resize(game->viewPortWidth, game->viewPortHeight);
+
+	//Bind frameBuffer
+	screenFBO->bindFrameBuffer();
+	//render the scene to the buffer
 	LayeredScene::render(_matrixStack, _renderOptions);
+	game->setViewport(0, 0, game->viewPortWidth*scale, game->viewPortHeight*scale);
+
+	//Render the buffer to the render surface
+	screenSurface->render(screenFBO->getTextureId());
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	uiLayer.render(_matrixStack, _renderOptions);
 }
 
 void OJ_Scene::load() {

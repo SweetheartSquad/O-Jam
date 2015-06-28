@@ -8,6 +8,8 @@
 #include <OJ_Player.h>
 #include <OJ_Bullet.h>
 #include <TextArea.h>
+#include <RenderSurface.h>
+#include <StandardFrameBuffer.h>
 
 class JoystickManager;
 class Joystick;
@@ -23,6 +25,10 @@ class FollowCamera;
 class OJ_Scene : public LayeredScene {
 
 public:
+
+	Shader * screenSurfaceShader;
+	RenderSurface * screenSurface;
+	StandardFrameBuffer * screenFBO;
 
 	int sceneHeight;
 	int sceneWidth;

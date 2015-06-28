@@ -12,10 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Asset.cpp" />
-    <ClCompile Include="..\src\Conversation.cpp" />
-    <ClCompile Include="..\src\DialogueDisplay.cpp" />
-    <ClCompile Include="..\src\DialogueSay.cpp" />
-    <ClCompile Include="..\src\DialogueText.cpp" />
     <ClCompile Include="..\src\OJ_Arena.cpp" />
     <ClCompile Include="..\src\OJ_BotEnemy.cpp" />
     <ClCompile Include="..\src\OJ_Bullet.cpp" />
@@ -29,18 +25,12 @@
     <ClCompile Include="..\src\OJ_Scene.cpp" />
     <ClCompile Include="..\src\OJ_Player.cpp" />
     <ClCompile Include="..\src\TimeoutEffects.cpp" />
-    <ClCompile Include="..\src\WAG_Button.cpp" />
     <ClCompile Include="..\src\OJ_ResourceManager.cpp" />
     <ClCompile Include="..\src\Main.cpp" />
     <ClCompile Include="..\src\OJ_Game.cpp" />
-    <ClCompile Include="..\src\WAG_TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Asset.h" />
-    <ClInclude Include="..\include\Conversation.h" />
-    <ClInclude Include="..\include\DialogueDisplay.h" />
-    <ClInclude Include="..\include\DialogueSay.h" />
-    <ClInclude Include="..\include\DialogueText.h" />
     <ClInclude Include="..\include\OJ_Arena.h" />
     <ClInclude Include="..\include\OJ_BotEnemy.h" />
     <ClInclude Include="..\include\OJ_Bullet.h" />
@@ -54,10 +44,8 @@
     <ClInclude Include="..\include\OJ_Scene.h" />
     <ClInclude Include="..\include\OJ_Player.h" />
     <ClInclude Include="..\include\TimeoutEffects.h" />
-    <ClInclude Include="..\include\WAG_Button.h" />
     <ClInclude Include="..\include\OJ_ResourceManager.h" />
     <ClInclude Include="..\include\OJ_Game.h" />
-    <ClInclude Include="..\include\WAG_TestScene.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
