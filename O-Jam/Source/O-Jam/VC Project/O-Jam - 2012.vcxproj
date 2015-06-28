@@ -58,6 +58,13 @@
     <ClInclude Include="..\include\OJ_ResourceManager.h" />
     <ClInclude Include="..\include\OJ_Game.h" />
     <ClInclude Include="..\include\WAG_TestScene.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="O-Jam - 2012.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\assets\textures\torso.ico" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{96FE28A2-BB06-4424-ADED-0DEDAEAF84B5}</ProjectGuid>
