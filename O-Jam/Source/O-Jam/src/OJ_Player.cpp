@@ -47,12 +47,14 @@ void OJ_Player::move(glm::vec2 _v){
 void OJ_Player::punchR(){
 	if(!disabled){
 		OJ_Boxer::punchR();
+		OJ_ResourceManager::sounds["thingOne"]->play();
 	}
 }
 
 void OJ_Player::punchL(){
 	if(!disabled){
 		OJ_Boxer::punchL();
+		OJ_ResourceManager::sounds["thingOne"]->play();
 	}
 }
 

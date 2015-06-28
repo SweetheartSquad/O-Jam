@@ -38,7 +38,7 @@ OJ_Character::OJ_Character(float _damage, float _componentScale, OJ_TexturePack*
 	rootComponent = torso;
 
 	rootComponent->maxVelocity = b2Vec2(componentScale*10.f, componentScale*10.f);
-	rootComponent->body->SetLinearDamping(1);
+	rootComponent->body->SetLinearDamping(5);
 	
 	b2Fixture * f = torso->createFixture(sf, b2Vec2(0.f, 0.f), this);
 	f->SetDensity(10.f);

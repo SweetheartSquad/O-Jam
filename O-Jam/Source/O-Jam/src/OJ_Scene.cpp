@@ -26,6 +26,7 @@
 #include <NumberUtils.h>
 #include <Timeout.h>
 #include <Resource.h>
+#include <ParticleSystem.h>
 
 OJ_Scene::OJ_Scene(Game * _game) :
 	LayeredScene(_game, 2),
@@ -128,7 +129,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 
 	slider->parents.at(0)->translate(glm::vec3(150.f, 50.f, 0.f));
 
-	playerOne->speed = 25.f;
+	playerOne->speed = 50.f;
 	playerOne->punchSpeed = 125.f;
 	playerTwo->speed = 25.f;
 	playerTwo->punchSpeed = 125.f;

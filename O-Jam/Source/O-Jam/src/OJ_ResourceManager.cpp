@@ -14,6 +14,7 @@ JsonPlaythroughParser * OJ_ResourceManager::playthrough = nullptr;
 
 std::map<std::string, OpenAL_Sound *> OJ_ResourceManager::voices;
 std::map<std::string, OpenAL_Sound *> OJ_ResourceManager::songs;
+std::map<std::string, OpenAL_Sound *> OJ_ResourceManager::sounds;
 
 
 std::string OJ_ResourceManager::speaker = "blip";
@@ -39,6 +40,10 @@ void OJ_ResourceManager::init(){
 	OpenAL_Sound * funker = new OpenAL_SoundSimple("../assets/audio/funker.wav", false, false);
 	songs["funker"] = funker;
 	resources.push_back(funker);
+
+	OpenAL_Sound * thingOne = new OpenAL_SoundSimple("../assets/audio/thingOne.wav", false, false);
+	sounds["thingOne"] = thingOne;
+	resources.push_back(thingOne);
 	
 	stream->source->buffer->sampleRate = 48000;
 	stream->source->buffer->format = AL_FORMAT_STEREO8;
