@@ -14,6 +14,10 @@
 #include <StandardFrameBuffer.h>
 #include <Slider.h>
 
+#define TITLE 0
+#define STORY 1
+#define INSTRUCTIONS 2
+
 class JoystickManager;
 class Joystick;
 class Game;
@@ -28,6 +32,8 @@ class FollowCamera;
 class OJ_TitleScene : public Scene {
 public:
 
+	int frame;
+
 	BulletWorld * bulletWorld;
 
 	ComponentShaderBase * mainShader;
@@ -35,6 +41,8 @@ public:
 	NodeUI * title;
 	NodeUI * story;
 	NodeUI * instructions;
+
+	JoystickManager * joy;
 
 	UILayer * uiLayer;
 

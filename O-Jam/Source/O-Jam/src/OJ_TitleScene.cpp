@@ -36,7 +36,9 @@ OJ_TitleScene::OJ_TitleScene(Game* _game) :
 	Scene(_game),
 	bulletWorld(new BulletWorld()),
 	mainShader(new ComponentShaderBase(true)),
-	uiLayer(new UILayer(this, 0, 0, 0, 0))
+	uiLayer(new UILayer(this, 0, 0, 0, 0)),
+	frame(0),
+	joy(new JoystickManager())
 {
 	mainShader->addComponent(new ShaderComponentTexture(mainShader));
 	mainShader->compileShader();
@@ -56,7 +58,7 @@ OJ_TitleScene::OJ_TitleScene(Game* _game) :
 
 	title->background->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("TITLE")->texture);
 	story->background->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("STORY")->texture);
-	instructions->background->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("INSTRUCTIONS")->texture);
+	instructions->background->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
 
 	uiLayer->addChild(title);
 	uiLayer->addChild(story);
@@ -72,6 +74,24 @@ OJ_TitleScene::~OJ_TitleScene() {
 }
 
 void OJ_TitleScene::update(Step* _step) {
+	joy->update(_step);
+	
+	if(frame == TITLE && joy->joysticks[0]->buttonJustDown(Joystick::kA)) {
+		frame = STORY;
+		story->setVisible(true);
+		title->setVisible(false);
+	}else if(frame == TITLE && joy->joysticks[0]->buttonJustDown(Joystick::kX)){
+		frame = INSTRUCTIONS;
+		instructions->setVisible(true);
+		title->setVisible(false);
+	}else if(frame == INSTRUCTIONS && joy->joysticks[0]->buttonJustDown(Joystick::kB)) {
+		frame = TITLE;
+		title->setVisible(true);
+		instructions->setVisible(false);
+	}else if(frame == STORY && joy->joysticks[0]->buttonJustDown(Joystick::kA)) {
+		// Start game;
+	}
+
 	glm::uvec2 sd = vox::getScreenDimensions();
 	uiLayer->resize(0, sd.x, 0, sd.y);
 	Scene::update(_step);
