@@ -172,7 +172,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 		}
 	};
 
-	OJ_ResourceManager::songs["funker"]->play(true);
+	OJ_ResourceManager::songs["DDoS"]->play(true);
 }
 
 OJ_Scene::~OJ_Scene() {
@@ -376,6 +376,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 			_playerOne->enable();
 			_playerTwo->enable();
 			if(_playerTwo->stance == OJ_Player::Stance::kAOE){
+				OJ_ResourceManager::sounds["blast"]->play();
 				float r = 2;
 				for(float i = 0; i < 360; i += 30.f / std::min(maxCharge, snapTime)){
 					glm::vec2 dir(cos(i) * r, sin(i) * r);
@@ -393,6 +394,7 @@ void OJ_Scene::handleStancing(OJ_Player * _playerOne, OJ_Player * _playerTwo){
 				specialTimer.targetSeconds = std::min(maxCharge, snapTime);
 				specialTimer.restart();
 			}else if(_playerTwo->stance == OJ_Player::Stance::kGUIDE){
+				OJ_ResourceManager::sounds["blast"]->play();
 				guideActive = true;
 				specialTimer.targetSeconds = std::min(maxCharge, snapTime);
 				specialTimer.restart();
