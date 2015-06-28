@@ -15,6 +15,7 @@
 
 #include <OJ_DdosEnemy.h>
 #include <OJ_BotEnemy.h>
+#include <OJ_ResourceManager.h>
 
 const float PI = 3.1415926;
 
@@ -83,30 +84,6 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 		}
 	}
 	
-	int numObs = vox::NumberUtils::randomInt(10, 20);
-
-	OJ_TexturePack texPack("TORSO", "HAND");
-
-	for(unsigned long int i = 0; i < numObs; ++i) {
-		
-		float randScale = vox::NumberUtils::randomFloat(2.0f, 4.0f);
-
-		Box2DSprite * sprite = new Box2DSprite(world, b2_staticBody, false, nullptr, texPack.torsoTex);
-		childTransform->addChild(sprite);
-		// The colliders don't match the scale
-		//sprite->parents.at(0)->scale(randScale, randScale, 1.0f);
-		sprite->setShader(_shader, true);
-		
-		b2Filter filter;
-
-		filter.categoryBits = OJ_Game::kBOUNDARY;
-		sprite->createFixture(filter);
-		float lim = 0.75f * _radius;
-		float x = vox::NumberUtils::randomFloat(-lim, lim);
-		float y = vox::NumberUtils::randomFloat(-lim, lim);
-		sprite->setTranslationPhysical(x, y, 0.f);
-	}
-
 	spawnTimer.onCompleteFunction = [this](Timeout * _this){
 		if(easyEnemiesLeft + hardEnemiesLeft > 0) {
 			spawnEnemy();
@@ -125,10 +102,8 @@ Box2DSprite * OJ_Arena::getHexTile(){
 
 	b2ChainShape  * chain = new b2ChainShape();
 	chain->CreateLoop(vs, 6);
-	
-	OJ_TexturePack texPack("TORSO", "HAND");
 
-	Box2DSprite * sprite = new Box2DSprite(world, b2_staticBody, false, nullptr, texPack.torsoTex);
+	Box2DSprite * sprite = new Box2DSprite(world, b2_staticBody, false, nullptr, OJ_ResourceManager::playthrough->getTexture("test2")->texture);
 
 	// Fixture
 	b2Filter filter;
@@ -297,7 +272,7 @@ Box2DSprite * OJ_Arena::getHexTile(){
 	delete sprite->mesh;
 	sprite->mesh = m;
 	sprite->childTransform->addChild(sprite->mesh, false);
-	sprite->mesh->pushTexture2D(texPack.torsoTex);
+	sprite->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("test2")->texture);
 
 	free(vs);
 	

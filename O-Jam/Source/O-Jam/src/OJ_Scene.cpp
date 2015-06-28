@@ -62,8 +62,12 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	arena = new OJ_Arena(this, box2DWorld, mainShader, 6, 6);
 	addChild(arena, 1);
 
-	
-	auto mesh = Resource::loadMeshFromObj("../assets/meshes/background.st2").at(0);
+	MeshEntity * m = new MeshEntity(Resource::loadMeshFromObj("../assets/meshes/hexArena.obj").at(0));
+	addChild(m, 0);
+	m->parents.at(0)->scale(arena->radius * 10.f);
+	m->setShader(mainShader, true);
+	m->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("test")->texture);
+	/*auto mesh = Resource::loadMeshFromObj("../assets/meshes/background.st2").at(0);
 	mesh->textures.clear();
 	// cheryl box
 	MeshEntity * bg = new MeshEntity(mesh);
@@ -71,7 +75,7 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	bg->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
 	addChild(bg, 0);
 	bg->parents.at(0)->scale(30.0f, 30.0f, 30.0f);
-	bg->parents.at(0)->rotate(90.0f, 1, 0, 0, kOBJECT);
+	bg->parents.at(0)->rotate(90.0f, 1, 0, 0, kOBJECT);*/
 
 	// Add the players to the scene
 	addChild(playerOne, 1);
