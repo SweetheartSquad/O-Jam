@@ -51,23 +51,24 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 
 	free(vs);
 
-	int numObs = vox::NumberUtils::randomInt(10, 30);
+	int numObs = vox::NumberUtils::randomInt(10, 20);
 
 	OJ_TexturePack texPack("TORSO", "HAND");
 
 	for(unsigned long int i = 0; i < numObs; ++i) {
 		
-		float randScale = vox::NumberUtils::randomFloat(2.0f, 5.0f);
+		float randScale = vox::NumberUtils::randomFloat(2.0f, 4.0f);
 
 		Box2DSprite * sprite = new Box2DSprite(world, b2_staticBody, false, nullptr, texPack.torsoTex);
-
+		childTransform->addChild(sprite);
+		// The colliders don't match the scale
+		//sprite->parents.at(0)->scale(randScale, randScale, 1.0f);
+		sprite->setShader(_shader, true);
+		
 		b2Filter filter;
 
 		filter.categoryBits = OJ_Game::kBOUNDARY;
 		sprite->createFixture(filter);
-		sprite->setShader(_shader, true);
-		childTransform->addChild(sprite);
-		sprite->parents.at(0)->scale(randScale, randScale, 1.0f);
 		float lim = 0.75f * _radius;
 		float x = vox::NumberUtils::randomFloat(-lim, lim);
 		float y = vox::NumberUtils::randomFloat(-lim, lim);

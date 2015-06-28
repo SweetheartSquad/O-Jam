@@ -25,6 +25,7 @@
 #include <Step.h>
 #include <NumberUtils.h>
 #include <Timeout.h>
+#include <Resource.h>
 
 OJ_Scene::OJ_Scene(Game * _game) :
 	LayeredScene(_game, 2),
@@ -61,12 +62,15 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	addChild(arena, 1);
 
 	
+	auto mesh = Resource::loadMeshFromObj("../assets/meshes/background.st2").at(0);
+	mesh->textures.clear();
 	// cheryl box
-	MeshEntity * bg = new MeshEntity(MeshFactory::getCubeMesh(100));
+	MeshEntity * bg = new MeshEntity(mesh);
 	bg->setShader(mainShader,true);
 	bg->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("DEFAULT")->texture);
-	addChild(bg, 0, false);
-
+	addChild(bg, 0);
+	bg->parents.at(0)->scale(30.0f, 30.0f, 30.0f);
+	bg->parents.at(0)->rotate(90.0f, 1, 0, 0, kOBJECT);
 
 	// Add the players to the scene
 	addChild(playerOne, 1);
