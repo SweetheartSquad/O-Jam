@@ -27,6 +27,7 @@
 #include <Timeout.h>
 #include <Resource.h>
 #include <ParticleSystem.h>
+#include <System.h>
 
 OJ_Scene::OJ_Scene(Game * _game) :
 	LayeredScene(_game, 2),
@@ -125,6 +126,10 @@ OJ_Scene::OJ_Scene(Game * _game) :
 	gameCam->addTarget(playerTwo->rootComponent, 1);}
 
 	waveText = new TextArea(bulletWorld, this, font, textShader, 400);
+	waveText->setRationalWidth(1.f);
+	waveText->setRationalHeight(1.f);
+	waveText->horizontalAlignment = kCENTER;
+	waveText->verticalAlignment = kMIDDLE;
 	uiLayer.addChild(waveText);
 	waveText->parents.at(0)->translate(100, 100, 0.f);
 
@@ -266,6 +271,9 @@ void OJ_Scene::update(Step* _step) {
 	box2DWorld->update(_step);
 
 	Scene::update(_step);
+
+	glm::uvec2 sd = vox::getScreenDimensions();
+	uiLayer.resize(0, sd.x, 0, sd.y);
 	uiLayer.update(_step);
 }
 
@@ -414,11 +422,11 @@ void OJ_Scene::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOpti
 		checkForGlError(0,__FILE__,__LINE__);
 	}
 	if(test2 != -1){
-		glUniform1i(test2, vox::NumberUtils::randomInt(0,3));
+		glUniform1i(test2, (int)fmod((float)vox::lastTimestamp/100.f, 3.f)+1);
 		checkForGlError(0,__FILE__,__LINE__);
 	}
 	if(test3 != -1){
-		glUniform1f(test3, std::abs(OJ_ResourceManager::songs["funker"]->getAmplitude()*OJ_ResourceManager::songs["funker"]->getAmplitude()));
+		glUniform1f(test3, std::abs(OJ_ResourceManager::songs["funker"]->getAmplitude()*OJ_ResourceManager::songs["funker"]->getAmplitude()*arena->waveNumber*0.5f));
 		checkForGlError(0,__FILE__,__LINE__);
 	}
 	float scale = vox::NumberUtils::randomFloat(1.0, 7.5);
