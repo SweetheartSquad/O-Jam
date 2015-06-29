@@ -49,7 +49,7 @@ OJ_SceneScoreAttack::OJ_SceneScoreAttack(Game * _game) :
 	screenSurfaceShader(new Shader("../assets/RenderSurface", false, true)),
 	screenSurface(new RenderSurface(screenSurfaceShader)),
 	screenFBO(new StandardFrameBuffer(true)),
-	gameOver(20),
+	gameOver(122),
 	gameOverMessage(nullptr),
 	uiLayer(new UILayer(this, 0,0,0,0))
 {
@@ -175,7 +175,8 @@ OJ_SceneScoreAttack::~OJ_SceneScoreAttack() {
 }
 
 void OJ_SceneScoreAttack::update(Step* _step) {
-
+	playerOne->health = 9999999999999;
+	playerTwo->health = 9999999999999;
 	if(arena->startIndicatorTimer.active){
 		waveText->parents.at(0)->scale(Easing::easeOutQuint(arena->startIndicatorTimer.elapsedSeconds, 1.5f, -0.5f, arena->startIndicatorTimer.targetSeconds), false);
 		waveText->setMarginTop(vox::NumberUtils::randomFloat(0.0025f, 0.005f) + Easing::easeOutBounce(arena->startIndicatorTimer.elapsedSeconds, 0.75f, -0.75f, arena->startIndicatorTimer.targetSeconds));
@@ -185,7 +186,7 @@ void OJ_SceneScoreAttack::update(Step* _step) {
 	}
 
 	std::wstringstream ws;
-	ws << "SCORE: " << arena->score;
+	ws << "TIME: " << (int)(gameOver.targetSeconds - gameOver.elapsedSeconds - 2) << "\nSCORE: " << arena->score;
 	scoreText->setText(ws.str());
 
 	specialTimer.update(_step);
@@ -292,7 +293,7 @@ void OJ_SceneScoreAttack::update(Step* _step) {
 	uiLayer->update(_step);
 	
 	gameOver.update(_step);
-	if(gameOver.targetSeconds - gameOver.elapsedSeconds < 10){
+	if(gameOver.targetSeconds - gameOver.elapsedSeconds < 2){
 		if(gameOverMessage == nullptr){
 			gameOverMessage = new TextArea(bulletWorld, this, font, textShader, 1.f);
 			gameOverMessage->setRationalHeight(1.f);
@@ -300,11 +301,11 @@ void OJ_SceneScoreAttack::update(Step* _step) {
 			gameOverMessage->verticalAlignment = kMIDDLE;
 			gameOverMessage->setText(L"TIME'S UP!");
 			uiLayer->addChild(gameOverMessage);
-			playerOne->disable(10);
-			playerTwo->disable(10);
+			playerOne->disable(2);
+			playerTwo->disable(2);
 		}
 		ShaderComponentHsv * s = dynamic_cast<ShaderComponentHsv *>(dynamic_cast<ComponentShaderBase *>(mainShader)->getComponentAt(1));
-		s->setValue(Easing::easeInOutCubic(gameOver.elapsedSeconds - (gameOver.targetSeconds-10), 1, -1, 10.f));
+		s->setValue(Easing::easeInOutCubic(gameOver.elapsedSeconds - (gameOver.targetSeconds-2), 1, -1, 2.f));
 	}
 }
 
