@@ -19,6 +19,7 @@
 
 #include <JoystickManager.h>
 #include <Joystick.h>
+#include <JoystickVirtual.h>
 #include <OJ_Enemy.h>
 #include <OJ_Arena.h>
 #include <Slider.h>
@@ -55,6 +56,7 @@ OJ_SceneSurvival::OJ_SceneSurvival(Game * _game) :
 {
 
 	gameOver.onCompleteFunction = [this](Timeout * _this){
+		OJ_ResourceManager::songs["funker"]->play(true);
 		this->game->switchScene("MENU", true);
 	};
 	gameOver.start();
@@ -193,14 +195,17 @@ OJ_SceneSurvival::~OJ_SceneSurvival() {
 	delete bulletWorld;
 	delete box2DWorld;
 
-	for(auto i : OJ_ResourceManager::songs){
-		i.second->stop();
-	}for(auto i : OJ_ResourceManager::sounds){
+	OJ_ResourceManager::songs["DDoS"]->stop();
+	for(auto i : OJ_ResourceManager::sounds){
 		i.second->stop();
 	}
 }
 
 void OJ_SceneSurvival::update(Step* _step) {
+	if(game->kc_active){
+		playerOne->health = 999999999;
+		playerTwo->health = 999999999;
+	}
 
 	if(arena->startIndicatorTimer.active){
 		waveText->parents.at(0)->scale(Easing::easeOutQuint(arena->startIndicatorTimer.elapsedSeconds, 1.5f, -0.5f, arena->startIndicatorTimer.targetSeconds), false);
@@ -239,6 +244,14 @@ void OJ_SceneSurvival::update(Step* _step) {
 	}
 
 	joy->update(_step);
+	
+	if(joy->joysticks[0] == nullptr){
+		joy->joysticks[0] = new JoystickVirtual(0);
+	}
+	if(joy->joysticks[1] == nullptr){
+		joy->joysticks[1] = new JoystickVirtual(1);
+	}
+
 	unsigned int joyCnt = 2;
 	switch(joyCnt){
 		case 2:
@@ -344,7 +357,7 @@ void OJ_SceneSurvival::update(Step* _step) {
 		}
 	}
 
-	if(playerOne == nullptr && playerTwo == nullptr){
+	if(playerOne == nullptr || playerTwo == nullptr){
 		if(gameOverMessage == nullptr){
 			gameOverMessage = new TextArea(bulletWorld, this, font, textShader, 1.f);
 			gameOverMessage->setRationalHeight(1.f);
@@ -479,20 +492,6 @@ void OJ_SceneSurvival::handleStancing(){
 			
 		}
 	}
-
-	/*if(_playerOne->stance != OJ_Player::Stance::kNONE && _playerTwo->stance != OJ_Player::Stance::kNONE){
-		float dist = glm::distance2(_playerOne->rootComponent->getWorldPos(), _playerTwo->rootComponent->getWorldPos());
-		if(dist < stanceDistanceSq && _playerOne->stance == _playerTwo->stance){
-			
-			}else if(snapTimer.active){
-				
-			}
-		}else{
-			// the players were either too far apart or didn't synchronize
-			// punish by pushing them apart
-			separatePlayers(1.f);
-		}
-	}*/
 }
 
 void OJ_SceneSurvival::render(vox::MatrixStack* _matrixStack, RenderOptions* _renderOptions) {
@@ -506,6 +505,10 @@ void OJ_SceneSurvival::render(vox::MatrixStack* _matrixStack, RenderOptions* _re
 
 	GLint test3 = glGetUniformLocation(screenSurfaceShader->getProgramId(), "mult");
 	checkForGlError(0,__FILE__,__LINE__);
+	GLint timeSnappedLoc = glGetUniformLocation(screenSurfaceShader->getProgramId(), "timeSnapped");
+	checkForGlError(0,__FILE__,__LINE__);
+	GLint snapPosLoc = glGetUniformLocation(screenSurfaceShader->getProgramId(), "snapPos");
+	checkForGlError(0,__FILE__,__LINE__);
 
 	if(test != -1){
 		glUniform1f(test, (float)vox::lastTimestamp);
@@ -517,6 +520,15 @@ void OJ_SceneSurvival::render(vox::MatrixStack* _matrixStack, RenderOptions* _re
 	}
 	if(test3 != -1){
 		glUniform1f(test3, std::abs(OJ_ResourceManager::songs["DDoS"]->getAmplitude()*OJ_ResourceManager::songs["DDoS"]->getAmplitude()*std::min(arena->waveNumber, 8)*0.1f));
+		checkForGlError(0,__FILE__,__LINE__);
+	}
+	if(timeSnappedLoc != -1){
+		glUniform1f(timeSnappedLoc, snapped ? snapTime : 0);
+		checkForGlError(0,__FILE__,__LINE__);
+	}
+	if(snapPosLoc != -1){
+		glm::vec3 snapPosScreen = gameCam->worldToScreen(snapPos, glm::vec2(game->viewPortWidth, game->viewPortHeight));
+		glUniform2f(snapPosLoc, snapPosScreen.x / game->viewPortWidth, snapPosScreen.y / game->viewPortHeight);
 		checkForGlError(0,__FILE__,__LINE__);
 	}
 
@@ -561,26 +573,6 @@ void OJ_SceneSurvival::unload() {
 
 	Scene::unload();
 }
-
-
-/*
-OJ_Enemy * OJ_Scene::findClosestEnemy(OJ_Player * _toPlayer){
-	OJ_Enemy * res = nullptr;
-	float dmin = 100000000000;
-	glm::vec3 dv(0);
-	float d;
-	for(unsigned long int i = 0; i < enemies.size(); ++i){
-		dv = enemies.at(i)->rootComponent->worldPos - _toPlayer->rootComponent->getWorldPos();
-		d = glm::length2(dv);
-		if(d < dmin){
-			dmin = d;
-			res = enemies.at(i);
-		}
-	}
-	return res;
-}
-*/
-
 
 void OJ_SceneSurvival::separatePlayers(float _multiplier){
 	if(playerOne == nullptr || playerTwo == nullptr){

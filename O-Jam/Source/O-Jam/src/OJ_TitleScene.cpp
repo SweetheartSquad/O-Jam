@@ -19,6 +19,7 @@
 
 #include <JoystickManager.h>
 #include <Joystick.h>
+#include <JoystickVirtual.h>
 #include <OJ_Enemy.h>
 #include <OJ_Arena.h>
 #include <Slider.h>
@@ -87,46 +88,51 @@ OJ_TitleScene::OJ_TitleScene(Game* _game) :
 OJ_TitleScene::~OJ_TitleScene() {
 }
 
-void OJ_TitleScene::update(Step* _step) {
+void OJ_TitleScene::update(Step* _step){
 	joy->update(_step);
 	
-	if(joy->joysticks[0] != nullptr){
-		if(frame == TITLE && joy->joysticks[0]->buttonJustDown(Joystick::kA)) {
-			frame = STORY;
-			story->setVisible(true);
-			title->setVisible(false);
-		}else if(frame == TITLE && joy->joysticks[0]->buttonJustDown(Joystick::kX)){
-			frame = INSTRUCTIONS;
-			instructions->setVisible(true);
-			title->setVisible(false);
-		}else if((frame == INSTRUCTIONS || frame == CREDITS || frame == STORY) && joy->joysticks[0]->buttonJustDown(Joystick::kB)) {
-			frame = TITLE;
-			title->setVisible(true);
-			instructions->setVisible(false);
-			credits->setVisible(false);
-			story->setVisible(false);
-		}else if(frame == TITLE && joy->joysticks[0]->buttonJustDown(Joystick::kY)) {
-			frame = CREDITS;
-			title->setVisible(false);
-			credits->setVisible(true);
-		}else if(frame == STORY && joy->joysticks[0]->buttonJustDown(Joystick::kA)) {
-			frame = TITLE;
-			title->setVisible(true);
-			story->setVisible(false);
-			credits->setVisible(false);
-			instructions->setVisible(false);
-			game->scenes.insert(std::pair<std::string, Scene *>("GAME", new OJ_SceneSurvival(game)));
-			game->switchScene("GAME", false);
-			OJ_ResourceManager::songs["funker"]->stop();
-		}else if(frame == STORY && joy->joysticks[0]->buttonJustDown(Joystick::kX)) {
-			frame = TITLE;
-			title->setVisible(true);
-			story->setVisible(false);
-			instructions->setVisible(false);
-			game->scenes.insert(std::pair<std::string, Scene *>("GAME", new OJ_SceneScoreAttack(game)));
-			game->switchScene("GAME", false);
-			OJ_ResourceManager::songs["funker"]->stop();
-		}
+	if(joy->joysticks[0] == nullptr){
+		joy->joysticks[0] = new JoystickVirtual(0);
+	}
+	if(joy->joysticks[1] == nullptr){
+		joy->joysticks[1] = new JoystickVirtual(1);
+	}
+
+	if(frame == TITLE && joy->joysticks[0]->buttonJustDown(Joystick::kA)) {
+		frame = STORY;
+		story->setVisible(true);
+		title->setVisible(false);
+	}else if(frame == TITLE && joy->joysticks[0]->buttonJustDown(Joystick::kX)){
+		frame = INSTRUCTIONS;
+		instructions->setVisible(true);
+		title->setVisible(false);
+	}else if((frame == INSTRUCTIONS || frame == CREDITS || frame == STORY) && joy->joysticks[0]->buttonJustDown(Joystick::kB)) {
+		frame = TITLE;
+		title->setVisible(true);
+		instructions->setVisible(false);
+		credits->setVisible(false);
+		story->setVisible(false);
+	}else if(frame == TITLE && joy->joysticks[0]->buttonJustDown(Joystick::kY)) {
+		frame = CREDITS;
+		title->setVisible(false);
+		credits->setVisible(true);
+	}else if(frame == STORY && joy->joysticks[0]->buttonJustDown(Joystick::kA)) {
+		frame = TITLE;
+		title->setVisible(true);
+		story->setVisible(false);
+		credits->setVisible(false);
+		instructions->setVisible(false);
+		game->scenes.insert(std::pair<std::string, Scene *>("GAME", new OJ_SceneSurvival(game)));
+		game->switchScene("GAME", false);
+		OJ_ResourceManager::songs["funker"]->stop();
+	}else if(frame == STORY && joy->joysticks[0]->buttonJustDown(Joystick::kX)) {
+		frame = TITLE;
+		title->setVisible(true);
+		story->setVisible(false);
+		instructions->setVisible(false);
+		game->scenes.insert(std::pair<std::string, Scene *>("GAME", new OJ_SceneScoreAttack(game)));
+		game->switchScene("GAME", false);
+		OJ_ResourceManager::songs["funker"]->stop();
 	}
 
 	glm::uvec2 sd = vox::getScreenDimensions();

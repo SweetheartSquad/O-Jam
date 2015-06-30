@@ -9,6 +9,9 @@ uniform int distortionMode = 0;
 uniform float time = 0;
 uniform float mult = 0;
 
+uniform float timeSnapped = 0;
+uniform vec2 snapPos = vec2(0.5);
+
 float rand1(vec2 co){
   return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
@@ -50,7 +53,15 @@ vec4 colour(vec4 _rgba){
 
 void main() {
     outColor = colour(vec4(texture(texFramebuffer, distort(Texcoord)))) * mult + vec4(texture(texFramebuffer, Texcoord))*(1-mult);
+
+
+    float d = distance(Texcoord, snapPos);
+
     if(outColor.y - outColor.z > mult){
     	discard;
+    }
+
+    if(d < timeSnapped){
+    	outColor = (vec4(1,1,1,2) - outColor)*(1-d);
     }
 }
