@@ -64,7 +64,7 @@ OJ_SceneSurvival::~OJ_SceneSurvival() {
 }
 
 void OJ_SceneSurvival::update(Step* _step) {
-	if(game->kc_active){
+	if(game->kc_active && gameOverMessage == nullptr){
 		playerOne->health = 999999999;
 		playerTwo->health = 999999999;
 	}
