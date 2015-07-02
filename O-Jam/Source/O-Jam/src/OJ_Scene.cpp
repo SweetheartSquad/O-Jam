@@ -203,8 +203,7 @@ void OJ_Scene::handleStancing(){
 	if(snapped){
 		float dist = glm::distance2(playerOne->rootComponent->getWorldPos(), playerTwo->rootComponent->getWorldPos());
 		if(
-			dist < stanceDistanceSq
-			&& playerOne->stance == playerTwo->stance
+			playerOne->stance == playerTwo->stance
 			&& playerOne->stance != OJ_Player::Stance::kNONE
 			&& playerOne->stance != OJ_Player::Stance::kPULL
 			&& snapTime > minCharge
@@ -214,6 +213,13 @@ void OJ_Scene::handleStancing(){
 			OJ_ResourceManager::sounds["charge"]->stop();
 			playerOne->enable();
 			playerTwo->enable();
+
+			// if the players aren't close enough together, cancel the charge
+			if(dist > stanceDistanceSq){
+				specialTimer.trigger();
+				return;
+			}
+
 			if(playerTwo->stance == OJ_Player::Stance::kAOE){
 				OJ_ResourceManager::sounds["blast"]->play();
 				float r = 2;
