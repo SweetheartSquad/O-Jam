@@ -144,8 +144,8 @@ void OJ_Scene::handlePlayerInput(OJ_Player * _player, Joystick * _joystick){
 	glm::vec2 movement(0);
 
 	if(_joystick != nullptr){
-		movement.x += _joystick->getAxis(Joystick::xbox_axes::kLX);
-		movement.y += -_joystick->getAxis(Joystick::xbox_axes::kLY);
+		movement.x += _joystick->getAxis(_joystick->axisLeftX);
+		movement.y += -_joystick->getAxis(_joystick->axisLeftY);
 	}
 	
 	_player->move(movement);
@@ -153,28 +153,28 @@ void OJ_Scene::handlePlayerInput(OJ_Player * _player, Joystick * _joystick){
 	// Calculate punches
 	if(_joystick != nullptr){
 		_player->aim = glm::vec2(0);
-		_player->aim.x = _joystick->getAxis(Joystick::xbox_axes::kRX);
-		_player->aim.y = -_joystick->getAxis(Joystick::xbox_axes::kRY);
+		_player->aim.x = _joystick->getAxis(_joystick->axisRightX);
+		_player->aim.y = -_joystick->getAxis(_joystick->axisRightY);
 		if(std::abs(_player->aim.x) + std::abs(_player->aim.y) > 0.5f){
 			_player->punchAngle = glm::atan(_player->aim.y, _player->aim.x) - glm::half_pi<float>();
 		}
-		if(_joystick->buttonJustDown(Joystick::xbox_buttons::kR1)){
+		if(_joystick->buttonJustDown(_joystick->bumperRight)){
 			_player->punchR();
-		}else if(_joystick->buttonJustDown(Joystick::xbox_buttons::kL1)){
+		}else if(_joystick->buttonJustDown(_joystick->bumperLeft)){
 			_player->punchL();
 		}
 
 		// stancing
 		if(_player->stance == OJ_Player::Stance::kNONE && !snapped){
-			if(_joystick->buttonJustDown(Joystick::xbox_buttons::kA)){
+			if(_joystick->buttonJustDown(_joystick->faceButtonDown)){
 				_player->getReady(OJ_Player::Stance::kPULL);
 			}
 		}else if(snapped){
-			if(_joystick->buttonDown(Joystick::xbox_buttons::kB)){
+			if(_joystick->buttonDown(_joystick->faceButtonRight)){
 				_player->getReady(OJ_Player::Stance::kGUIDE);
-			}else if(_joystick->buttonDown(Joystick::xbox_buttons::kY)){
+			}else if(_joystick->buttonDown(_joystick->faceButtonUp)){
 				_player->getReady(OJ_Player::Stance::kBEAM);
-			}else if(_joystick->buttonDown(Joystick::xbox_buttons::kX)){
+			}else if(_joystick->buttonDown(_joystick->faceButtonLeft)){
 				_player->getReady(OJ_Player::Stance::kAOE);
 			}
 		}
