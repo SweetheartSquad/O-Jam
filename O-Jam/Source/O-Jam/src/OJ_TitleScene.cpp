@@ -41,7 +41,7 @@ OJ_TitleScene::OJ_TitleScene(Game* _game) :
 	uiLayer(new UILayer(this, 0, 0, 0, 0)),
 	frame(0),
 	joy(new JoystickManager()),
-	screenSurfaceShader(new Shader("../assets/RenderSurface", false, true)),
+	screenSurfaceShader(new Shader("assets/RenderSurface", false, true)),
 	screenSurface(new RenderSurface(screenSurfaceShader)),
 	screenFBO(new StandardFrameBuffer(true))
 {

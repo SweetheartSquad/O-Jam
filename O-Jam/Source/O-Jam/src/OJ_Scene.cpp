@@ -10,7 +10,7 @@ OJ_Scene::OJ_Scene(Game * _game, unsigned long int _layers) :
 	box2DWorld(new Box2DWorld(b2Vec2(0, 0))),
 	bulletWorld(new BulletWorld()),
 	textShader(new ComponentShaderText(false)),
-	font(new Font("../assets/fonts/Asgalt-Regular.ttf", 60, false)),
+	font(new Font("assets/fonts/Asgalt-Regular.ttf", 60, false)),
 	box2DDebugDrawer(nullptr),
 	cl(new OJ_ContactListener(this)),
 	stanceDistanceSq(500),
@@ -25,7 +25,7 @@ OJ_Scene::OJ_Scene(Game * _game, unsigned long int _layers) :
 	guideActive(false),
 	teamworkAngle(0),
 	guidedBullet(nullptr),
-	screenSurfaceShader(new Shader("../assets/RenderSurface", false, true)),
+	screenSurfaceShader(new Shader("assets/RenderSurface", false, true)),
 	screenSurface(new RenderSurface(screenSurfaceShader)),
 	screenFBO(new StandardFrameBuffer(true)),
 	uiLayer(new UILayer(this, 0,0,0,0))
@@ -48,7 +48,7 @@ OJ_Scene::OJ_Scene(Game * _game, unsigned long int _layers) :
 	arena = new OJ_Arena(this, box2DWorld, mainShader, 6, 6);
 	addChild(arena, 1);
 
-	MeshEntity * m = new MeshEntity(Resource::loadMeshFromObj("../assets/meshes/hexArena.obj").at(0));
+	MeshEntity * m = new MeshEntity(Resource::loadMeshFromObj("assets/meshes/hexArena.obj").at(0));
 	addChild(m, 0);
 	m->parents.at(0)->scale(arena->radius * 10.f);
 	m->setShader(mainShader, true);
@@ -69,13 +69,12 @@ OJ_Scene::OJ_Scene(Game * _game, unsigned long int _layers) :
 	//Set up camera
 	delete cameras.back()->parents.at(0);
 	cameras.pop_back();
-	Transform * t = new Transform();
 	gameCam = new FollowCamera(10, glm::vec3(0, 0, 0), 0, 0);
-	t->addChild(gameCam, false);
+	childTransform->addChild(gameCam);
 	cameras.push_back(gameCam);
 	gameCam->farClip = 1000.f;
-	t->rotate(90, 0, 1, 0, kWORLD);
-	t->translate(5.0f, 1.5f, 22.5f);
+	gameCam->childTransform->rotate(90, 0, 1, 0, kWORLD);
+	gameCam->parents.at(0)->translate(5.0f, 1.5f, 22.5f);
 	gameCam->minimumZoom = 22.5f;
 	gameCam->yaw = 90.0f;
 	gameCam->pitch = -10.0f;
