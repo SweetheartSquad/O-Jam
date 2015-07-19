@@ -67,7 +67,8 @@ OJ_Scene::OJ_Scene(Game * _game, unsigned long int _layers) :
 	playerTwo->setShader(mainShader, true);
 
 	//Set up camera
-	delete cameras.back()->parents.at(0);
+	childTransform->removeChild(cameras.back());
+	delete cameras.back();
 	cameras.pop_back();
 	gameCam = new FollowCamera(10, glm::vec3(0, 0, 0), 0, 0);
 	childTransform->addChild(gameCam);
