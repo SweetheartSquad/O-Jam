@@ -6,14 +6,13 @@
 #include <map>
 
 #include <OpenALSound.h>
-#include <JsonPlaythroughParser.h>
+#include <scenario/Scenario.h>
 
 class OJ_ResourceManager : public ResourceManager{
 public:
 	static Texture * cursor;
-	static Texture * cheryl;
 
-	static JsonPlaythroughParser * playthrough;
+	static Scenario * playthrough;
 
 	static std::string speaker;
 	static std::map<std::string, OpenAL_Sound *> songs;
