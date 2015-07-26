@@ -15,6 +15,7 @@
 #include <shader\ComponentShaderText.h>
 #include <shader\ShaderComponentTexture.h>
 #include <shader\ShaderComponentHsv.h>
+#include <shader\ShaderComponentMVP.h>
 #include <BulletWorld.h>
 #include <Box2DWorld.h>
 #include <Box2DDebugDrawer.h>

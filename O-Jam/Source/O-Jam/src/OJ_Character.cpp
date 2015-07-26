@@ -60,7 +60,7 @@ void OJ_Character::update(Step * _step){
 }
 
 void OJ_Character::render(vox::MatrixStack * _matrixStack, RenderOptions * _renderOptions){
-	ShaderComponentHsv * s = dynamic_cast<ShaderComponentHsv *>(dynamic_cast<ComponentShaderBase *>(shader)->getComponentAt(1));
+	ShaderComponentHsv * s = dynamic_cast<ShaderComponentHsv *>(dynamic_cast<ComponentShaderBase *>(shader)->getComponentAt(2));
 	float g = s->getSaturation();
 	float ng = 1;
 	if(hitTimer.active){
