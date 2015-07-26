@@ -7,7 +7,7 @@
 
 #include <math.h>
 
-Texture * OJ_ResourceManager::cursor = new Texture("assets/engine basics/cursor.png", 32, 32, true, false);
+Texture * OJ_ResourceManager::cursor = new Texture("assets/engine basics/cursor.png", true, false);
 
 Scenario * OJ_ResourceManager::playthrough = nullptr;
 
