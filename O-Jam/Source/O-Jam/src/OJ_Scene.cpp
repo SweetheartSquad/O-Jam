@@ -38,6 +38,7 @@ OJ_Scene::OJ_Scene(Game * _game, unsigned long int _layers) :
 	screenSurface->load();
 	screenSurface->configureDefaultVertexAttributes(screenSurfaceShader);
 	// Initialize and compile the shader 
+	mainShader->addComponent(new ShaderComponentMVP(mainShader));
 	mainShader->addComponent(new ShaderComponentTexture(mainShader));
 	mainShader->addComponent(new ShaderComponentHsv(mainShader, 0, 1, 1));
 	mainShader->compileShader();
