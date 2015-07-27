@@ -8,8 +8,6 @@ public:
 
 	explicit OJ_Enemy(float _componentScale, OJ_TexturePack * _texPack, Box2DWorld * _world, int16 _categoryBits, int16 _maskBits = -1, int16 _groupIndex = 0);
 
-	virtual ~OJ_Enemy();
-
 	void update(Step * step);
 
 	void targetCharacter(OJ_Character * _target);

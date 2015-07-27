@@ -87,8 +87,8 @@ void OJ_ContactListener::playerEnemyContact(b2Contact * _contact, b2Fixture * _p
 
 		if(hand != nullptr){
 			// hand - enemy punch!
-			glm::vec3 hPos = hand->getWorldPos();
-			glm::vec3 pPos = p->rootComponent->getWorldPos();
+			glm::vec3 hPos = hand->mesh->getWorldPos();
+			glm::vec3 pPos = p->rootComponent->mesh->getWorldPos();
 
 			float d = glm::distance2(hPos, pPos);
 			if(d > p->punchReach*p->punchReach){

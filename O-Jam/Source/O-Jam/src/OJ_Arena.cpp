@@ -287,12 +287,12 @@ Box2DSprite * OJ_Arena::getHexTile(){
 	m->setUV(38, 1.0, 0.0);
 	m->setUV(39, 0.0, 0.0);
 	
-	sprite->childTransform->removeChild(sprite->mesh);
-	delete sprite->mesh;
+	sprite->childTransform->removeChild(sprite->meshTransform);
+	delete sprite->meshTransform;
 	sprite->mesh = m;
-	sprite->childTransform->addChild(sprite->mesh, false);
+	sprite->meshTransform = sprite->childTransform->addChild(sprite->mesh, true);
 	sprite->mesh->pushTexture2D(OJ_ResourceManager::playthrough->getTexture("test2")->texture);
-
+	
 	free(vs);
 	
 	return sprite;
@@ -344,7 +344,7 @@ void OJ_Arena::killEnemy(OJ_Enemy * _enemy){
 			break;
 		}
 	}
-	glm::vec3 pos = _enemy->rootComponent->getWorldPos();
+	glm::vec3 pos = _enemy->rootComponent->mesh->getWorldPos();
 	for(unsigned long int i = 0; i < 10; ++i){
 		Particle * p = particles->addParticle(pos);
 		p->startSize += vox::NumberUtils::randomFloat(0, 1);
