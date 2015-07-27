@@ -84,12 +84,12 @@ void OJ_SceneSurvival::update(Step* _step) {
 	specialTimer.update(_step);
 	snapTime += _step->deltaTime;
 	if(snapped){
-		glm::vec3 v = snapPos - playerOne->rootComponent->getWorldPos();
+		glm::vec3 v = snapPos - playerOne->rootComponent->mesh->getWorldPos();
 		v = glm::normalize(v);
 		float s = playerOne->rootComponent->body->GetMass() * 10 * std::min(snapTime, 10.f);
 		playerOne->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
 
-		v = snapPos - playerTwo->rootComponent->getWorldPos();
+		v = snapPos - playerTwo->rootComponent->mesh->getWorldPos();
 		v = glm::normalize(v);
 		s = playerTwo->rootComponent->body->GetMass() * 10 * std::min(snapTime, 10.f);
 		playerTwo->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
@@ -198,7 +198,7 @@ void OJ_SceneSurvival::update(Step* _step) {
 			uiLayer->addChild(gameOverMessage);
 		}
 		gameOver.update(_step);
-		ShaderComponentHsv * s = dynamic_cast<ShaderComponentHsv *>(dynamic_cast<ComponentShaderBase *>(mainShader)->getComponentAt(1));
+		ShaderComponentHsv * s = dynamic_cast<ShaderComponentHsv *>(dynamic_cast<ComponentShaderBase *>(mainShader)->getComponentAt(2));
 		s->setValue(Easing::easeInOutCubic(gameOver.elapsedSeconds, 1, -1, gameOver.targetSeconds/2.f));
 	}
 }

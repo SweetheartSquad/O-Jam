@@ -82,8 +82,8 @@ OJ_Scene::OJ_Scene(Game * _game, unsigned long int _layers) :
 	gameCam->pitch = -10.0f;
 	activeCamera = gameCam;
 	
-	gameCam->addTarget(playerOne->rootComponent, 1);
-	gameCam->addTarget(playerTwo->rootComponent, 1);
+	gameCam->addTarget(playerOne->rootComponent->mesh, 1);
+	gameCam->addTarget(playerTwo->rootComponent->mesh, 1);
 
 	scoreText = new TextArea(bulletWorld, this, font, textShader, 1.f);
 	scoreText->horizontalAlignment = kCENTER;
@@ -195,7 +195,7 @@ void OJ_Scene::handleStancing(){
 			playerOne->disable();
 			playerTwo->disable();
 			snapTime = 0;
-			snapPos = (playerOne->rootComponent->getWorldPos() + playerTwo->rootComponent->getWorldPos()) * 0.5f;
+			snapPos = (playerOne->rootComponent->mesh->getWorldPos() + playerTwo->rootComponent->mesh->getWorldPos()) * 0.5f;
 		}
 	}
 
@@ -268,12 +268,12 @@ void OJ_Scene::separatePlayers(float _multiplier){
 	playerOne->disable(0.25f*_multiplier);
 	playerTwo->disable(0.25f*_multiplier);
 
-	glm::vec3 v = playerOne->rootComponent->getWorldPos() - playerTwo->rootComponent->getWorldPos();
+	glm::vec3 v = playerOne->rootComponent->mesh->getWorldPos() - playerTwo->rootComponent->mesh->getWorldPos();
 	v = glm::normalize(v);
 	float s = playerOne->rootComponent->body->GetMass() * 50 * _multiplier;
 	playerOne->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
 
-	v = playerTwo->rootComponent->getWorldPos() - playerOne->rootComponent->getWorldPos();
+	v = playerTwo->rootComponent->mesh->getWorldPos() - playerOne->rootComponent->mesh->getWorldPos();
 	v = glm::normalize(v);
 	s = playerTwo->rootComponent->body->GetMass() * 50 * _multiplier;
 	playerTwo->rootComponent->applyLinearImpulseToCenter(v.x*s, v.y*s);
