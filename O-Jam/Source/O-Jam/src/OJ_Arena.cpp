@@ -43,7 +43,7 @@ OJ_Arena::OJ_Arena(OJ_Scene * _scene, Box2DWorld * _world, Shader * _shader, flo
 	trojansPreWave(1),
 	amoebaPerWave(1),
 	amoebasLeft(0),
-	particles(new ParticleSystem(new TextureSampler(OJ_ResourceManager::playthrough->getTexture("TORSO")->texture, 1, 1), _world, -1, -1, 0)),
+	particles(new ParticleSystem(OJ_ResourceManager::playthrough->getTexture("TORSO")->texture, _world, -1, -1, 0)),
 	startIndicatorTimer(1.5f),
 	componentMultMutlt(0),
 	score(0)
